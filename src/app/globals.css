@@ -1,12 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1a2c2a;
+  --foreground: #ffffff;
+  --muted: #ececec;
+  --muted-2: #f2f2f2;
+  --accent: #31aaa0;
+  --accent-dark: #1a2c2a;
+  --text-dark: #1a2c2a;
+  --text-muted: #4b4b4b;
+  --surface: #f2f2f2;
+  --surface-dark: #445251;
+  --danger: #d02e2e;
+  --anim-ease: cubic-bezier(.2,.9,.28,1);
+  --anim-fast: 160ms;
+  --anim-medium: 320ms;
+  --anim-slow: 700ms;
+  --stagger-step: 80ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Better defaults for animations/transitions site-wide */
+* {
+  transition-timing-function: var(--anim-ease);
+  animation-timing-function: var(--anim-ease);
+}
+
+/* Utility: stagger children by setting inline style --i on each child (0,1,2...)
+   Example in React: <div className="stagger">{items.map((it,i)=>(<div style={{"--i": i}} className="stagger-item">...))}</div> */
+.stagger > * {
+  animation-delay: calc(var(--i, 0) * var(--stagger-step));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -17,17 +53,18 @@ body {
 }
 
 body {
+  margin: 0;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 a {
@@ -35,8 +72,70 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button {
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.kdam {
+  font-family: var(--font-kdam), sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0,14px,0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0,0,0);
+  }
+}
+
+@keyframes softFloat {
+  0% {
+    transform: translate3d(0,0,0);
+  }
+  50% {
+    transform: translate3d(0,-4px,0);
+  }
+  100% {
+    transform: translate3d(0,0,0);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+}
+
+@keyframes sheen {
+  0% {
+    transform: translate3d(-120%,0,0) rotate(0.001deg);
+  }
+  60% {
+    transform: translate3d(120%,0,0) rotate(0.001deg);
+  }
+  100% {
+    transform: translate3d(120%,0,0) rotate(0.001deg);
   }
 }

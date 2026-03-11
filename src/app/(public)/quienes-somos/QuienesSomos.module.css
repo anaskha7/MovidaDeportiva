@@ -1,0 +1,396 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding-bottom: 40px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero {
+  padding: 40px 0 28px;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: clamp(64px, 10vw, 149px);
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+  text-align: center;
+}
+
+.sectionTitle {
+  width: fit-content;
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 9px solid #31aaa0;
+  font-size: clamp(40px, 4vw, 66px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.storySection {
+  display: grid;
+  grid-template-columns: minmax(300px, 705px) minmax(0, 1fr);
+  gap: 40px;
+  padding: 40px 0;
+  align-items: stretch;
+}
+
+.storyImage {
+  border-radius: 20px;
+  overflow: hidden;
+  height: 562px;
+  background: #203432;
+}
+
+.storyImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.storyContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.storyBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.storyText {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.storyText p {
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 36px);
+  font-weight: 500;
+  line-height: 1.06;
+  color: #ececec;
+  letter-spacing: -0.055em;
+}
+
+.storyNote {
+  background: #445251;
+  border-radius: 20px;
+  padding: 20px 13px;
+  font-size: clamp(18px, 1.5vw, 26px);
+  line-height: 1.05;
+  color: #ffffff;
+  letter-spacing: -0.04em;
+}
+
+.valuesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 40px 0;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.valueCard {
+  background: #ececec;
+  border-radius: 20px;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+  color: #1a2c2a;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.valueCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.valueCopy h3 {
+  margin: 0;
+  font-size: clamp(24px, 2vw, 36px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.valueCopy p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(14px, 1vw, 18px);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.valueIcon,
+.valueIconDark {
+  width: 32px;
+  height: 32px;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.valueIcon img,
+.valueIconDark img {
+  width: 32px;
+  height: 32px;
+}
+
+.valueCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.valueIconDark {
+  border-radius: 999px;
+  background: #1a2c2a;
+}
+
+.valueIconDark img {
+  width: 18px;
+  height: 18px;
+}
+
+.missionSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
+  gap: 40px;
+  padding: 40px 0;
+  align-items: center;
+}
+
+.missionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.missionText {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.missionText p {
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 36px);
+  font-weight: 500;
+  line-height: 1.06;
+  color: #ececec;
+  letter-spacing: -0.055em;
+}
+
+.missionPills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.missionPills span {
+  background: #445251;
+  border-radius: 20px;
+  padding: 8px 13px;
+  width: fit-content;
+  max-width: 100%;
+  font-size: clamp(16px, 1.5vw, 26px);
+  line-height: 1.05;
+  color: #ffffff;
+  letter-spacing: -0.04em;
+}
+
+.missionImageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 598px;
+}
+
+.missionImage {
+  width: 100%;
+  max-width: 497px;
+  height: 529px;
+  border-radius: 20px;
+  overflow: hidden;
+  transform: rotate(-90deg);
+  background: #203432;
+}
+
+.missionImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.distinguishSection {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 40px 0;
+}
+
+.distinguishGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.distinguishCard {
+  background: #31aaa0;
+  border-radius: 20px;
+  padding: 20px 15px;
+  color: #1a2c2a;
+  min-height: 130px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.distinguishCard h3 {
+  margin: 0 0 8px;
+  font-size: clamp(26px, 2.4vw, 36px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.distinguishCard p {
+  margin: 0;
+  font-size: clamp(18px, 1.5vw, 26px);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+.distinguishCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+
+.collabSection {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 40px 0;
+}
+
+.collabGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 40px;
+  align-items: center;
+}
+
+.collabItem {
+  height: 121px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collabItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 1200px) {
+  .storySection,
+  .missionSection {
+    grid-template-columns: 1fr;
+  }
+
+  .valuesGrid,
+  .distinguishGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .valueCard {
+    min-height: 180px;
+  }
+
+  .missionImageWrap {
+    min-height: auto;
+  }
+
+  .missionImage {
+    transform: none;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 497 / 529;
+  }
+
+  .collabGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    gap: 28px;
+  }
+
+  .hero {
+    padding: 24px 0 12px;
+  }
+
+  .storySection,
+  .valuesSection,
+  .missionSection,
+  .distinguishSection,
+  .collabSection {
+    padding: 24px 0;
+  }
+
+  .sectionTitle {
+    padding-bottom: 8px;
+    border-bottom-width: 6px;
+  }
+
+  .storyImage {
+    height: 360px;
+  }
+
+  .valueCard,
+  .distinguishCard {
+    min-height: auto;
+  }
+
+  .valueIcon,
+  .valueIconDark {
+    width: 28px;
+    height: 28px;
+  }
+
+  .valueIcon img,
+  .valueIconDark img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .valueIconDark img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .collabGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .collabItem {
+    height: 86px;
+  }
+}

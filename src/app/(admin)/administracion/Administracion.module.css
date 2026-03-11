@@ -1,0 +1,420 @@
+.page {
+  background: #1a2c2a;
+  min-height: 100vh;
+  padding: 24px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 282px 1fr;
+  gap: 24px;
+}
+
+.sidebar {
+  background: #f2f2f2;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logo {
+  width: 76px;
+  height: 29.5px;
+}
+
+.menuLabel {
+  font-size: 16px;
+  color: #4b4b4b;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #fafafa;
+  font-size: 20px;
+  color: #1a2c2a;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menuItem img {
+  width: 24px;
+  height: 24px;
+}
+
+.menuItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.active {
+  background: #1a2c2a;
+  color: #ffffff;
+  border: 1px solid #c3c3c3;
+}
+
+.active img {
+  filter: brightness(0) invert(1);
+}
+
+.liveTag {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ececec;
+  color: #1a2c2a;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.liveTag i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #d02e2e;
+}
+
+.badge {
+  margin-left: auto;
+  background: #d02e2e;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.subscribeCard {
+  margin-top: auto;
+  background: #31aaa0;
+  border-radius: 16px;
+  padding: 16px;
+  color: #1a2c2a;
+}
+
+.subscribeTitle {
+  font-size: 32px;
+  line-height: 30px;
+  letter-spacing: -2.5px;
+}
+
+.content {
+  background: #f2f2f2;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.logoSmall {
+  width: 76px;
+  height: 29.5px;
+}
+
+.headerLeft h1 {
+  font-size: 24px;
+  color: #1a2c2a;
+}
+
+.headerLeft p {
+  font-size: 14px;
+  color: #4b4b4b;
+}
+
+.headerRight {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.iconButton {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.iconButton img {
+  width: 20px;
+  height: 20px;
+}
+
+.dot {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #d02e2e;
+}
+
+.adminCard {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.adminIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #31aaa0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adminIcon img {
+  width: 20px;
+  height: 20px;
+}
+
+.adminCard p {
+  font-size: 12px;
+  color: #4b4b4b;
+}
+
+.adminCard strong {
+  color: #31aaa0;
+  letter-spacing: -0.6px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 24px 32px 0;
+}
+
+.tab,
+.tabActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  font-size: 14px;
+  color: #1a2c2a;
+}
+
+.tabActive {
+  background: #1a2c2a;
+  color: #ffffff;
+  border-color: #1a2c2a;
+}
+
+.tab img,
+.tabActive img {
+  width: 16px;
+  height: 16px;
+}
+
+.statsGrid {
+  padding: 24px 32px 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.statCard {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard p {
+  font-size: 14px;
+  color: #6b6b6b;
+}
+
+.statCard h3 {
+  font-size: 30px;
+  color: #1a2c2a;
+  margin: 6px 0;
+}
+
+.statCard span {
+  font-size: 14px;
+  color: #1a2c2a;
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statIcon img {
+  width: 24px;
+  height: 24px;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.bodyGrid {
+  padding: 24px 32px 32px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.activityCard,
+.systemCard {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.activityCard h2,
+.systemCard h2 {
+  font-size: 16px;
+  color: #1a2c2a;
+}
+
+.activityCard p,
+.systemCard p {
+  font-size: 16px;
+  color: #6b6b6b;
+}
+
+.activityList {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activityItem {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.activityItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.activityDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #31aaa0;
+}
+
+.activityItem strong {
+  font-size: 14px;
+  color: #1a2c2a;
+}
+
+.activityItem p {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.metric {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #1a2c2a;
+}
+
+.metricBar {
+  height: 8px;
+  background: #f5f5f5;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.metricBar span {
+  display: block;
+  height: 8px;
+  background: #030213;
+}
+
+@media (max-width: 1200px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bodyGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

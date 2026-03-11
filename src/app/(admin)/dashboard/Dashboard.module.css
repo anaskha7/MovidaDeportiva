@@ -1,0 +1,478 @@
+.dashboardPage {
+  background: #1a2c2a;
+  min-height: 100vh;
+  padding: 24px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 284px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.sidebar {
+  background: #f2f2f2;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: calc(100vh - 48px);
+}
+
+.logo {
+  width: 76px;
+  height: 29.5px;
+  margin-bottom: 40px;
+}
+
+.menuBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menuLabel {
+  font-size: 16px;
+  color: #4b4b4b;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  font-size: 20px;
+  color: #1a2c2a;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menuItem img {
+  width: 24px;
+  height: 24px;
+}
+
+.menuItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.active {
+  background: #1a2c2a;
+  color: #ffffff;
+  border: 1px solid #c3c3c3;
+}
+
+.active img {
+  filter: brightness(0) invert(1);
+}
+
+.liveTag,
+.liveTagSmall {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ececec;
+  color: #1a2c2a;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 18px;
+}
+
+.liveTag i,
+.liveTagSmall i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #d02e2e;
+  display: inline-block;
+}
+
+.badge {
+  margin-left: auto;
+  background: #d02e2e;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.subscribeCard {
+  background: #31aaa0;
+  border-radius: 16px;
+  padding: 14px 10px;
+  margin-top: 40px;
+}
+
+.subscribeTitle {
+  font-size: 38px;
+  line-height: 35px;
+  letter-spacing: -3.3px;
+  color: #1a2c2a;
+}
+
+.subscribeFooter {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 20px;
+  color: #1a2c2a;
+}
+
+.subscribeFooter img {
+  width: 41px;
+  height: 41px;
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topbar {
+  background: #f2f2f2;
+  border-radius: 13px;
+  padding: 7px 24px 7px 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfo {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.userInfo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 11px;
+  object-fit: cover;
+}
+
+.userInfo p {
+  font-size: 16px;
+  color: #1a2c2a;
+}
+
+.userInfo strong {
+  font-size: 24px;
+  letter-spacing: -1px;
+  color: #31aaa0;
+}
+
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.searchBox {
+  border: 2.5px solid #1a2c2a;
+  border-radius: 22px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #4b4b4b;
+  width: 278px;
+  font-size: 16px;
+}
+
+.searchBox img {
+  width: 16px;
+  height: 16px;
+}
+
+.iconGroup {
+  display: flex;
+  gap: 24px;
+}
+
+.iconGroup span {
+  position: relative;
+}
+
+.iconGroup img {
+  width: 30px;
+  height: 30px;
+}
+
+.iconGroup i {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #d02e2e;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+  gap: 16px;
+}
+
+.leftStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: #f2f2f2;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.cardHeader strong {
+  font-size: 24px;
+  color: #1a2c2a;
+}
+
+.cardHeader p {
+  font-size: 20px;
+  color: #1a2c2a;
+}
+
+.videoFrame {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 410px;
+}
+
+.videoFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.playIcon {
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.serviceRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.serviceBox,
+.serviceBoxLight {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.serviceBox {
+  background: #bfd9c6;
+}
+
+.serviceBoxLight {
+  background: #d2e4d7;
+}
+
+.eventRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.eventCard {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 180px;
+}
+
+.eventCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.eventOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.eventMeta {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.rightStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardSmall {
+  background: #f2f2f2;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cardSmall:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.scheduleItemActive {
+  background: #31aaa0;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  color: #1a2c2a;
+}
+
+.scheduleLive {
+  background: rgba(236, 236, 236, 0.6);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.scheduleItem {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  color: #1a2c2a;
+}
+
+.linkButton {
+  align-self: center;
+  color: #1a2c2a;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  font-size: 12px;
+  color: #7e818c;
+}
+
+.highlight {
+  background: #1f95af;
+  color: #ffffff;
+  border-radius: 999px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noticeHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.noticeItem {
+  display: flex;
+  gap: 5px;
+  align-items: flex-start;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+.noticeItem span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #31aaa0;
+  margin-top: 4px;
+}
+
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .topbarActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .searchBox {
+    width: 100%;
+  }
+}

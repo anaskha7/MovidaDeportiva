@@ -1,0 +1,146 @@
+.footer {
+  background: rgba(236, 236, 236, 0.2);
+  padding: 40px 0;
+  border-top-left-radius: 48px;
+  border-top-right-radius: 48px;
+  margin-top: 40px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.footerInner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 64px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.footerColumns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  color: #ffffff;
+}
+
+.columnGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.footer h3 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.footer ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.contactGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contactGroup p {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 24px;
+}
+
+.contactRow img {
+  width: 27px;
+  height: 27px;
+}
+
+.footerBottom {
+  border-top: 4px solid #ffffff;
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+}
+
+.footerBottom p {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.socials {
+  display: flex;
+  gap: 12px;
+}
+
+.socialCircle {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #ffffff;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.socialGlyph {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a2c2a;
+}
+
+.socialGlyph svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: currentColor;
+}
+
+.socialCircle:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 1200px) {
+  .footerColumns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footerBottom p {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footerInner {
+    padding: 48px 20px 24px;
+  }
+
+  .footerColumns {
+    grid-template-columns: 1fr;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
