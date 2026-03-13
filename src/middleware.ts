@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SESSION_COOKIE_ROLE } from "./lib/session";
 
-const PRIVATE_PATHS = ["/directo", "/videos", "/app"];
+const PRIVATE_PATHS = ["/directo", "/videos", "/app", "/administracion"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -33,5 +33,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/directo/:path*", "/videos/:path*", "/app/:path*"],
+  matcher: ["/admin/:path*", "/directo/:path*", "/videos/:path*", "/app/:path*", "/administracion"],
 };

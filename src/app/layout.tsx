@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Kdam_Thmor_Pro, Manrope } from "next/font/google";
+import { getLocale } from "@/lib/i18n";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -19,13 +20,15 @@ export const metadata: Metadata = {
   description: "Movida Deportiva TV",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="es">
+    <html lang={locale}>
       <body className={`${manrope.variable} ${kdam.variable}`}>
         {children}
       </body>

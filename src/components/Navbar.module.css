@@ -23,6 +23,12 @@
   align-items: center;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .link,
 .activeLink {
   display: inline-flex;
@@ -145,5 +151,10 @@
 
   .loginButton {
     align-self: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

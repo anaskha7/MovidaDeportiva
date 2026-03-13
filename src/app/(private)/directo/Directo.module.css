@@ -34,6 +34,12 @@
   gap: 16px;
 }
 
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .menuLabel {
   font-size: 16px;
   color: #4b4b4b;
@@ -48,6 +54,7 @@
   border-radius: 8px;
   font-size: 20px;
   color: #1a2c2a;
+  text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 

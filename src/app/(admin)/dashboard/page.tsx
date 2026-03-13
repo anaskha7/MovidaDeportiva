@@ -1,60 +1,87 @@
-import { getSession } from "@/lib/session";
+import Link from "next/link";
+import { getLocale } from "@/lib/i18n";
+import { formatUserName, getSession } from "@/lib/session";
+import DashboardSidebarWidgets from "./DashboardSidebarWidgets";
 import styles from "./Dashboard.module.css";
 
-export default async function DashboardPage() {
+export default async function DashboardPage(props: {
+  searchParams?: Promise<{ q?: string }>;
+}) {
   const session = await getSession();
+  const locale = await getLocale();
+  const searchParams = props.searchParams ? await props.searchParams : undefined;
+  const searchQuery =
+    typeof searchParams?.q === "string" ? searchParams.q.trim().toLowerCase() : "";
+  const t = {
+    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "¿Qué estás buscando?", request: "Solicitar servicios", requestText: "Escoje que tipo de servicio quieres contratar.", from: "Desde", eventsText: "Disfruta del mejor fútbol siempre que quieras", noResults: "No hay resultados para esta búsqueda." },
+    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", request: "Sol·licitar serveis", requestText: "Escull quin tipus de servei vols contractar.", from: "Des de", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
+    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", request: "Request services", requestText: "Choose the type of service you want to hire.", from: "From", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
+  }[locale];
+  const matchesSearch = (value: string) =>
+    !searchQuery || value.toLowerCase().includes(searchQuery);
+  const serviceCards = [
+    { title: "SERVICIOS RETRANSMISION", price: "19,99€/hora", className: styles.serviceBox, icon: "video" },
+    { title: "SPEAKERS Y ANIMACIÓN", price: "27,99€/hora", className: styles.serviceBoxLight, icon: "audio" },
+  ].filter((item) => matchesSearch(item.title));
+  const notificationItems = [
+    { actor: "@futbol_008", message: "ha reaccionado a tu mensaje" },
+    { message: "Has reservado los Servicios Streaming para el 18/03 con éxito." },
+    { actor: "@juannn_mp", message: "ha contestado tu mensaje de chat" },
+    { actor: "@futbol_008", message: "ha reaccionado a tu mensaje" },
+  ].filter((item) => matchesSearch(`${item.actor ?? ""} ${item.message}`));
+  const showLiveCard = matchesSearch("GRAMA vs VILANOVA 3ª Federación Grupo V Jornada 19");
+  const showEventsCard = matchesSearch("Partidos y eventos Disfruta del mejor fútbol siempre que quieras");
   return (
     <main className={styles.dashboardPage}>
       <div className={styles.dashboardGrid}>
         <aside className={styles.sidebar}>
-          <img className={styles.logo} src="/assets/figma/logo.png" alt="Movida Deportiva TV" />
+          <img
+            className={styles.logo}
+            src="/assets/figma/logo-md-dark.svg"
+            alt="Movida Deportiva TV"
+          />
           <div className={styles.menuBlock}>
-            <p className={styles.menuLabel}>Menú</p>
+            <p className={styles.menuLabel}>{t.menu}</p>
             <nav className={styles.menuList}>
-              <div className={`${styles.menuItem} ${styles.active}`}>
-                <img src="/assets/figma/icon-home.png" alt="" />
-                <span>Inicio</span>
-              </div>
-              <div className={styles.menuItem}>
-                <img src="/assets/figma/icon-video.png" alt="" />
-                <span>En directo</span>
+              <Link href="/dashboard" className={`${styles.menuItem} ${styles.active}`}>
+                <img src="/assets/figma/admin-menu-home.svg" alt="" />
+                <span>{t.home}</span>
+              </Link>
+              <Link href="/directo" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-live.svg" alt="" />
+                <span>{t.live}</span>
                 <span className={styles.liveTag}>
                   Live <i />
                 </span>
-              </div>
-              <div className={styles.menuItem}>
-                <img src="/assets/figma/icon-dribbble.png" alt="" />
-                <span>Partidos y eventos</span>
-              </div>
-              <div className={styles.menuItem}>
-                <img src="/assets/figma/icon-clipboard.png" alt="" />
-                <span>Nuestros servicios</span>
-              </div>
-              <div className={styles.menuItem}>
-                <img src="/assets/figma/icon-bell.png" alt="" />
-                <span>Notificaciones</span>
+              </Link>
+              <Link href="/videos" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-events.svg" alt="" />
+                <span>{t.events}</span>
+              </Link>
+              <Link href="/app/servicios" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-services.svg" alt="" />
+                <span>{t.services}</span>
+              </Link>
+              <Link href="/dashboard#notificaciones" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-bell.svg" alt="" />
+                <span>{t.notifications}</span>
                 <span className={styles.badge}>22</span>
-              </div>
-              <div className={styles.menuItem}>
-                <img src="/assets/figma/icon-message.png" alt="" />
-                <span>Tus mensajes</span>
-                <span className={styles.badge}>7</span>
-              </div>
-              <div className={styles.menuItem}>
-                <img src="/assets/figma/icon-settings.png" alt="" />
-                <span>Ajustes</span>
-              </div>
+              </Link>
+              <Link href="/app/ajustes" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-settings.svg" alt="" />
+                <span>{t.settings}</span>
+              </Link>
             </nav>
           </div>
           <div className={styles.subscribeCard}>
             <div className={`kdam ${styles.subscribeTitle}`}>
-              ¡SÚSCRIBETE
+              {t.subscribe}
               <br />
-              AHORA!
+              {t.subscribe2}
             </div>
             <div className={styles.subscribeFooter}>
-              <p>Para disfrutar de todas las ventajas del Premium</p>
-              <img src="/assets/figma/arrow-right.png" alt="" />
+              <p>{t.subscribeText}</p>
+              <img src="/assets/figma/icon-arrow-up-right.svg" alt="" />
             </div>
           </div>
         </aside>
@@ -64,22 +91,24 @@ export default async function DashboardPage() {
             <div className={styles.userInfo}>
               <img src="/assets/figma/dashboard-user.png" alt="" />
               <div>
-                <p>Buenos días,</p>
-                <strong>{session?.name ?? "Admin"}</strong>
+                <p>{t.greeting}</p>
+                <strong>{formatUserName(session?.name)}</strong>
               </div>
             </div>
             <div className={styles.topbarActions}>
-              <div className={styles.searchBox}>
+              <form className={styles.searchBox} action="/dashboard" method="get">
                 <img src="/assets/figma/icon-search.png" alt="" />
-                <span>¿Qué estás buscando?</span>
-              </div>
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={searchQuery}
+                  placeholder={t.search}
+                  aria-label={t.search}
+                />
+              </form>
               <div className={styles.iconGroup}>
                 <span>
-                  <img src="/assets/figma/icon-message-small.png" alt="" />
-                  <i />
-                </span>
-                <span>
-                  <img src="/assets/figma/icon-bell-small.png" alt="" />
+                    <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                   <i />
                 </span>
               </div>
@@ -88,6 +117,7 @@ export default async function DashboardPage() {
 
           <div className={styles.mainContent}>
             <div className={styles.leftStack}>
+              {showLiveCard ? <Link href="/directo" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
@@ -99,7 +129,7 @@ export default async function DashboardPage() {
                     </div>
                     <p>3ª Federación - GRUPO V - Jornada 19</p>
                   </div>
-                  <img src="/assets/figma/arrow-right.png" alt="" />
+                  <img src="/assets/figma/icon-arrow-up-right-dark.svg" alt="" />
                 </div>
                 <div className={styles.videoFrame}>
                   <img src="/assets/figma/dashboard-live.png" alt="" />
@@ -111,34 +141,53 @@ export default async function DashboardPage() {
                   />
                 </div>
               </article>
+              </Link> : null}
 
-              <article className={styles.card}>
+              {serviceCards.length > 0 ? <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
-                    <strong>Solicitar servicios</strong>
-                    <p>Escoje que tipo de servicio quieres contratar.</p>
+                    <strong>{t.request}</strong>
+                    <p>{t.requestText}</p>
                   </div>
-                  <img src="/assets/figma/arrow-right.png" alt="" />
+                  <img src="/assets/figma/icon-arrow-up-right-dark.svg" alt="" />
                 </div>
                 <div className={styles.serviceRow}>
-                  <div className={styles.serviceBox}>
-                    <strong>SERVICIOS RETRANSMISION</strong>
-                    <span>Desde 19,99€/hora</span>
-                  </div>
-                  <div className={styles.serviceBoxLight}>
-                    <strong>SPEAKERS Y ANIMACIÓN</strong>
-                    <span>Desde 27,99€/hora</span>
-                  </div>
+                  {serviceCards.map((card) => (
+                  <Link key={card.title} href="/app/servicios" className={card.className}>
+                    <div className={styles.serviceBoxInner}>
+                      <strong>{card.title}</strong>
+                      <span>{t.from} {card.price}</span>
+                    </div>
+                    <span className={styles.serviceBoxIcon} aria-hidden="true">
+                      {card.icon === "video" ? (
+                      <svg viewBox="0 0 24 24">
+                        <rect x="3" y="7" width="12" height="10" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="M15 10.2 20.5 7.5v9L15 13.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                        <circle cx="7.5" cy="10.5" r="1.1" fill="currentColor" />
+                        <path d="M6.5 14.2h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                      ) : (
+                      <svg viewBox="0 0 24 24">
+                        <path d="M5 13.5V12a7 7 0 1 1 14 0v1.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        <rect x="4" y="12.5" width="3.8" height="6.5" rx="1.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
+                        <rect x="16.2" y="12.5" width="3.8" height="6.5" rx="1.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="M7.8 19h3.2c.3 1 1.2 1.7 2.3 1.7h1.2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      )}
+                    </span>
+                  </Link>
+                  ))}
                 </div>
-              </article>
+              </article> : null}
 
+              {showEventsCard ? <Link href="/videos" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
-                    <strong>Partidos y eventos</strong>
-                    <p>Disfruta del mejor fútbol siempre que quieras</p>
+                    <strong>{t.events}</strong>
+                    <p>{t.eventsText}</p>
                   </div>
-                  <img src="/assets/figma/arrow-right.png" alt="" />
+                  <img src="/assets/figma/icon-arrow-up-right-dark.svg" alt="" />
                 </div>
                 <div className={styles.eventRow}>
                   <div className={styles.eventCard}>
@@ -153,69 +202,34 @@ export default async function DashboardPage() {
                   </div>
                 </div>
               </article>
+              </Link> : null}
             </div>
 
             <div className={styles.rightStack}>
-              <article className={styles.cardSmall}>
-                <div className={styles.cardHeader}>
-                  <strong>Hoy, Sábado 6 de Febrero</strong>
-                </div>
-                <div className={styles.scheduleItemActive}>
-                  <div>
-                    <span className={styles.scheduleLive}>Live now</span>
-                    <strong>GRAMA vs VILANOVA</strong>
-                    <p>3ª Federación - GRUPO V</p>
-                  </div>
-                  <span>Ahora</span>
-                </div>
-                {[
-                  "V.HEBRON vs VILAFRANCA",
-                  "VILASSAR vs GRAMA",
-                  "LES CORTS vs LLEFIÁ",
-                ].map((item) => (
-                  <div key={item} className={styles.scheduleItem}>
-                    <div>
-                      <strong>{item}</strong>
-                      <p>3ª Federación - GRUPO V</p>
-                    </div>
-                    <span>11:30 h</span>
-                  </div>
-                ))}
-                <button className={styles.linkButton}>Ver todos</button>
-              </article>
+              <DashboardSidebarWidgets locale={locale} />
 
-              <article className={styles.cardSmall}>
-                <div className={styles.cardHeader}>
-                  <strong>Febrero 2026</strong>
-                </div>
-                <img src="/assets/figma/icon-camera.png" alt="" />
-                <div className={styles.calendarGrid}>
-                  {[...Array(14)].map((_, idx) => (
-                    <span key={idx} className={idx % 5 === 0 ? styles.highlight : ""}>
-                      {idx + 1}
-                    </span>
-                  ))}
-                </div>
-              </article>
-
-              <article className={styles.cardSmall}>
+              <article id="notificaciones" className={styles.cardSmall}>
                 <div className={styles.cardHeader}>
                   <div className={styles.noticeHeader}>
-                    <strong>Notificaciones</strong>
+                    <strong>{t.notifications}</strong>
                     <span className={styles.badge}>22</span>
                   </div>
                 </div>
-                {[
-                  "@futbol_008 ha reaccionado a tu mensaje",
-                  "Has reservado los Servicios Streaming para el 18/03 con éxito.",
-                  "@juannn_mp ha contestado tu mensaje de chat",
-                  "@futbol_008 ha reaccionado a tu mensaje",
-                ].map((text) => (
-                  <div key={text} className={styles.noticeItem}>
-                    <span />
-                    <p>{text}</p>
+                {notificationItems.map((item) => (
+                  <div key={`${item.actor ?? "system"}-${item.message}`} className={styles.noticeItem}>
+                    <span className={styles.noticeDot} />
+                    <p>
+                      {item.actor ? <strong>{item.actor}</strong> : null}
+                      {item.actor ? " " : null}
+                      <span>{item.message}</span>
+                    </p>
                   </div>
                 ))}
+                {!showLiveCard && !showEventsCard && serviceCards.length === 0 && notificationItems.length === 0 ? (
+                  <div className={styles.scheduleEmptyAlt}>
+                    <p>{t.noResults}</p>
+                  </div>
+                ) : null}
               </article>
             </div>
           </div>

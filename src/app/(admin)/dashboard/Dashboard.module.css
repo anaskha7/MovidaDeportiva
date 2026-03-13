@@ -57,6 +57,11 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.cardLink {
+  display: block;
+  color: inherit;
+}
+
 .menuItem img {
   width: 24px;
   height: 24px;
@@ -172,7 +177,7 @@
 .userInfo strong {
   font-size: 24px;
   letter-spacing: -1px;
-  color: #31aaa0;
+  color: #1a2c2a;
 }
 
 .topbarActions {
@@ -183,19 +188,33 @@
 
 .searchBox {
   border: 2.5px solid #1a2c2a;
-  border-radius: 22px;
-  padding: 8px 12px;
+  border-radius: 24px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 10px;
   color: #4b4b4b;
-  width: 278px;
-  font-size: 16px;
+  width: 360px;
+  min-height: 60px;
+  font-size: 18px;
 }
 
 .searchBox img {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
+}
+
+.searchBox input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #1a2c2a;
+  font-size: 20px;
+}
+
+.searchBox input::placeholder {
+  color: #4b4b4b;
 }
 
 .iconGroup {
@@ -256,6 +275,12 @@
   gap: 16px;
 }
 
+.cardHeader > img {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
 .cardHeader strong {
   font-size: 24px;
   color: #1a2c2a;
@@ -302,12 +327,18 @@
 
 .serviceBox,
 .serviceBoxLight {
-  padding: 12px;
+  min-height: 112px;
+  padding: 16px;
   border-radius: 8px;
   font-size: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  color: #1a2c2a;
+  position: relative;
+  overflow: hidden;
+  color: #1a2c2a;
 }
 
 .serviceBox {
@@ -316,6 +347,41 @@
 
 .serviceBoxLight {
   background: #d2e4d7;
+}
+
+.serviceBoxInner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: calc(100% - 54px);
+}
+
+.serviceBoxInner strong {
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: -0.6px;
+}
+
+.serviceBoxInner span {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.serviceBoxIcon {
+  width: 52px;
+  height: 52px;
+  align-self: flex-end;
+  opacity: 0.5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a2c2a;
+}
+
+.serviceBoxIcon svg {
+  width: 52px;
+  height: 52px;
+  display: block;
 }
 
 .eventRow {
@@ -407,23 +473,98 @@
   text-decoration: underline;
 }
 
+.scheduleEmpty,
+.scheduleEmptyAlt {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px 12px;
+  color: #1a2c2a;
+}
+
+.scheduleEmpty strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.scheduleEmpty p,
+.scheduleEmptyAlt p {
+  margin: 0;
+  font-size: 14px;
+  color: #4b4b4b;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendarTitle {
+  font-size: 20px;
+  color: #1a2c2a;
+}
+
+.calendarNav {
+  display: flex;
+  gap: 6px;
+}
+
+.calendarNavButton {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  color: #7e818c;
+  font-size: 18px;
+}
+
+.calendarNavButton:hover {
+  background: #e3e3e3;
+  color: #1a2c2a;
+}
+
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
-  font-size: 12px;
-  color: #7e818c;
+  gap: 10px 6px;
+  align-items: center;
 }
 
-.highlight {
-  background: #1f95af;
-  color: #ffffff;
-  border-radius: 999px;
-  width: 24px;
-  height: 24px;
+.calendarWeekday {
+  font-size: 13px;
+  color: #7e818c;
+  text-align: center;
+}
+
+.calendarDay,
+.calendarDayEmpty {
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  justify-self: center;
+  border-radius: 999px;
+}
+
+.calendarDay {
+  color: #1a2c2a;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.calendarDay:hover {
+  background: #dfe5e4;
+}
+
+.calendarDayEvent {
+  background: rgba(49, 170, 160, 0.18);
+}
+
+.calendarDaySelected {
+  background: #31aaa0;
+  color: #1a2c2a;
+  font-weight: 700;
 }
 
 .noticeHeader {
@@ -440,14 +581,27 @@
   padding: 12px;
   border-radius: 8px;
   font-size: 18px;
+  color: #1a2c2a;
 }
 
-.noticeItem span {
+.noticeDot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
   background: #31aaa0;
   margin-top: 4px;
+  flex: 0 0 10px;
+}
+
+.noticeItem p {
+  margin: 0;
+  color: #1a2c2a;
+  line-height: 1.2;
+  font-size: 18px;
+}
+
+.noticeItem strong {
+  font-weight: 700;
 }
 
 @media (max-width: 1200px) {

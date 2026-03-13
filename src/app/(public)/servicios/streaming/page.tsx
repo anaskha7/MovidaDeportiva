@@ -1,24 +1,37 @@
 import Link from "next/link";
+import { getLocale } from "@/lib/i18n";
 import styles from "./ServiciosStreaming.module.css";
 
-export default function ServiciosStreamingPage() {
+export default async function ServiciosStreamingPage() {
+  const locale = await getLocale();
+  const t = {
+    es: {
+      hero: "SERVICIO STREAMING", highlightTitle: "Retransmisiones profesionales de eventos deportivos",
+      highlightText: "En MOVIDA DEPORTIVA TV, ofrecemos servicios completos de retransmisión de eventos deportivos, asegurando una cobertura integral y de alta calidad para cada partido. Nuestro compromiso es brindar una experiencia única y envolvente tanto para los espectadores como para los organizadores.",
+      include: "Nuestros servicios incluyen", process: "¿Cómo Trabajamos?", ctaTitle: "¿Listo para llevar tu evento al siguiente nivel?", ctaText: "En MOVIDA DEPORTIVA TV, nos apasiona el deporte y estamos dedicados a ofrecer retransmisiones de la más alta calidad.", contact: "Contactar ahora",
+    },
+    ca: {
+      hero: "SERVEI STREAMING", highlightTitle: "Retransmissions professionals d'esdeveniments esportius",
+      highlightText: "A MOVIDA DEPORTIVA TV, oferim serveis complets de retransmissió d'esdeveniments esportius, assegurant una cobertura integral i d'alta qualitat per a cada partit. El nostre compromís és oferir una experiència única i immersiva tant per als espectadors com per als organitzadors.",
+      include: "Els nostres serveis inclouen", process: "Com treballem?", ctaTitle: "Preparat per portar el teu esdeveniment al següent nivell?", ctaText: "A MOVIDA DEPORTIVA TV, ens apassiona l'esport i estem dedicats a oferir retransmissions de la màxima qualitat.", contact: "Contacta ara",
+    },
+    en: {
+      hero: "STREAMING SERVICE", highlightTitle: "Professional live coverage for sporting events",
+      highlightText: "At MOVIDA DEPORTIVA TV, we provide comprehensive sports broadcasting services, ensuring high-quality and complete coverage for every match. Our commitment is to deliver a unique and immersive experience for both viewers and organisers.",
+      include: "Our services include", process: "How do we work?", ctaTitle: "Ready to take your event to the next level?", ctaText: "At MOVIDA DEPORTIVA TV, we are passionate about sport and dedicated to offering top-quality broadcasts.", contact: "Contact now",
+    },
+  }[locale];
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
-        <h1 className={`kdam ${styles.heroTitle}`}>SERVICIO STREAMING</h1>
+        <h1 className={`kdam ${styles.heroTitle}`}>{t.hero}</h1>
       </section>
 
       <section className={styles.highlightSection}>
         <div className={styles.highlightBox}>
           <div>
-            <h2>Retransmisiones profesionales de eventos deportivos</h2>
-            <p>
-              En MOVIDA DEPORTIVA TV, ofrecemos servicios completos de retransmisión
-              de eventos deportivos, asegurando una cobertura integral y de alta
-              calidad para cada partido. Nuestro compromiso es brindar una
-              experiencia única y envolvente tanto para los espectadores como para
-              los organizadores.
-            </p>
+            <h2>{t.highlightTitle}</h2>
+            <p>{t.highlightText}</p>
           </div>
           <div className={styles.featureGrid}>
             {[
@@ -54,7 +67,7 @@ export default function ServiciosStreamingPage() {
       </section>
 
       <section className={styles.servicesSection}>
-        <h2>Nuestros servicios incluyen</h2>
+        <h2>{t.include}</h2>
         <div className={styles.servicesGrid}>
           {[
             {
@@ -104,7 +117,7 @@ export default function ServiciosStreamingPage() {
           <img src="/assets/figma/servicios-image-25.png" alt="" />
         </div>
         <div className={styles.processContent}>
-          <h2>¿Cómo Trabajamos?</h2>
+          <h2>{t.process}</h2>
           {[
             {
               num: "1",
@@ -141,16 +154,13 @@ export default function ServiciosStreamingPage() {
           <img src="/assets/figma/servicios-cta-bg.png" alt="" />
         </div>
         <div className={styles.ctaContent}>
-          <h2>¿Listo para llevar tu evento al siguiente nivel?</h2>
-          <p>
-            En MOVIDA DEPORTIVA TV, nos apasiona el deporte y estamos dedicados a
-            ofrecer retransmisiones de la más alta calidad.
-          </p>
+          <h2>{t.ctaTitle}</h2>
+          <p>{t.ctaText}</p>
           <Link
             className={styles.primaryButton}
             href="mailto:movidadeportiva.direccion@gmail.com?subject=Quiero%20informaci%C3%B3n%20sobre%20streaming"
           >
-            Contactar ahora
+            {t.contact}
             <img src="/assets/figma/arrow-right.png" alt="" />
           </Link>
         </div>

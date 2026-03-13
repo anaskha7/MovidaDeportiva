@@ -9,6 +9,17 @@ export interface SessionData {
   name: string;
 }
 
+export function formatUserName(name: string | null | undefined): string {
+  if (!name) return "Usuario";
+
+  return name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
 export async function getSession(): Promise<SessionData | null> {
   const cookieStore = await cookies();
   const role = cookieStore.get(SESSION_COOKIE_ROLE)?.value as Rol | undefined;

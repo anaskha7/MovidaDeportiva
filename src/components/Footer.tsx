@@ -1,6 +1,8 @@
 import Link from "next/link";
 import styles from "./Footer.module.css";
 
+type Locale = "es" | "ca" | "en";
+
 const socialIcons = [
   {
     id: "facebook",
@@ -43,40 +45,88 @@ const socialIcons = [
   },
 ];
 
-export default function Footer() {
+export default function Footer({ locale }: { locale: Locale }) {
+  const copy = {
+    es: {
+      quick: "Enlaces rápidos",
+      home: "Inicio",
+      about: "Conócenos",
+      contact: "Contacto",
+      legal: "Legal",
+      privacy: "Política de Privacidad",
+      terms: "Términos de Servicio",
+      services: "Nuestros servicios",
+      streaming: "Servicio de streaming",
+      rental: "Alquiler de material",
+      speakers: "Speakers y animación",
+      customer: "Atención al cliente",
+      customerText: "Disponible por correo y teléfono. Respuesta en menos de 24 horas",
+    },
+    ca: {
+      quick: "Enllaços ràpids",
+      home: "Inici",
+      about: "Coneix-nos",
+      contact: "Contacte",
+      legal: "Legal",
+      privacy: "Política de privacitat",
+      terms: "Termes del servei",
+      services: "Els nostres serveis",
+      streaming: "Servei d'Streaming",
+      rental: "Lloguer de material",
+      speakers: "Speakers i animació",
+      customer: "Atenció al client",
+      customerText: "Disponible per correu i telèfon. Resposta en menys de 24 hores",
+    },
+    en: {
+      quick: "Quick links",
+      home: "Home",
+      about: "About us",
+      contact: "Contact",
+      legal: "Legal",
+      privacy: "Privacy Policy",
+      terms: "Terms of Service",
+      services: "Our services",
+      streaming: "Streaming service",
+      rental: "Equipment rental",
+      speakers: "Speakers and entertainment",
+      customer: "Customer support",
+      customerText: "Available by email and phone. Response within 24 hours",
+    },
+  }[locale];
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <div className={styles.footerColumns}>
           <div className={styles.columnGroup}>
             <div>
-              <h3>Enlaces rápidos</h3>
+              <h3>{copy.quick}</h3>
               <ul>
-                <li><Link href="/">Inicio</Link></li>
-                <li><Link href="/quienes-somos">Conócenos</Link></li>
-                <li><a href="mailto:movidadeportiva.direccion@gmail.com">Contacto</a></li>
+                <li><Link href="/">{copy.home}</Link></li>
+                <li><Link href="/quienes-somos">{copy.about}</Link></li>
+                <li><a href="mailto:movidadeportiva.direccion@gmail.com">{copy.contact}</a></li>
               </ul>
             </div>
             <div>
-              <h3>Legal</h3>
+              <h3>{copy.legal}</h3>
               <ul>
-                <li><Link href="/quienes-somos">Política de Privacidad</Link></li>
-                <li><Link href="/quienes-somos">Términos de Servicio</Link></li>
+                <li><Link href="/quienes-somos">{copy.privacy}</Link></li>
+                <li><Link href="/quienes-somos">{copy.terms}</Link></li>
               </ul>
             </div>
           </div>
           <div>
-            <h3>Nuestros servicios</h3>
+            <h3>{copy.services}</h3>
             <ul>
-              <li><Link href="/servicios/streaming">Servicio de streaming</Link></li>
+              <li><Link href="/servicios/streaming">{copy.streaming}</Link></li>
               <li><Link href="/servicios/streaming">MDTV</Link></li>
-              <li><Link href="/servicios/streaming">Alquiler de material</Link></li>
-              <li><Link href="/servicios/streaming">Speakers y animación</Link></li>
+              <li><Link href="/servicios/streaming">{copy.rental}</Link></li>
+              <li><Link href="/servicios/streaming">{copy.speakers}</Link></li>
             </ul>
           </div>
           <div>
             <div className={styles.contactGroup}>
-              <h3>Contacto</h3>
+              <h3>{copy.contact}</h3>
               <div className={styles.contactRow}>
                 <img src="/assets/figma/footer-mail.svg" alt="" />
                 <a href="mailto:movidadeportiva.direccion@gmail.com">
@@ -89,10 +139,8 @@ export default function Footer() {
               </div>
             </div>
             <div className={styles.contactGroup}>
-              <h3>Atención al cliente</h3>
-              <p>
-                Disponible por correo y teléfono. Respuesta en menos de 24 horas
-              </p>
+              <h3>{copy.customer}</h3>
+              <p>{copy.customerText}</p>
               <div className={styles.contactRow}>
                 <img src="/assets/figma/footer-phone.svg" alt="" />
                 <span>+34 666 123 456</span>

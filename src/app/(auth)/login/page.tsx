@@ -1,7 +1,9 @@
 import { validateCredentials } from "@/lib/auth-mock";
+import { getLocale } from "@/lib/i18n";
 import { SESSION_COOKIE_NAME, SESSION_COOKIE_ROLE } from "@/lib/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import LoginForm from "./LoginForm";
 import styles from "./Login.module.css";
 
@@ -62,10 +64,14 @@ export default async function LoginPage({
   searchParams?: Promise<{ error?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
+  const locale = await getLocale();
   const error = resolvedSearchParams?.error;
 
   return (
     <main className={styles.page}>
+      <div className={styles.languageBar}>
+        <LanguageSwitcher locale={locale} compact />
+      </div>
       <div className={styles.card}>
         <div className={styles.imagePanel}>
           <img src="/assets/figma/login-image.png" alt="" />
@@ -73,7 +79,7 @@ export default async function LoginPage({
             <img src="/assets/figma/logo.png" alt="" />
           </div>
         </div>
-        <LoginForm error={error} onLogin={loginAction} onRegister={registerAction} />
+        <LoginForm error={error} onLogin={loginAction} onRegister={registerAction} locale={locale} />
       </div>
     </main>
   );

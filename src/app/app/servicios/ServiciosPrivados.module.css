@@ -7,8 +7,9 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 282px 1fr;
+  grid-template-columns: 284px 1fr;
   gap: 16px;
+  align-items: start;
 }
 
 .sidebar {
@@ -27,15 +28,17 @@
   margin-bottom: 40px;
 }
 
-.menu {
+.menuBlock,
+.menuList {
   display: flex;
   flex-direction: column;
+}
+
+.menuBlock {
   gap: 16px;
 }
 
 .menuList {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
 }
 
@@ -111,13 +114,13 @@
   border-radius: 16px;
   padding: 14px 10px;
   margin-top: 40px;
-  color: #1a2c2a;
 }
 
 .subscribeTitle {
   font-size: 38px;
   line-height: 35px;
   letter-spacing: -3.3px;
+  color: #1a2c2a;
 }
 
 .subscribeFooter {
@@ -134,25 +137,19 @@
   height: 41px;
 }
 
-.content {
+.mainColumn {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.header {
+.topbar {
   background: #f2f2f2;
   border-radius: 13px;
   padding: 7px 24px 7px 7px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.topbarActions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
 }
 
 .userInfo {
@@ -175,8 +172,14 @@
 
 .userInfo strong {
   font-size: 24px;
+  letter-spacing: -1px;
   color: #1a2c2a;
-  letter-spacing: -0.8px;
+}
+
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 .searchBox {
@@ -204,10 +207,6 @@
   background: transparent;
   color: #1a2c2a;
   font-size: 20px;
-}
-
-.searchBox button {
-  display: none;
 }
 
 .searchBox input::placeholder {
@@ -238,259 +237,232 @@
   background: #d02e2e;
 }
 
-.mainCard {
+.bookingGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 16px;
+}
+
+.bookingPanel,
+.summaryCard {
   background: #f2f2f2;
   border-radius: 20px;
-  padding: 32px;
-  min-height: 797px;
+  padding: 24px;
+}
+
+.bookingPanel {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.heading h1 {
-  font-size: 36px;
-  font-weight: 700;
-  letter-spacing: -1px;
+.sectionHeading h1 {
+  font-size: 40px;
   color: #1a2c2a;
+  letter-spacing: -1.5px;
 }
 
-.heading p {
+.sectionHeading p {
   font-size: 18px;
   color: #4b4b4b;
 }
 
-.filters {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
+.serviceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.filters > div {
+.serviceCard {
+  border: 1px solid #d5d5d5;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+  color: #1a2c2a;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.serviceCard strong {
+  font-size: 22px;
+}
+
+.serviceCard p {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #4b4b4b;
+}
+
+.serviceCard span {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.serviceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.serviceCardActive {
+  border-color: #31aaa0;
+  background: #e8f7f5;
+}
+
+.formCard {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #1a2c2a;
+}
+
+.field span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: #1a2c2a;
+  background: #fafafa;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.extraSection {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.filterLabel {
-  font-size: 18px;
+.extraLabel {
+  font-size: 16px;
   font-weight: 600;
   color: #1a2c2a;
 }
 
-.filterRow {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.filterButton {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 14px 18px;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1;
-  color: #1a2c2a;
-  border: 1px solid #e0e0e0;
-  text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
-.filterButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-}
-
-.filterActive {
-  background: #1a2c2a;
-  color: #ffffff;
-  border-color: #1a2c2a;
-}
-
-.videoGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  position: relative;
-}
-
-.videoCard {
-  background: #f2f2f2;
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.videoCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
-}
-
-.videoThumb {
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  height: 180px;
-}
-
-.videoThumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.videoOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.scoreBadge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #31aaa0;
-  color: #1a2c2a;
-  font-weight: 700;
-  font-size: 14px;
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-
-.durationBadge {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #ffffff;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.playBadge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 56px;
-  height: 56px;
-  background: #31aaa0;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.videoMeta {
-  padding: 12px 0;
-}
-
-.videoMeta h3 {
-  font-size: 18px;
-  color: #1a2c2a;
-  letter-spacing: -1px;
-}
-
-.videoMeta p {
-  font-size: 14px;
-  color: #1a2c2a;
-}
-
-.videoInfo {
+.extraList {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
+  gap: 12px;
 }
 
-.videoInfo span {
+.extraButton {
+  background: #f6f6f6;
+  border: 1px solid #e2e2e2;
+  border-radius: 14px;
+  padding: 16px 18px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  color: #1a2c2a;
+}
+
+.extraButtonActive {
+  background: #e8f7f5;
+  border-color: #31aaa0;
+}
+
+.summaryPanel {
+  align-self: start;
+}
+
+.summaryCard {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.summaryCard h2 {
+  font-size: 30px;
+  color: #1a2c2a;
+}
+
+.summaryBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #1a2c2a;
+}
+
+.summaryBlock > span {
+  font-size: 14px;
   color: #4b4b4b;
 }
 
-.videoInfo img {
-  width: 14px;
-  height: 14px;
+.summaryBlock strong {
+  font-size: 22px;
 }
 
-.carouselButton {
-  position: absolute;
-  right: -10px;
-  top: 30%;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: #1a2c2a;
+.selectedServices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.featureList {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summaryLine,
+.totalLine {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  color: #1a2c2a;
 }
 
-.carouselButton img {
-  width: 24px;
-  height: 24px;
-}
-
-.carouselDots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.carouselDots span {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #d0d0d0;
-}
-
-.dotActive {
-  width: 24px;
-  background: #1a2c2a;
-}
-
-.loadMore {
-  align-self: center;
-  background: #1a2c2a;
-  color: #ffffff;
-  padding: 12px 24px;
-  border-radius: 12px;
+.summaryLine {
   font-size: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.loadMore:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+.totalLine {
+  border-top: 1px solid #d7d7d7;
+  padding-top: 16px;
+  font-size: 22px;
 }
 
-@media (max-width: 1200px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .videoGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.confirmButton {
+  height: 52px;
+  border-radius: 999px;
+  background: #31aaa0;
+  color: #1a2c2a;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .searchBox {
-    width: 100%;
-  }
-
-  .videoGrid {
-    grid-template-columns: 1fr;
-  }
+.summaryHint {
+  font-size: 14px;
+  color: #4b4b4b;
 }
