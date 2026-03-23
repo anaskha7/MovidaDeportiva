@@ -114,6 +114,21 @@
   color: #1a2c2a;
 }
 
+.headerLogoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #1a2c2a;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .subscribeTitle {
   font-size: 38px;
   line-height: 35px;
@@ -315,6 +330,11 @@
   position: relative;
 }
 
+.videoCardLink {
+  display: block;
+  text-decoration: none;
+}
+
 .videoCard {
   background: #f2f2f2;
   border-radius: 12px;
@@ -373,13 +393,19 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   background: #31aaa0;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.playBadge svg {
+  width: 32px;
+  height: 32px;
+  margin-left: 4px;
 }
 
 .videoMeta {

@@ -1,3 +1,5 @@
-import DashboardPage from "@/app/(admin)/dashboard/page";
+import { redirect } from "next/navigation";
 
-export default DashboardPage;
+export default function AppPage() {
+  redirect("/videos");
+}

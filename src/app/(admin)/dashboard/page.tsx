@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getLocale } from "@/lib/i18n";
+import { getNotificationItems } from "@/lib/notifications";
 import { formatUserName, getSession } from "@/lib/session";
+import NotificationBell from "@/components/NotificationBell";
+import AdminDashboardPanel from "./AdminDashboardPanel";
 import DashboardSidebarWidgets from "./DashboardSidebarWidgets";
 import styles from "./Dashboard.module.css";
 
@@ -13,9 +16,9 @@ export default async function DashboardPage(props: {
   const searchQuery =
     typeof searchParams?.q === "string" ? searchParams.q.trim().toLowerCase() : "";
   const t = {
-    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "¿Qué estás buscando?", request: "Solicitar servicios", requestText: "Escoje que tipo de servicio quieres contratar.", from: "Desde", eventsText: "Disfruta del mejor fútbol siempre que quieras", noResults: "No hay resultados para esta búsqueda." },
-    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", request: "Sol·licitar serveis", requestText: "Escull quin tipus de servei vols contractar.", from: "Des de", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
-    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", request: "Request services", requestText: "Choose the type of service you want to hire.", from: "From", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
+    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "¿Qué estás buscando?", request: "Solicitar servicios", requestText: "Escoje que tipo de servicio quieres contratar.", from: "Desde", eventsText: "Disfruta del mejor fútbol siempre que quieras", noResults: "No hay resultados para esta búsqueda." },
+    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", request: "Sol·licitar serveis", requestText: "Escull quin tipus de servei vols contractar.", from: "Des de", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
+    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", request: "Request services", requestText: "Choose the type of service you want to hire.", from: "From", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
   }[locale];
   const matchesSearch = (value: string) =>
     !searchQuery || value.toLowerCase().includes(searchQuery);
@@ -23,12 +26,9 @@ export default async function DashboardPage(props: {
     { title: "SERVICIOS RETRANSMISION", price: "19,99€/hora", className: styles.serviceBox, icon: "video" },
     { title: "SPEAKERS Y ANIMACIÓN", price: "27,99€/hora", className: styles.serviceBoxLight, icon: "audio" },
   ].filter((item) => matchesSearch(item.title));
-  const notificationItems = [
-    { actor: "@futbol_008", message: "ha reaccionado a tu mensaje" },
-    { message: "Has reservado los Servicios Streaming para el 18/03 con éxito." },
-    { actor: "@juannn_mp", message: "ha contestado tu mensaje de chat" },
-    { actor: "@futbol_008", message: "ha reaccionado a tu mensaje" },
-  ].filter((item) => matchesSearch(`${item.actor ?? ""} ${item.message}`));
+  const notificationItems = getNotificationItems(locale).filter((item) =>
+    matchesSearch(`${item.actor ?? ""} ${item.message}`),
+  );
   const showLiveCard = matchesSearch("GRAMA vs VILANOVA 3ª Federación Grupo V Jornada 19");
   const showEventsCard = matchesSearch("Partidos y eventos Disfruta del mejor fútbol siempre que quieras");
   return (
@@ -107,10 +107,10 @@ export default async function DashboardPage(props: {
                 />
               </form>
               <div className={styles.iconGroup}>
-                <span>
-                    <img src="/assets/figma/admin-menu-bell.svg" alt="" />
-                  <i />
-                </span>
+                <NotificationBell locale={locale} />
+                <Link href="/logout" className={styles.headerLogoutButton}>
+                  {t.logout}
+                </Link>
               </div>
             </div>
           </header>

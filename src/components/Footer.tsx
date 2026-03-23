@@ -57,7 +57,6 @@ export default function Footer({ locale }: { locale: Locale }) {
       terms: "Términos de Servicio",
       services: "Nuestros servicios",
       streaming: "Servicio de streaming",
-      rental: "Alquiler de material",
       speakers: "Speakers y animación",
       customer: "Atención al cliente",
       customerText: "Disponible por correo y teléfono. Respuesta en menos de 24 horas",
@@ -72,7 +71,6 @@ export default function Footer({ locale }: { locale: Locale }) {
       terms: "Termes del servei",
       services: "Els nostres serveis",
       streaming: "Servei d'Streaming",
-      rental: "Lloguer de material",
       speakers: "Speakers i animació",
       customer: "Atenció al client",
       customerText: "Disponible per correu i telèfon. Resposta en menys de 24 hores",
@@ -87,7 +85,6 @@ export default function Footer({ locale }: { locale: Locale }) {
       terms: "Terms of Service",
       services: "Our services",
       streaming: "Streaming service",
-      rental: "Equipment rental",
       speakers: "Speakers and entertainment",
       customer: "Customer support",
       customerText: "Available by email and phone. Response within 24 hours",
@@ -120,7 +117,6 @@ export default function Footer({ locale }: { locale: Locale }) {
             <ul>
               <li><Link href="/servicios/streaming">{copy.streaming}</Link></li>
               <li><Link href="/servicios/streaming">MDTV</Link></li>
-              <li><Link href="/servicios/streaming">{copy.rental}</Link></li>
               <li><Link href="/servicios/streaming">{copy.speakers}</Link></li>
             </ul>
           </div>

@@ -114,6 +114,20 @@
   margin-top: 40px;
 }
 
+.logoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: #1a2c2a;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .subscribeTitle {
   font-size: 38px;
   line-height: 35px;

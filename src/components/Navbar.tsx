@@ -32,9 +32,9 @@ export default function Navbar({ locale }: { locale: Locale }) {
 
   return (
     <header className={styles.navbar}>
-      <div className={styles.logo}>
-        <img src="/assets/figma/logo.png" alt="Movida Deportiva TV" />
-      </div>
+      <Link href="/" className={styles.logo}>
+        <img src="/assets/figma/logo-public.svg" alt="Movida Deportiva TV" />
+      </Link>
       <nav className={styles.links}>
         {items.map((item) => {
           const isActive = pathname === item.href;
@@ -46,11 +46,11 @@ export default function Navbar({ locale }: { locale: Locale }) {
             >
               <span className={styles.linkText}>{item.label}</span>
               {item.label === servicesLabel && (
-                <img
-                  className={styles.chevron}
-                  src="/assets/figma/chevron-down.png"
-                  alt=""
-                />
+                <span className={styles.chevron} aria-hidden="true">
+                  <svg viewBox="0 0 20 20">
+                    <path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
               )}
             </Link>
           );

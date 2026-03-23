@@ -27,13 +27,6 @@ const SERVICES: ServiceOption[] = [
     description: "Locución, animación de grada y dinamización del evento.",
     features: ["Speaker profesional", "Guion del evento", "Coordinación de momentos clave"],
   },
-  {
-    id: "material",
-    title: "Alquiler de material",
-    pricePerHour: 14.99,
-    description: "Equipamiento técnico para directos, entrevistas y cobertura de pista.",
-    features: ["Cámaras y soportes", "Audio y microfonía", "Iluminación básica"],
-  },
 ];
 
 const EXTRA_OPTIONS = [
@@ -108,12 +101,10 @@ export default function ContratarServiciosClient({
     ca: [
       { ...SERVICES[0], title: "Serveis retransmissió", description: "Cobertura audiovisual completa per a partits i esdeveniments esportius.", features: ["Realització en viu", "Marcadors i grafismes", "Lliurament de contingut final"] },
       { ...SERVICES[1], title: "Speakers i animació", description: "Locució, animació de graderia i dinamització de l'esdeveniment.", features: ["Speaker professional", "Guió de l'esdeveniment", "Coordinació de moments clau"] },
-      { ...SERVICES[2], title: "Lloguer de material", description: "Equipament tècnic per a directes, entrevistes i cobertura de pista.", features: ["Càmeres i suports", "Àudio i microfonia", "Il·luminació bàsica"] },
     ],
     en: [
       { ...SERVICES[0], title: "Broadcast services", description: "Full audiovisual coverage for sports matches and events.", features: ["Live production", "Scoreboards and graphics", "Final content delivery"] },
       { ...SERVICES[1], title: "Speakers and entertainment", description: "Commentary, crowd entertainment and event hosting.", features: ["Professional speaker", "Event script", "Key moments coordination"] },
-      { ...SERVICES[2], title: "Equipment rental", description: "Technical equipment for live shows, interviews and court coverage.", features: ["Cameras and supports", "Audio and microphones", "Basic lighting"] },
     ],
   }[locale];
 

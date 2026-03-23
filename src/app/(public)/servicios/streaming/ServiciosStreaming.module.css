@@ -323,24 +323,115 @@
 }
 
 @media (max-width: 768px) {
+  .page {
+    gap: 28px;
+    padding-bottom: 28px;
+  }
+
+  .hero {
+    padding: 24px 0 8px;
+  }
+
   .heroTitle {
-    font-size: 64px;
-    line-height: 70px;
+    font-size: 46px;
+    line-height: 48px;
+    letter-spacing: -2px;
   }
 
   .highlightBox h2,
   .servicesSection h2,
   .processContent h2,
   .ctaContent h2 {
-    font-size: 42px;
+    font-size: 34px;
+    letter-spacing: -1.4px;
   }
 
   .highlightBox p,
   .ctaContent p {
-    font-size: 24px;
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+
+  .highlightSection,
+  .servicesSection,
+  .processSection {
+    padding: 24px 0;
+  }
+
+  .highlightBox {
+    border-radius: 28px;
+    padding: 24px 18px;
+    gap: 24px;
+  }
+
+  .featureGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
   }
 
   .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .serviceCard {
+    min-height: auto;
+    padding: 18px 14px;
+  }
+
+  .serviceCard h3 {
+    font-size: 28px;
+    letter-spacing: -1px;
+  }
+
+  .serviceCard p,
+  .processCard {
+    font-size: 18px;
+    letter-spacing: -0.4px;
+  }
+
+  .processSection {
+    gap: 24px;
+  }
+
+  .processImage {
+    min-height: 300px;
+  }
+
+  .processRow {
+    align-items: flex-start;
+  }
+
+  .processNumber {
+    width: 40px;
+    height: 40px;
+    font-size: 26px;
+    flex: 0 0 auto;
+  }
+
+  .ctaSection {
+    border-radius: 28px;
+    padding: 28px 16px;
+  }
+
+  .ctaContent {
+    padding: 12px 0;
+  }
+
+  .primaryButton {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 20px;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .heroTitle {
+    font-size: 38px;
+    line-height: 40px;
+  }
+
+  .featureGrid {
     grid-template-columns: 1fr;
   }
 }

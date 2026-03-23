@@ -30,7 +30,7 @@ async function loginAction(formData: FormData) {
     path: "/",
   });
 
-  redirect(user.role === "admin" ? "/admin/dashboard" : "/app");
+  redirect(user.role === "admin" ? "/dashboard" : "/app");
 }
 
 async function registerAction(formData: FormData) {
@@ -76,7 +76,7 @@ export default async function LoginPage({
         <div className={styles.imagePanel}>
           <img src="/assets/figma/login-image.png" alt="" />
           <div className={styles.logoOverlay}>
-            <img src="/assets/figma/logo.png" alt="" />
+            <img src="/assets/figma/logo-public.svg" alt="Movida Deportiva TV" />
           </div>
         </div>
         <LoginForm error={error} onLogin={loginAction} onRegister={registerAction} locale={locale} />

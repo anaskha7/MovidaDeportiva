@@ -6,12 +6,13 @@ import { getLiveMatch, getOtherLiveMatches } from "@/lib/repos/partidos";
 import styles from "./Directo.module.css";
 
 export default async function DirectoPage() {
-  await getSession();
+  const session = await getSession();
   const locale = await getLocale();
+  const homeHref = session?.role === "admin" ? "/dashboard" : "/app";
   const t = {
-    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", liveNow: "EN VIVO", other: "Otros partidos", round: "Jornada", chat: "Chat en directo", write: "Escribe un mensaje..." },
-    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", liveNow: "EN DIRECTE", other: "Altres partits", round: "Jornada", chat: "Xat en directe", write: "Escriu un missatge..." },
-    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", liveNow: "LIVE", other: "Other matches", round: "Matchday", chat: "Live chat", write: "Write a message..." },
+    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", liveNow: "EN VIVO", other: "Otros partidos", round: "Jornada", chat: "Chat en directo", write: "Escribe un mensaje..." },
+    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", liveNow: "EN DIRECTE", other: "Altres partits", round: "Jornada", chat: "Xat en directe", write: "Escriu un missatge..." },
+    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", liveNow: "LIVE", other: "Other matches", round: "Matchday", chat: "Live chat", write: "Write a message..." },
   }[locale];
   const liveMatch = getLiveMatch();
   const otherMatches = getOtherLiveMatches();
@@ -25,10 +26,16 @@ export default async function DirectoPage() {
           <div className={styles.menu}>
             <span className={styles.menuLabel}>{t.menu}</span>
             <nav className={styles.menuList}>
-              <Link href="/dashboard" className={styles.menuItem}>
+              <Link href={homeHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
               </Link>
+              {session?.role === "admin" ? (
+                <Link href="/admin/panel" className={styles.menuItem}>
+                  <img src="/assets/figma/admin-menu-panel.svg" alt="" />
+                  <span>{locale === "en" ? "Admin panel" : locale === "ca" ? "Panell admin" : "Panel admin"}</span>
+                </Link>
+              ) : null}
               <Link href="/directo" className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
@@ -56,6 +63,9 @@ export default async function DirectoPage() {
             </nav>
           </div>
           <div className={styles.subscribeCard}>
+            <Link href="/logout" className={styles.logoutButton}>
+              {t.logout}
+            </Link>
             <div className={`kdam ${styles.subscribeTitle}`}>
               {t.subscribe}
               <br />

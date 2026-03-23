@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { getLocale } from "@/lib/i18n";
 import { formatUserName, getSession } from "@/lib/session";
 import { getCategorias, getDeportes } from "@/lib/repos/categorias";
@@ -38,9 +39,9 @@ export default async function VideosGuardadosPage({
   const session = await getSession();
   const locale = await getLocale();
   const t = {
-    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "Buscar videos...", saved: "Videos guardados", available: "partidos disponibles", sport: "Tipo de deporte", category: "Categoría", all: "Todos", load: "Cargar más videos" },
-    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Cercar vídeos...", saved: "Vídeos desats", available: "partits disponibles", sport: "Tipus d'esport", category: "Categoria", all: "Tots", load: "Carregar més vídeos" },
-    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "Search videos...", saved: "Saved videos", available: "matches available", sport: "Sport type", category: "Category", all: "All", load: "Load more videos" },
+    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "Buscar videos...", saved: "Videos guardados", available: "partidos disponibles", sport: "Tipo de deporte", category: "Categoría", all: "Todos", load: "Cargar más videos" },
+    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Cercar vídeos...", saved: "Vídeos desats", available: "partits disponibles", sport: "Tipus d'esport", category: "Categoria", all: "Tots", load: "Carregar més vídeos" },
+    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "Search videos...", saved: "Saved videos", available: "matches available", sport: "Sport type", category: "Category", all: "All", load: "Load more videos" },
   }[locale];
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const allowedSports = ["dep-futbol", "dep-futsal"];
@@ -55,6 +56,7 @@ export default async function VideosGuardadosPage({
       : undefined;
   const selectedCategory = resolvedSearchParams.categoria || undefined;
   const searchQuery = resolvedSearchParams.q?.trim() || "";
+  const homeHref = session?.role === "admin" ? "/dashboard" : "/app";
   const videosPage = getVideos(
     {
       deportes: selectedSport ? [selectedSport] : allowedSports,
@@ -73,10 +75,16 @@ export default async function VideosGuardadosPage({
           <div className={styles.menu}>
             <span className={styles.menuLabel}>{t.menu}</span>
             <nav className={styles.menuList}>
-              <Link href="/dashboard" className={styles.menuItem}>
+              <Link href={homeHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
               </Link>
+              {session?.role === "admin" ? (
+                <Link href="/admin/panel" className={styles.menuItem}>
+                  <img src="/assets/figma/admin-menu-panel.svg" alt="" />
+                  <span>{locale === "en" ? "Admin panel" : locale === "ca" ? "Panell admin" : "Panel admin"}</span>
+                </Link>
+              ) : null}
               <Link href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
@@ -141,10 +149,10 @@ export default async function VideosGuardadosPage({
                 ) : null}
               </form>
               <div className={styles.iconGroup}>
-                <span>
-                  <img src="/assets/figma/admin-menu-bell.svg" alt="" />
-                  <i />
-                </span>
+                <NotificationBell locale={locale} />
+                <Link href="/logout" className={styles.headerLogoutButton}>
+                  {t.logout}
+                </Link>
               </div>
             </div>
           </header>
@@ -209,14 +217,23 @@ export default async function VideosGuardadosPage({
 
             <div className={styles.videoGrid}>
               {videosPage.items.map((video) => (
-                <article key={video.id} className={styles.videoCard}>
+                <a
+                  key={video.id}
+                  href={video.vodUrl || "#"}
+                  target={video.vodUrl && video.vodUrl !== "#" ? "_blank" : undefined}
+                  rel={video.vodUrl && video.vodUrl !== "#" ? "noreferrer" : undefined}
+                  className={styles.videoCardLink}
+                >
+                <article className={styles.videoCard}>
                   <div className={styles.videoThumb}>
                     <img src={video.thumbUrl} alt="" />
                     <div className={styles.videoOverlay} />
                     <div className={styles.scoreBadge}>{video.scoreLabel}</div>
                     <div className={styles.durationBadge}>{video.durationLabel}</div>
                     <div className={styles.playBadge}>
-                      <img src="/assets/figma/icon-play-small.png" alt="" />
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 6.5v11l9-5.5-9-5.5Z" fill="#ffffff" />
+                      </svg>
                     </div>
                   </div>
                   <div className={styles.videoMeta}>
@@ -234,6 +251,7 @@ export default async function VideosGuardadosPage({
                     </div>
                   </div>
                 </article>
+                </a>
               ))}
               <button className={styles.carouselButton}>
                 <img src="/assets/figma/icon-arrow-right-dark.png" alt="" />

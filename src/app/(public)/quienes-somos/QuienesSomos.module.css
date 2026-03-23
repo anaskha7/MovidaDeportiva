@@ -346,6 +346,10 @@
     padding: 24px 0 12px;
   }
 
+  .heroTitle {
+    font-size: 48px;
+  }
+
   .storySection,
   .valuesSection,
   .missionSection,
@@ -357,10 +361,35 @@
   .sectionTitle {
     padding-bottom: 8px;
     border-bottom-width: 6px;
+    font-size: 34px;
   }
 
   .storyImage {
     height: 360px;
+  }
+
+  .storyText p,
+  .missionText p {
+    font-size: 20px;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+  }
+
+  .storyNote,
+  .missionPills span,
+  .distinguishCard p {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .valueCard,
+  .distinguishCard {
+    padding: 18px 14px;
+  }
+
+  .valueCopy h3,
+  .distinguishCard h3 {
+    font-size: 24px;
   }
 
   .valueCard,
@@ -392,5 +421,19 @@
 
   .collabItem {
     height: 86px;
+  }
+}
+
+@media (max-width: 420px) {
+  .heroTitle {
+    font-size: 40px;
+  }
+
+  .storyImage {
+    height: 280px;
+  }
+
+  .collabGrid {
+    gap: 16px;
   }
 }

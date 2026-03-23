@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const role = request.cookies.get(SESSION_COOKIE_ROLE)?.value;
 
-  const isAdminPath = pathname.startsWith("/admin");
+  const isAdminPath = pathname.startsWith("/admin") || pathname === "/dashboard";
   const isPrivatePath = PRIVATE_PATHS.some((path) => pathname.startsWith(path));
 
   if (!isAdminPath && !isPrivatePath) {
@@ -33,5 +33,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/directo/:path*", "/videos/:path*", "/app/:path*", "/administracion"],
+  matcher: ["/admin/:path*", "/dashboard", "/directo/:path*", "/videos/:path*", "/app/:path*", "/administracion"],
 };

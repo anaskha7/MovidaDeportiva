@@ -130,17 +130,80 @@
 }
 
 @media (max-width: 768px) {
+  .footer {
+    margin-top: 28px;
+    padding: 28px 0;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+  }
+
   .footerInner {
-    padding: 48px 20px 24px;
+    padding: 32px 16px 20px;
+    gap: 32px;
   }
 
   .footerColumns {
     grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .columnGroup {
+    gap: 28px;
+  }
+
+  .footer h3 {
+    font-size: 24px;
+  }
+
+  .footer ul {
+    font-size: 18px;
+    gap: 10px;
+  }
+
+  .contactGroup p,
+  .contactRow {
+    font-size: 16px;
+  }
+
+  .contactRow {
+    gap: 12px;
+  }
+
+  .contactRow img {
+    width: 22px;
+    height: 22px;
   }
 
   .footerBottom {
     flex-direction: column;
     gap: 16px;
     align-items: flex-start;
+    padding-top: 18px;
+    border-top-width: 2px;
+  }
+
+  .footerBottom p {
+    font-size: 20px;
+  }
+
+  .socials {
+    gap: 10px;
+  }
+
+  .socialCircle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .socialGlyph,
+  .socialGlyph svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .footerInner {
+    padding: 28px 12px 18px;
   }
 }

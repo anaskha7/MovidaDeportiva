@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import NotificationBell from "@/components/NotificationBell";
 import { LOCALE_COOKIE, type Locale } from "@/lib/i18n-shared";
 import type { Rol } from "@/lib/types";
 import SettingsPanel from "@/app/(admin)/administracion/SettingsPanel";
@@ -14,14 +15,15 @@ type AjustesPageClientProps = {
 };
 
 const translations = {
-  es: {
-    menu: "Menú",
+    es: {
+      menu: "Menú",
     home: "Inicio",
     live: "En directo",
     events: "Partidos y eventos",
     services: "Nuestros servicios",
-    notifications: "Notificaciones",
-    settings: "Ajustes",
+      notifications: "Notificaciones",
+      settings: "Ajustes",
+      logout: "Cerrar sesión",
     liveTag: "Live",
     subscribe: "¡SÚSCRIBETE AHORA!",
     subscribeText: "Para disfrutar de todas las ventajas del Premium",
@@ -36,8 +38,9 @@ const translations = {
     live: "En directe",
     events: "Partits i esdeveniments",
     services: "Els nostres serveis",
-    notifications: "Notificacions",
-    settings: "Ajustos",
+      notifications: "Notificacions",
+      settings: "Ajustos",
+      logout: "Tancar sessió",
     liveTag: "Live",
     subscribe: "SUBSCRIU-TE ARA!",
     subscribeText: "Per gaudir de tots els avantatges del Premium",
@@ -52,8 +55,9 @@ const translations = {
     live: "Live",
     events: "Matches and events",
     services: "Our services",
-    notifications: "Notifications",
-    settings: "Settings",
+      notifications: "Notifications",
+      settings: "Settings",
+      logout: "Log out",
     liveTag: "Live",
     subscribe: "SUBSCRIBE NOW!",
     subscribeText: "Enjoy all the benefits of Premium",
@@ -75,6 +79,7 @@ export default function AjustesPageClient({
     () => (role === "admin" ? t.admin : t.user),
     [role, t.admin, t.user]
   );
+  const homeHref = role === "admin" ? "/dashboard" : "/app";
 
   useEffect(() => {
     document.cookie = `${LOCALE_COOKIE}=${language}; path=/; max-age=31536000; samesite=lax`;
@@ -87,10 +92,16 @@ export default function AjustesPageClient({
           <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
           <p className={styles.menuLabel}>{t.menu}</p>
           <nav className={styles.menuList}>
-            <Link href="/dashboard" className={styles.menuItem}>
+            <Link href={homeHref} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-home.svg" alt="" />
               <span>{t.home}</span>
             </Link>
+            {role === "admin" ? (
+              <Link href="/admin/panel" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-panel.svg" alt="" />
+                <span>{language === "en" ? "Admin panel" : language === "ca" ? "Panell admin" : "Panel admin"}</span>
+              </Link>
+            ) : null}
             <Link href="/directo" className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-live.svg" alt="" />
               <span>{t.live}</span>
@@ -143,10 +154,6 @@ export default function AjustesPageClient({
               </div>
             </div>
             <div className={styles.headerRight}>
-              <button className={styles.iconButton}>
-                <img src="/assets/figma/admin2-icon-bell-top.png" alt="" />
-                <span className={styles.dot} />
-              </button>
               <div className={styles.adminCard}>
                 <span className={styles.adminIcon}>
                   <img src="/assets/figma/admin2-icon-user.png" alt="" />
@@ -156,6 +163,10 @@ export default function AjustesPageClient({
                   <p>{roleLabel}</p>
                 </div>
               </div>
+              <NotificationBell locale={language} iconSrc="/assets/figma/admin-menu-bell.svg" />
+              <Link href="/logout" className={styles.headerLogoutButton}>
+                {t.logout}
+              </Link>
             </div>
           </header>
           <div className={styles.settingsContent}>

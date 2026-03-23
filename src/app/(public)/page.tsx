@@ -14,8 +14,6 @@ export default async function HomePage() {
       knowMore: "Quiero saber más",
       streaming: "Servicio streaming",
       streamingText: "Disponible en múltiples plataformas. YouTube, Facebook, Instagram, Twitch y más. Calidad 4K, audio profesional y chat interactivo.",
-      rental: "Alquiler de material",
-      rentalText: "Equipos profesionales de última generación. Cámaras 4K, audio inalámbrico, iluminación LED, drones y sistemas de streaming completos.",
       speakers: "Speakers y animación",
       speakersText: "Servicios de locución profesional y animación para dar vida a tus eventos con energía y profesionalismo.",
       livePill: "Directos",
@@ -46,8 +44,6 @@ export default async function HomePage() {
       knowMore: "Vull saber-ne més",
       streaming: "Servei d'Streaming",
       streamingText: "Disponible en múltiples plataformes. YouTube, Facebook, Instagram, Twitch i més. Qualitat 4K, àudio professional i xat interactiu.",
-      rental: "Lloguer de material",
-      rentalText: "Equips professionals d'última generació. Càmeres 4K, àudio sense fils, il·luminació LED, drons i sistemes d'Streaming complets.",
       speakers: "Speakers i animació",
       speakersText: "Serveis de locució professional i animació per donar vida als teus esdeveniments amb energia i professionalitat.",
       livePill: "Directes",
@@ -78,8 +74,6 @@ export default async function HomePage() {
       knowMore: "I want to know more",
       streaming: "Streaming service",
       streamingText: "Available on multiple platforms. YouTube, Facebook, Instagram, Twitch and more. 4K quality, professional audio and interactive chat.",
-      rental: "Equipment rental",
-      rentalText: "State-of-the-art professional equipment. 4K cameras, wireless audio, LED lighting, drones and complete streaming systems.",
       speakers: "Speakers and entertainment",
       speakersText: "Professional voice-over and entertainment services to bring your events to life with energy and professionalism.",
       livePill: "Live",
@@ -140,6 +134,7 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className={styles.servicesGrid}>
+          <Link href="/servicios/streaming" className={styles.cardLink}>
           <article className={styles.serviceCard}>
             <div className={styles.cardTop}>
               <span className={styles.cardArrow} aria-hidden="true" />
@@ -149,15 +144,8 @@ export default async function HomePage() {
               <p>{t.streamingText}</p>
             </div>
           </article>
-          <article className={styles.serviceCard}>
-            <div className={styles.cardTop}>
-              <span className={styles.cardArrow} aria-hidden="true" />
-            </div>
-            <div>
-              <h3>{t.rental}</h3>
-              <p>{t.rentalText}</p>
-            </div>
-          </article>
+          </Link>
+          <Link href="/servicios/streaming" className={styles.cardLink}>
           <article className={styles.serviceCard}>
             <div className={styles.cardTop}>
               <span className={styles.cardArrow} aria-hidden="true" />
@@ -170,6 +158,8 @@ export default async function HomePage() {
               </p>
             </div>
           </article>
+          </Link>
+          <Link href="/servicios/streaming" className={styles.cardLink}>
           <article className={styles.serviceCard}>
             <div className={styles.cardTop}>
               <span className={styles.cardArrow} aria-hidden="true" />
@@ -179,6 +169,7 @@ export default async function HomePage() {
               <p>{t.speakersText}</p>
             </div>
           </article>
+          </Link>
         </div>
       </section>
 
@@ -203,13 +194,14 @@ export default async function HomePage() {
               subtitle: "3ª FEDERACIÓN - GRUPO 2 - JORNADA 16",
             },
           ].map((item) => (
-            <article key={item.title} className={styles.directoCard}>
+            <Link key={item.title} href="/directo" className={styles.cardLink}>
+            <article className={styles.directoCard}>
               <div className={styles.directoImage}>
                 <img src={item.img} alt="" />
                 <div className={styles.directoOverlay} />
-                <Link href="/directo" className={styles.secondaryButton}>
+                <span className={styles.secondaryButton}>
                   {t.watchNow}
-                </Link>
+                </span>
               </div>
               <div className={styles.directoMeta}>
                 <div className={styles.liveBadge}>
@@ -222,6 +214,7 @@ export default async function HomePage() {
                 <strong>{item.title}</strong> - <span>{item.subtitle}</span>
               </p>
             </article>
+            </Link>
           ))}
         </div>
       </section>
@@ -232,10 +225,13 @@ export default async function HomePage() {
           <h2>{t.aboutTitle}</h2>
           <p>{t.aboutText}</p>
           <div className={styles.aboutGrid}>
+            <Link href="/quienes-somos" className={styles.cardLink}>
             <article className={styles.aboutCard}>
               <h3>{t.mission}</h3>
               <p>{t.missionText}</p>
             </article>
+            </Link>
+            <Link href="/quienes-somos" className={styles.cardLink}>
             <article className={styles.aboutCard}>
               <h3>{t.distinct}</h3>
               <ul>
@@ -253,6 +249,7 @@ export default async function HomePage() {
                 </li>
               </ul>
             </article>
+            </Link>
           </div>
         </div>
         <div className={styles.aboutImage}>

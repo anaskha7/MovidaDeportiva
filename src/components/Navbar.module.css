@@ -4,6 +4,7 @@
   justify-content: space-between;
   padding: 14px 0;
   width: 100%;
+  gap: 24px;
 }
 
 .logo {
@@ -21,6 +22,7 @@
   display: flex;
   gap: 32px;
   align-items: center;
+  min-width: 0;
 }
 
 .actions {
@@ -71,8 +73,17 @@
 }
 
 .chevron {
-  width: 23px;
-  height: 23px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chevron svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .loginButton {
@@ -139,22 +150,84 @@
 
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    padding: 10px 0 18px;
   }
 
   .links {
-    flex-wrap: wrap;
-    gap: 12px;
+    order: 2;
+    width: 100%;
+    gap: 18px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
   }
 
-  .loginButton {
-    align-self: flex-start;
+  .links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .link,
+  .activeLink {
+    flex: 0 0 auto;
+    font-size: 18px;
+    line-height: 1.1;
+  }
+
+  .activeLink {
+    padding-bottom: 4px;
+    border-bottom-width: 2px;
+  }
+
+  .link::after {
+    bottom: -4px;
   }
 
   .actions {
+    order: 3;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .loginButton {
+    min-width: 158px;
+    justify-content: space-between;
+    padding: 8px 18px;
+    font-size: 18px;
+  }
+
+  .loginButton img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .chevron {
+    display: none;
+  }
+
+  .logo {
+    width: 68px;
+    height: 26px;
+  }
+}
+
+@media (max-width: 420px) {
+  .actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .actions > :first-child {
+    justify-self: start;
+  }
+
+  .loginButton {
+    min-width: 0;
+    width: 100%;
   }
 }

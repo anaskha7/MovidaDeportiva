@@ -120,6 +120,21 @@
   margin-top: 40px;
 }
 
+.headerLogoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #1a2c2a;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .subscribeTitle {
   font-size: 38px;
   line-height: 35px;
@@ -261,6 +276,203 @@
   flex-direction: column;
   gap: 12px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.adminPanelSection {
+  margin-top: 16px;
+  background: #f2f2f2;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.adminPanelHeader h2 {
+  font-size: 34px;
+  color: #1a2c2a;
+  letter-spacing: -1px;
+}
+
+.adminPanelHeader p {
+  font-size: 16px;
+  color: #4b4b4b;
+}
+
+.adminPanelGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.adminPanelCard {
+  background: #ffffff;
+  border: 1px solid #e4e4e4;
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.adminPanelCardWide {
+  grid-column: 1 / -1;
+}
+
+.adminCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.adminCardTop strong {
+  font-size: 22px;
+  color: #1a2c2a;
+}
+
+.adminSearch {
+  width: 220px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid #d8d8d8;
+  padding: 0 14px;
+  font-size: 15px;
+}
+
+.adminList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adminListItem {
+  background: #f7f7f7;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.adminListItem strong {
+  color: #1a2c2a;
+  font-size: 16px;
+}
+
+.adminListItem p {
+  color: #4b4b4b;
+  font-size: 14px;
+}
+
+.adminMeta {
+  color: #1a2c2a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.adminActionButton,
+.adminPrimaryButton {
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 0 16px;
+  background: #1a2c2a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.adminPrimaryButton {
+  background: #31aaa0;
+  color: #1a2c2a;
+}
+
+.adminEmpty {
+  color: #4b4b4b;
+  font-size: 15px;
+}
+
+.adminForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adminForm input {
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid #d8d8d8;
+  padding: 0 14px;
+  font-size: 15px;
+}
+
+.adminFormRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adminFormRow label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #1a2c2a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.adminScheduleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adminScheduleBlock strong {
+  font-size: 18px;
+  color: #1a2c2a;
+}
+
+.adminRequestGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.adminRequestCard {
+  background: #f7f7f7;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adminRequestCard strong {
+  font-size: 18px;
+  color: #1a2c2a;
+}
+
+.adminRequestCard p {
+  color: #4b4b4b;
+}
+
+.adminStatus {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.adminStatusPending {
+  background: #fff0c5;
+  color: #7a5a00;
+}
+
+.adminStatusOk {
+  background: #dcf5e8;
+  color: #14613b;
 }
 
 .card:hover {
