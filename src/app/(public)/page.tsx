@@ -194,7 +194,7 @@ export default async function HomePage() {
               subtitle: "3ª FEDERACIÓN - GRUPO 2 - JORNADA 16",
             },
           ].map((item) => (
-            <Link key={item.title} href="/directo" className={styles.cardLink}>
+            <Link key={item.title} href="/directo" prefetch={false} className={styles.cardLink}>
             <article className={styles.directoCard}>
               <div className={styles.directoImage}>
                 <img src={item.img} alt="" />

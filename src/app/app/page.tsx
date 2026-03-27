@@ -208,29 +208,29 @@ export default async function AppPage(props: {
           <div className={styles.menuBlock}>
             <p className={styles.menuLabel}>{t.menu}</p>
             <nav className={styles.menuList}>
-              <Link href="/app" className={`${styles.menuItem} ${styles.active}`}>
+              <Link href="/app" prefetch={false} className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
               </Link>
-              <Link href="/directo" className={styles.menuItem}>
+              <Link href="/directo" prefetch={false} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
                 {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
               </Link>
-              <Link href="/videos" className={styles.menuItem}>
+              <Link href="/videos" prefetch={false} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
               </Link>
-              <Link href="/app/servicios" className={styles.menuItem}>
+              <Link href="/app/servicios" prefetch={false} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
               </Link>
-              <Link href={notificationsHref} className={styles.menuItem}>
+              <Link href={notificationsHref} prefetch={false} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
                 <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
               </Link>
-              <Link href="/app/ajustes" className={styles.menuItem}>
+              <Link href="/app/ajustes" prefetch={false} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
                 <span>{t.settings}</span>
               </Link>
@@ -302,7 +302,7 @@ export default async function AppPage(props: {
                 </div>
               </article>
 
-              {showLiveCard ? <Link href="/directo" className={styles.cardLink}>
+              {showLiveCard ? <Link href="/directo" prefetch={false} className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
@@ -338,7 +338,7 @@ export default async function AppPage(props: {
                 </div>
                 <div className={styles.serviceRow}>
                   {serviceCards.map((card) => (
-                  <Link key={card.title} href="/app/servicios" className={card.className}>
+                  <Link key={card.title} href="/app/servicios" prefetch={false} className={card.className}>
                     <div className={styles.serviceBoxInner}>
                       <strong>{card.title}</strong>
                       <span>{t.from} {card.price}</span>
@@ -365,7 +365,7 @@ export default async function AppPage(props: {
                 </div>
               </article> : null}
 
-              {showEventsCard ? <Link href="/videos" className={styles.cardLink}>
+              {showEventsCard ? <Link href="/videos" prefetch={false} className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>

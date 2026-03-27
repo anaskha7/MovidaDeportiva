@@ -119,17 +119,17 @@ export default function AjustesPageClient({
           <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
           <p className={styles.menuLabel}>{t.menu}</p>
           <nav className={styles.menuList}>
-            <Link href={homeHref} className={styles.menuItem}>
+            <Link href={homeHref} prefetch={false} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-home.svg" alt="" />
               <span>{t.home}</span>
             </Link>
             {role === "admin" ? (
-              <Link href="/admin/panel" className={styles.menuItem}>
+              <Link href="/admin/panel" prefetch={false} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-panel.svg" alt="" />
                 <span>{language === "en" ? "Admin panel" : language === "ca" ? "Panell admin" : "Panel admin"}</span>
               </Link>
             ) : null}
-            <Link href="/directo" className={styles.menuItem}>
+            <Link href="/directo" prefetch={false} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-live.svg" alt="" />
               <span>{t.live}</span>
               {hasLiveNow ? (
@@ -138,20 +138,20 @@ export default function AjustesPageClient({
                 </span>
               ) : null}
             </Link>
-            <Link href="/videos" className={styles.menuItem}>
+            <Link href="/videos" prefetch={false} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-events.svg" alt="" />
               <span>{t.events}</span>
             </Link>
-            <Link href="/app/servicios" className={styles.menuItem}>
+            <Link href="/app/servicios" prefetch={false} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-services.svg" alt="" />
               <span>{t.services}</span>
             </Link>
-            <Link href={notificationsHref} className={styles.menuItem}>
+            <Link href={notificationsHref} prefetch={false} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-bell.svg" alt="" />
               <span>{t.notifications}</span>
               <NotificationDateBadge count={notificationCount} className={styles.badge} />
             </Link>
-            <Link href="/app/ajustes" className={`${styles.menuItem} ${styles.active}`}>
+            <Link href="/app/ajustes" prefetch={false} className={`${styles.menuItem} ${styles.active}`}>
               <img src="/assets/figma/admin-menu-settings.svg" alt="" />
               <span>{t.settings}</span>
             </Link>
