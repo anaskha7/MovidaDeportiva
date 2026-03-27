@@ -8,8 +8,6 @@ import styles from "./Login.module.css";
 type Props = {
   error?: string;
   initialTab?: "login" | "register";
-  onLogin: (formData: FormData) => void;
-  onRegister: (formData: FormData) => void;
   locale: Locale;
   googleEnabled: boolean;
 };
@@ -17,8 +15,6 @@ type Props = {
 export default function LoginForm({
   error,
   initialTab = "login",
-  onLogin,
-  onRegister,
   locale,
   googleEnabled,
 }: Props) {
@@ -86,7 +82,7 @@ export default function LoginForm({
       </div>
 
       {tab === "login" ? (
-        <form action={onLogin}>
+        <form action="/auth/login" method="post">
           <div className={styles.formFields}>
             <label>
               {t.email}
@@ -186,7 +182,7 @@ export default function LoginForm({
           </div>
         </form>
       ) : (
-        <form action={onRegister}>
+        <form action="/auth/register" method="post">
           <div className={styles.formFields}>
             <label>
               {t.fullName}
