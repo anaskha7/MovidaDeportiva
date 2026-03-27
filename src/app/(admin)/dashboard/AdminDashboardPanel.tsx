@@ -1,140 +1,305 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import type { NotificationFeedItem, AdminMetricSnapshot } from "@/lib/backoffice";
 import type { Locale } from "@/lib/i18n-shared";
 import styles from "./Dashboard.module.css";
 
 type AdminUser = {
-  id: string;
+  id: number;
   name: string;
   email: string;
+  roleId: number;
   role: string;
   blocked: boolean;
+  joinedAt: string;
 };
 
-type ScheduledMatch = {
-  id: string;
-  title: string;
-  competition: string;
+type RoleOption = {
+  id: number;
+  name: string;
+  label: string;
+};
+
+type ServiceRequest = {
+  id: number;
+  userId: number | null;
+  requester: string;
+  email: string;
+  services: string;
   date: string;
-  time: string;
+  hours: number;
+  extras: string;
+  details: string;
+  total: number;
+  status: string;
+  createdAt: string;
 };
 
-const initialUsers: AdminUser[] = [
-  { id: "u-admin", name: "Admin", email: "admin@example.com", role: "admin", blocked: false },
-  { id: "u-user", name: "Usuario Demo", email: "user@example.com", role: "user", blocked: false },
-  { id: "u-subscriber", name: "Suscriptor Demo", email: "suscriptor@example.com", role: "suscriptor", blocked: false },
-  { id: "u-live-1", name: "Lucía", email: "lucia@demo.com", role: "user", blocked: false },
-  { id: "u-live-2", name: "Carlos", email: "carlos@demo.com", role: "suscriptor", blocked: true },
-  { id: "u-live-3", name: "Marta", email: "marta@demo.com", role: "user", blocked: false },
-];
+type AdminDirect = {
+  id: number;
+  title: string;
+  description: string;
+  url: string;
+  status: string;
+  scheduledAt: string | null;
+};
 
-const initialMatches: ScheduledMatch[] = [
-  {
-    id: "m-1",
-    title: "GRAMA vs VILANOVA",
-    competition: "3ª Federación - Grupo V",
-    date: "2026-03-18",
-    time: "18:30",
-  },
-  {
-    id: "m-2",
-    title: "SEAGULL FEM vs EUROPA FEM",
-    competition: "Primera Nacional Fem.",
-    date: "2026-03-21",
-    time: "12:00",
-  },
-];
+type AuditEntry = {
+  id: number;
+  action: string;
+  entity: string;
+  entityId: number | null;
+  description: string;
+  actor: string;
+  createdAt: string;
+};
 
-const initialRequests = [
-  { id: "r-1", club: "UE Sants", service: "Streaming", status: "Pendiente" },
-  { id: "r-2", club: "Grama", service: "Speakers", status: "Confirmada" },
-  { id: "r-3", club: "Europa FEM", service: "Streaming", status: "Pendiente" },
-];
+type AdminDashboardPanelProps = {
+  locale: Locale;
+  initialQuery?: string;
+  users: AdminUser[];
+  roles: RoleOption[];
+  requests: ServiceRequest[];
+  directs: AdminDirect[];
+  logs: AuditEntry[];
+  notifications: NotificationFeedItem[];
+  metrics: AdminMetricSnapshot;
+  onChangeUserRole: (formData: FormData) => Promise<void>;
+  onToggleUserBlocked: (formData: FormData) => Promise<void>;
+  onCreateDirect: (formData: FormData) => Promise<void>;
+  onUpdateDirectStatus: (formData: FormData) => Promise<void>;
+  onUpdateRequestStatus: (formData: FormData) => Promise<void>;
+  onCreateNotification: (formData: FormData) => Promise<void>;
+};
 
-export default function AdminDashboardPanel({ locale }: { locale: Locale }) {
+function buildFormData(entries: Record<string, string | number | null | undefined>) {
+  const formData = new FormData();
+
+  Object.entries(entries).forEach(([key, value]) => {
+    if (value === null || value === undefined) {
+      return;
+    }
+
+    formData.set(key, String(value));
+  });
+
+  return formData;
+}
+
+function formatCurrency(value: number, locale: Locale) {
+  const currencyLocale = locale === "ca" ? "ca-ES" : locale === "en" ? "en-US" : "es-ES";
+  return new Intl.NumberFormat(currencyLocale, {
+    style: "currency",
+    currency: "EUR",
+  }).format(value);
+}
+
+export default function AdminDashboardPanel({
+  locale,
+  initialQuery = "",
+  users,
+  roles,
+  requests,
+  directs,
+  logs,
+  notifications,
+  metrics,
+  onChangeUserRole,
+  onToggleUserBlocked,
+  onCreateDirect,
+  onUpdateDirectStatus,
+  onUpdateRequestStatus,
+  onCreateNotification,
+}: AdminDashboardPanelProps) {
+  const router = useRouter();
+  const [query, setQuery] = useState(initialQuery);
+  const [isPending, startTransition] = useTransition();
+  const [roleDrafts, setRoleDrafts] = useState<Record<number, number>>(
+    Object.fromEntries(users.map((user) => [user.id, user.roleId])),
+  );
+  const [requestStatusDrafts, setRequestStatusDrafts] = useState<Record<number, string>>(
+    Object.fromEntries(requests.map((request) => [request.id, request.status])),
+  );
+  const [directStatusDrafts, setDirectStatusDrafts] = useState<Record<number, string>>(
+    Object.fromEntries(directs.map((direct) => [direct.id, direct.status])),
+  );
+  const [directForm, setDirectForm] = useState({
+    title: "",
+    description: "",
+    url: "",
+    status: "programado",
+    scheduledAt: "",
+  });
+  const [notificationForm, setNotificationForm] = useState({
+    title: "",
+    target: "admin",
+    type: "info",
+    message: "",
+  });
+
   const t = {
     es: {
       title: "Panel de control admin",
-      subtitle: "Gestiona usuarios, moderación en directo, calendario y solicitudes.",
-      users: "Usuarios",
+      subtitle: "Usuarios, solicitudes, directos, notificaciones y trazas ya salen de la base de datos.",
+      users: "Gestión de usuarios",
       blocked: "Usuarios bloqueados",
-      liveModeration: "Moderación en directos",
-      calendar: "Añadir partidos al calendario",
-      requests: "Solicitudes recientes",
-      searchUsers: "Buscar usuario...",
       noBlocked: "No hay usuarios bloqueados",
+      role: "Rol",
+      joined: "Alta",
+      saveRole: "Guardar rol",
       block: "Bloquear",
       unblock: "Desbloquear",
-      addMatch: "Añadir partido",
-      titleLabel: "Partido",
-      competitionLabel: "Competición",
-      dateLabel: "Fecha",
-      timeLabel: "Hora",
-      scheduled: "Programados",
-      pending: "Pendiente",
+      requests: "Solicitudes de servicios",
+      requestStatus: "Estado solicitud",
+      requestsEmpty: "No hay solicitudes registradas todavía.",
+      directs: "Gestión de directos",
+      createDirect: "Crear directo",
+      directTitle: "Nombre del directo",
+      directDescription: "Descripción",
+      directUrl: "URL de streaming",
+      directStatus: "Estado",
+      directDate: "Fecha programada",
+      directsEmpty: "Todavía no hay directos registrados.",
+      saveStatus: "Guardar estado",
+      notifications: "Notificaciones reales",
+      sendNotification: "Enviar notificación",
+      notificationTitle: "Título",
+      notificationTarget: "Destino",
+      notificationType: "Tipo",
+      notificationMessage: "Mensaje",
+      notificationsEmpty: "Todavía no hay notificaciones en el sistema.",
+      logs: "Logs básicos",
+      logsEmpty: "Todavía no hay trazas registradas.",
+      searchUsers: "Filtrar por nombre, email o servicio...",
+      metrics: "Métricas reales",
+      activeUsers: "Usuarios activos",
+      blockedUsers: "Bloqueados",
+      pendingRequests: "Pendientes",
+      activeDirects: "En directo",
+      scheduledDirects: "Programados",
+      unreadNotifications: "Sin leer",
+      general: "Toda la app",
+      actorFallback: "Sistema",
     },
     ca: {
       title: "Panell de control admin",
-      subtitle: "Gestiona usuaris, moderació en directe, calendari i sol·licituds.",
-      users: "Usuaris",
+      subtitle: "Usuaris, sol·licituds, directes, notificacions i traces ja surten de la base de dades.",
+      users: "Gestió d'usuaris",
       blocked: "Usuaris bloquejats",
-      liveModeration: "Moderació en directes",
-      calendar: "Afegir partits al calendari",
-      requests: "Sol·licituds recents",
-      searchUsers: "Cercar usuari...",
       noBlocked: "No hi ha usuaris bloquejats",
+      role: "Rol",
+      joined: "Alta",
+      saveRole: "Desar rol",
       block: "Bloquejar",
       unblock: "Desbloquejar",
-      addMatch: "Afegir partit",
-      titleLabel: "Partit",
-      competitionLabel: "Competició",
-      dateLabel: "Data",
-      timeLabel: "Hora",
-      scheduled: "Programats",
-      pending: "Pendent",
+      requests: "Sol·licituds de serveis",
+      requestStatus: "Estat de la sol·licitud",
+      requestsEmpty: "Encara no hi ha sol·licituds registrades.",
+      directs: "Gestió de directes",
+      createDirect: "Crear directe",
+      directTitle: "Nom del directe",
+      directDescription: "Descripció",
+      directUrl: "URL d'streaming",
+      directStatus: "Estat",
+      directDate: "Data programada",
+      directsEmpty: "Encara no hi ha directes registrats.",
+      saveStatus: "Desar estat",
+      notifications: "Notificacions reals",
+      sendNotification: "Enviar notificació",
+      notificationTitle: "Títol",
+      notificationTarget: "Destí",
+      notificationType: "Tipus",
+      notificationMessage: "Missatge",
+      notificationsEmpty: "Encara no hi ha notificacions al sistema.",
+      logs: "Logs bàsics",
+      logsEmpty: "Encara no hi ha traces registrades.",
+      searchUsers: "Filtra per nom, correu o servei...",
+      metrics: "Mètriques reals",
+      activeUsers: "Usuaris actius",
+      blockedUsers: "Bloquejats",
+      pendingRequests: "Pendents",
+      activeDirects: "En directe",
+      scheduledDirects: "Programats",
+      unreadNotifications: "Sense llegir",
+      general: "Tota l'app",
+      actorFallback: "Sistema",
     },
     en: {
       title: "Admin control panel",
-      subtitle: "Manage users, live moderation, calendar and requests.",
-      users: "Users",
+      subtitle: "Users, service requests, live broadcasts, notifications and logs now come from the database.",
+      users: "User management",
       blocked: "Blocked users",
-      liveModeration: "Live moderation",
-      calendar: "Add matches to calendar",
-      requests: "Recent requests",
-      searchUsers: "Search user...",
-      noBlocked: "No blocked users",
+      noBlocked: "There are no blocked users",
+      role: "Role",
+      joined: "Joined",
+      saveRole: "Save role",
       block: "Block",
       unblock: "Unblock",
-      addMatch: "Add match",
-      titleLabel: "Match",
-      competitionLabel: "Competition",
-      dateLabel: "Date",
-      timeLabel: "Time",
-      scheduled: "Scheduled",
-      pending: "Pending",
+      requests: "Service requests",
+      requestStatus: "Request status",
+      requestsEmpty: "There are no requests yet.",
+      directs: "Live management",
+      createDirect: "Create live item",
+      directTitle: "Live title",
+      directDescription: "Description",
+      directUrl: "Streaming URL",
+      directStatus: "Status",
+      directDate: "Scheduled date",
+      directsEmpty: "No live entries have been created yet.",
+      saveStatus: "Save status",
+      notifications: "Real notifications",
+      sendNotification: "Send notification",
+      notificationTitle: "Title",
+      notificationTarget: "Target",
+      notificationType: "Type",
+      notificationMessage: "Message",
+      notificationsEmpty: "There are no notifications yet.",
+      logs: "Basic logs",
+      logsEmpty: "There are no logs yet.",
+      searchUsers: "Filter by name, email or service...",
+      metrics: "Real metrics",
+      activeUsers: "Active users",
+      blockedUsers: "Blocked",
+      pendingRequests: "Pending",
+      activeDirects: "Live now",
+      scheduledDirects: "Scheduled",
+      unreadNotifications: "Unread",
+      general: "Whole app",
+      actorFallback: "System",
     },
   }[locale];
 
-  const [users, setUsers] = useState(initialUsers);
-  const [scheduledMatches, setScheduledMatches] = useState(initialMatches);
-  const [query, setQuery] = useState("");
-  const [form, setForm] = useState({
-    title: "",
-    competition: "",
-    date: "2026-03-25",
-    time: "18:00",
-  });
+  const normalizedQuery = query.trim().toLowerCase();
+  const matchesQuery = (value: string) =>
+    !normalizedQuery || value.toLowerCase().includes(normalizedQuery);
 
-  const filteredUsers = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return users.filter((user) =>
-      !normalized ||
-      `${user.name} ${user.email} ${user.role}`.toLowerCase().includes(normalized)
-    );
-  }, [query, users]);
+  const filteredUsers = users.filter((user) =>
+    matchesQuery(`${user.name} ${user.email} ${user.role}`),
+  );
+  const filteredBlockedUsers = filteredUsers.filter((user) => user.blocked);
+  const filteredRequests = requests.filter((request) =>
+    matchesQuery(`${request.requester} ${request.email} ${request.services} ${request.status}`),
+  );
+  const filteredDirects = directs.filter((direct) =>
+    matchesQuery(`${direct.title} ${direct.description} ${direct.status}`),
+  );
+  const filteredNotifications = notifications.filter(
+    (item: (typeof notifications)[number]) =>
+      matchesQuery(`${item.title ?? ""} ${item.actor ?? ""} ${item.message}`),
+  );
+  const filteredLogs = logs.filter((log) =>
+    matchesQuery(`${log.actor} ${log.entity} ${log.description}`),
+  );
 
-  const blockedUsers = users.filter((user) => user.blocked);
+  const runServerAction = (action: () => Promise<void>, after?: () => void) => {
+    startTransition(async () => {
+      await action();
+      after?.();
+      router.refresh();
+    });
+  };
 
   return (
     <section className={styles.adminPanelSection}>
@@ -145,17 +310,46 @@ export default function AdminDashboardPanel({ locale }: { locale: Locale }) {
         </div>
       </div>
 
+      <div className={styles.adminCardTop}>
+        <strong>{t.metrics}</strong>
+        <input
+          className={styles.adminSearch}
+          type="text"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={t.searchUsers}
+        />
+      </div>
+
+      <div className={styles.metricsGrid}>
+        <div className={styles.metricCard}>
+          <span>{t.activeUsers}</span>
+          <strong>{metrics.activeUsers}</strong>
+        </div>
+        <div className={styles.metricCard}>
+          <span>{t.blockedUsers}</span>
+          <strong>{metrics.blockedUsers}</strong>
+        </div>
+        <div className={styles.metricCard}>
+          <span>{t.pendingRequests}</span>
+          <strong>{metrics.pendingRequests}</strong>
+        </div>
+        <div className={styles.metricCard}>
+          <span>{t.activeDirects}</span>
+          <strong>{metrics.activeDirects}</strong>
+          <small>{t.scheduledDirects}: {metrics.scheduledDirects}</small>
+        </div>
+        <div className={styles.metricCard}>
+          <span>{t.unreadNotifications}</span>
+          <strong>{metrics.unreadNotifications}</strong>
+          <small>{t.notifications}</small>
+        </div>
+      </div>
+
       <div className={styles.adminPanelGrid}>
         <article className={styles.adminPanelCard}>
           <div className={styles.adminCardTop}>
             <strong>{t.users}</strong>
-            <input
-              className={styles.adminSearch}
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t.searchUsers}
-            />
           </div>
           <div className={styles.adminList}>
             {filteredUsers.map((user) => (
@@ -163,8 +357,63 @@ export default function AdminDashboardPanel({ locale }: { locale: Locale }) {
                 <div>
                   <strong>{user.name}</strong>
                   <p>{user.email}</p>
+                  <p>
+                    {t.joined}: {user.joinedAt}
+                  </p>
                 </div>
-                <span className={styles.adminMeta}>{user.role}</span>
+                <div className={styles.adminInlineActions}>
+                  <select
+                    className={styles.adminSelect}
+                    value={roleDrafts[user.id] ?? user.roleId}
+                    onChange={(event) =>
+                      setRoleDrafts((current) => ({
+                        ...current,
+                        [user.id]: Number(event.target.value),
+                      }))
+                    }
+                    disabled={isPending}
+                  >
+                    {roles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className={styles.adminActionButton}
+                    disabled={isPending || (roleDrafts[user.id] ?? user.roleId) === user.roleId}
+                    onClick={() =>
+                      runServerAction(() =>
+                        onChangeUserRole(
+                          buildFormData({
+                            userId: user.id,
+                            roleId: roleDrafts[user.id] ?? user.roleId,
+                          }),
+                        ),
+                      )
+                    }
+                  >
+                    {t.saveRole}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.adminActionButton}
+                    disabled={isPending}
+                    onClick={() =>
+                      runServerAction(() =>
+                        onToggleUserBlocked(
+                          buildFormData({
+                            userId: user.id,
+                            blocked: (!user.blocked).toString(),
+                          }),
+                        ),
+                      )
+                    }
+                  >
+                    {user.blocked ? t.unblock : t.block}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -174,9 +423,9 @@ export default function AdminDashboardPanel({ locale }: { locale: Locale }) {
           <div className={styles.adminCardTop}>
             <strong>{t.blocked}</strong>
           </div>
-          {blockedUsers.length > 0 ? (
+          {filteredBlockedUsers.length > 0 ? (
             <div className={styles.adminList}>
-              {blockedUsers.map((user) => (
+              {filteredBlockedUsers.map((user) => (
                 <div key={user.id} className={styles.adminListItem}>
                   <div>
                     <strong>{user.name}</strong>
@@ -185,11 +434,15 @@ export default function AdminDashboardPanel({ locale }: { locale: Locale }) {
                   <button
                     type="button"
                     className={styles.adminActionButton}
+                    disabled={isPending}
                     onClick={() =>
-                      setUsers((current) =>
-                        current.map((item) =>
-                          item.id === user.id ? { ...item, blocked: false } : item
-                        )
+                      runServerAction(() =>
+                        onToggleUserBlocked(
+                          buildFormData({
+                            userId: user.id,
+                            blocked: "false",
+                          }),
+                        ),
                       )
                     }
                   >
@@ -205,130 +458,317 @@ export default function AdminDashboardPanel({ locale }: { locale: Locale }) {
 
         <article className={styles.adminPanelCard}>
           <div className={styles.adminCardTop}>
-            <strong>{t.liveModeration}</strong>
-          </div>
-          <div className={styles.adminList}>
-            {users
-              .filter((user) => user.role !== "admin")
-              .map((user) => (
-                <div key={user.id} className={styles.adminListItem}>
-                  <div>
-                    <strong>{user.name}</strong>
-                    <p>{user.blocked ? t.blocked : t.liveModeration}</p>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.adminActionButton}
-                    onClick={() =>
-                      setUsers((current) =>
-                        current.map((item) =>
-                          item.id === user.id ? { ...item, blocked: !item.blocked } : item
-                        )
-                      )
-                    }
-                  >
-                    {user.blocked ? t.unblock : t.block}
-                  </button>
-                </div>
-              ))}
-          </div>
-        </article>
-
-        <article className={styles.adminPanelCard}>
-          <div className={styles.adminCardTop}>
-            <strong>{t.calendar}</strong>
+            <strong>{t.directs}</strong>
           </div>
           <form
             className={styles.adminForm}
             onSubmit={(event) => {
               event.preventDefault();
-              if (!form.title || !form.competition) return;
-              setScheduledMatches((current) => [
-                ...current,
-                {
-                  id: `match-${Date.now()}`,
-                  title: form.title,
-                  competition: form.competition,
-                  date: form.date,
-                  time: form.time,
-                },
-              ]);
-              setForm((current) => ({ ...current, title: "", competition: "" }));
+              runServerAction(
+                () =>
+                  onCreateDirect(
+                    buildFormData({
+                      title: directForm.title,
+                      description: directForm.description,
+                      url: directForm.url,
+                      status: directForm.status,
+                      scheduledAt: directForm.scheduledAt,
+                    }),
+                  ),
+                () =>
+                  setDirectForm({
+                    title: "",
+                    description: "",
+                    url: "",
+                    status: "programado",
+                    scheduledAt: "",
+                  }),
+              );
             }}
           >
             <input
               type="text"
-              placeholder={t.titleLabel}
-              value={form.title}
-              onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+              value={directForm.title}
+              placeholder={t.directTitle}
+              onChange={(event) =>
+                setDirectForm((current) => ({ ...current, title: event.target.value }))
+              }
             />
             <input
               type="text"
-              placeholder={t.competitionLabel}
-              value={form.competition}
+              value={directForm.description}
+              placeholder={t.directDescription}
               onChange={(event) =>
-                setForm((current) => ({ ...current, competition: event.target.value }))
+                setDirectForm((current) => ({ ...current, description: event.target.value }))
+              }
+            />
+            <input
+              type="url"
+              value={directForm.url}
+              placeholder={t.directUrl}
+              onChange={(event) =>
+                setDirectForm((current) => ({ ...current, url: event.target.value }))
               }
             />
             <div className={styles.adminFormRow}>
               <label>
-                <span>{t.dateLabel}</span>
+                <span>{t.directDate}</span>
                 <input
-                  type="date"
-                  value={form.date}
-                  onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
+                  type="datetime-local"
+                  value={directForm.scheduledAt}
+                  onChange={(event) =>
+                    setDirectForm((current) => ({ ...current, scheduledAt: event.target.value }))
+                  }
                 />
               </label>
               <label>
-                <span>{t.timeLabel}</span>
-                <input
-                  type="time"
-                  value={form.time}
-                  onChange={(event) => setForm((current) => ({ ...current, time: event.target.value }))}
-                />
+                <span>{t.directStatus}</span>
+                <select
+                  className={styles.adminSelect}
+                  value={directForm.status}
+                  onChange={(event) =>
+                    setDirectForm((current) => ({ ...current, status: event.target.value }))
+                  }
+                >
+                  <option value="programado">programado</option>
+                  <option value="live">live</option>
+                  <option value="finalizado">finalizado</option>
+                </select>
               </label>
             </div>
-            <button type="submit" className={styles.adminPrimaryButton}>
-              {t.addMatch}
+            <button type="submit" className={styles.adminPrimaryButton} disabled={isPending}>
+              {t.createDirect}
             </button>
           </form>
-          <div className={styles.adminScheduleBlock}>
-            <strong>{t.scheduled}</strong>
+          {filteredDirects.length > 0 ? (
             <div className={styles.adminList}>
-              {scheduledMatches.map((match) => (
-                <div key={match.id} className={styles.adminListItem}>
+              {filteredDirects.map((direct) => (
+                <div key={direct.id} className={styles.adminListItem}>
                   <div>
-                    <strong>{match.title}</strong>
-                    <p>{match.competition}</p>
+                    <strong>{direct.title}</strong>
+                    <p>{direct.description || direct.url}</p>
+                    <p>{direct.scheduledAt ?? "-"}</p>
                   </div>
-                  <span className={styles.adminMeta}>
-                    {match.date} · {match.time}
-                  </span>
+                  <div className={styles.adminInlineActions}>
+                    <select
+                      className={styles.adminSelect}
+                      value={directStatusDrafts[direct.id] ?? direct.status}
+                      onChange={(event) =>
+                        setDirectStatusDrafts((current) => ({
+                          ...current,
+                          [direct.id]: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="programado">programado</option>
+                      <option value="live">live</option>
+                      <option value="finalizado">finalizado</option>
+                    </select>
+                    <button
+                      type="button"
+                      className={styles.adminActionButton}
+                      disabled={isPending || (directStatusDrafts[direct.id] ?? direct.status) === direct.status}
+                      onClick={() =>
+                        runServerAction(() =>
+                          onUpdateDirectStatus(
+                            buildFormData({
+                              directId: direct.id,
+                              status: directStatusDrafts[direct.id] ?? direct.status,
+                            }),
+                          ),
+                        )
+                      }
+                    >
+                      {t.saveStatus}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
+          ) : (
+            <p className={styles.adminEmpty}>{t.directsEmpty}</p>
+          )}
+        </article>
+
+        <article className={styles.adminPanelCard}>
+          <div className={styles.adminCardTop}>
+            <strong>{t.notifications}</strong>
           </div>
+          <form
+            className={styles.adminForm}
+            onSubmit={(event) => {
+              event.preventDefault();
+              runServerAction(
+                () =>
+                  onCreateNotification(
+                    buildFormData({
+                      title: notificationForm.title,
+                      target: notificationForm.target,
+                      type: notificationForm.type,
+                      message: notificationForm.message,
+                    }),
+                  ),
+                () =>
+                  setNotificationForm({
+                    title: "",
+                    target: "admin",
+                    type: "info",
+                    message: "",
+                  }),
+              );
+            }}
+          >
+            <input
+              type="text"
+              value={notificationForm.title}
+              placeholder={t.notificationTitle}
+              onChange={(event) =>
+                setNotificationForm((current) => ({ ...current, title: event.target.value }))
+              }
+            />
+            <div className={styles.adminFormRow}>
+              <label>
+                <span>{t.notificationTarget}</span>
+                <select
+                  className={styles.adminSelect}
+                  value={notificationForm.target}
+                  onChange={(event) =>
+                    setNotificationForm((current) => ({ ...current, target: event.target.value }))
+                  }
+                >
+                  <option value="admin">admin</option>
+                  <option value="user">user</option>
+                  <option value="suscriptor">suscriptor</option>
+                  <option value="all">{t.general}</option>
+                </select>
+              </label>
+              <label>
+                <span>{t.notificationType}</span>
+                <select
+                  className={styles.adminSelect}
+                  value={notificationForm.type}
+                  onChange={(event) =>
+                    setNotificationForm((current) => ({ ...current, type: event.target.value }))
+                  }
+                >
+                  <option value="info">info</option>
+                  <option value="success">success</option>
+                  <option value="warning">warning</option>
+                </select>
+              </label>
+            </div>
+            <textarea
+              className={styles.adminTextarea}
+              rows={4}
+              value={notificationForm.message}
+              placeholder={t.notificationMessage}
+              onChange={(event) =>
+                setNotificationForm((current) => ({ ...current, message: event.target.value }))
+              }
+            />
+            <button type="submit" className={styles.adminPrimaryButton} disabled={isPending}>
+              {t.sendNotification}
+            </button>
+          </form>
+
+          {filteredNotifications.length > 0 ? (
+            <div className={styles.adminList}>
+              {filteredNotifications.map((item: (typeof filteredNotifications)[number]) => (
+                <div key={item.id} className={styles.adminListItem}>
+                  <div>
+                    <strong>{item.title || item.message}</strong>
+                    <p>{item.actor || t.actorFallback}</p>
+                    <p>{item.createdAtLabel}</p>
+                  </div>
+                  <span className={styles.adminMeta}>{item.type}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.adminEmpty}>{t.notificationsEmpty}</p>
+          )}
         </article>
 
         <article className={`${styles.adminPanelCard} ${styles.adminPanelCardWide}`}>
           <div className={styles.adminCardTop}>
             <strong>{t.requests}</strong>
           </div>
-          <div className={styles.adminRequestGrid}>
-            {initialRequests.map((request) => (
-              <div key={request.id} className={styles.adminRequestCard}>
-                <strong>{request.club}</strong>
-                <p>{request.service}</p>
-                <span
-                  className={`${styles.adminStatus} ${
-                    request.status === "Pendiente" ? styles.adminStatusPending : styles.adminStatusOk
-                  }`}
-                >
-                  {request.status === "Pendiente" ? t.pending : request.status}
-                </span>
-              </div>
-            ))}
+          {filteredRequests.length > 0 ? (
+            <div className={styles.adminRequestGrid}>
+              {filteredRequests.map((request) => (
+                <div key={request.id} className={styles.adminRequestCard}>
+                  <strong>{request.requester}</strong>
+                  <p>{request.email}</p>
+                  <p>{request.services}</p>
+                  <p>{request.date} · {request.hours}h</p>
+                  {request.extras ? <p>{request.extras}</p> : null}
+                  {request.details ? <p>{request.details}</p> : null}
+                  <div className={styles.adminInlineActions}>
+                    <select
+                      className={styles.adminSelect}
+                      value={requestStatusDrafts[request.id] ?? request.status}
+                      onChange={(event) =>
+                        setRequestStatusDrafts((current) => ({
+                          ...current,
+                          [request.id]: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="pendiente">pendiente</option>
+                      <option value="revisando">revisando</option>
+                      <option value="confirmada">confirmada</option>
+                      <option value="rechazada">rechazada</option>
+                      <option value="cerrada">cerrada</option>
+                    </select>
+                    <button
+                      type="button"
+                      className={styles.adminActionButton}
+                      disabled={isPending || (requestStatusDrafts[request.id] ?? request.status) === request.status}
+                      onClick={() =>
+                        runServerAction(() =>
+                          onUpdateRequestStatus(
+                            buildFormData({
+                              requestId: request.id,
+                              status: requestStatusDrafts[request.id] ?? request.status,
+                            }),
+                          ),
+                        )
+                      }
+                    >
+                      {t.requestStatus}
+                    </button>
+                  </div>
+                  <div className={styles.adminRequestFooter}>
+                    <span>{request.createdAt}</span>
+                    <strong>{formatCurrency(request.total, locale)}</strong>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.adminEmpty}>{t.requestsEmpty}</p>
+          )}
+        </article>
+
+        <article className={`${styles.adminPanelCard} ${styles.adminPanelCardWide}`}>
+          <div className={styles.adminCardTop}>
+            <strong>{t.logs}</strong>
           </div>
+          {filteredLogs.length > 0 ? (
+            <div className={styles.adminList}>
+              {filteredLogs.map((log) => (
+                <div key={log.id} className={styles.adminListItem}>
+                  <div>
+                    <strong>{log.description}</strong>
+                    <p>{log.actor}</p>
+                  </div>
+                  <span className={styles.adminMeta}>{log.createdAt}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.adminEmpty}>{t.logsEmpty}</p>
+          )}
         </article>
       </div>
     </section>

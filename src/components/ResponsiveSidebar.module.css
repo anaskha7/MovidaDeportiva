@@ -1,0 +1,125 @@
+.mobileBar {
+  display: none;
+}
+
+.desktopSidebar {
+  display: block;
+}
+
+.mobileBarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(13, 24, 23, 0.56);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.drawer {
+  width: min(340px, calc(100vw - 28px));
+  height: 100%;
+  padding: 12px 0 12px 12px;
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.closeButton,
+.menuButton {
+  border: none;
+  background: #1a2c2a;
+  color: #ffffff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menuButton {
+  width: 48px;
+  height: 48px;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.menuButton span {
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.closeButton {
+  width: 44px;
+  height: 44px;
+  position: relative;
+}
+
+.closeButton span {
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.closeButton span:first-child {
+  transform: rotate(45deg);
+}
+
+.closeButton span:last-child {
+  transform: rotate(-45deg);
+}
+
+.drawerSidebar {
+  min-height: auto;
+  height: calc(100% - 54px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 24px;
+}
+
+@media (max-width: 768px) {
+  .mobileBar {
+    display: flex;
+    position: sticky;
+    top: max(12px, env(safe-area-inset-top));
+    z-index: 20;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding: 16px 18px;
+    background: #f2f2f2;
+    border-radius: 20px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  .mobileLogo {
+    width: 76px;
+    height: 29.5px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .mobileBarActions {
+    gap: 8px;
+  }
+
+  .desktopSidebar {
+    display: none;
+  }
+}

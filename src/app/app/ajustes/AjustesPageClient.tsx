@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import NotificationBell from "@/components/NotificationBell";
+import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import type { NotificationFeedItem } from "@/lib/backoffice";
 import { LOCALE_COOKIE, type Locale } from "@/lib/i18n-shared";
 import type { Rol } from "@/lib/types";
 import SettingsPanel from "@/app/(admin)/administracion/SettingsPanel";
@@ -10,8 +13,12 @@ import styles from "@/app/(admin)/administracion/Administracion.module.css";
 
 type AjustesPageClientProps = {
   displayName: string;
+  email: string;
   role: Rol;
   initialLanguage: Locale;
+  hasLiveNow: boolean;
+  notificationItems: NotificationFeedItem[];
+  notificationCount: number;
 };
 
 const translations = {
@@ -70,16 +77,24 @@ const translations = {
 
 export default function AjustesPageClient({
   displayName,
+  email,
   role,
   initialLanguage,
+  hasLiveNow,
+  notificationItems,
+  notificationCount,
 }: AjustesPageClientProps) {
   const [language, setLanguage] = useState<Locale>(initialLanguage);
+  const [currentDisplayName, setCurrentDisplayName] = useState(displayName);
+  const [currentEmail, setCurrentEmail] = useState(email);
   const t = translations[language];
   const roleLabel = useMemo(
     () => (role === "admin" ? t.admin : t.user),
     [role, t.admin, t.user]
   );
   const homeHref = role === "admin" ? "/dashboard" : "/app";
+  const notificationsHref =
+    role === "admin" ? "/admin/notificaciones" : "/app/notificaciones";
 
   useEffect(() => {
     document.cookie = `${LOCALE_COOKIE}=${language}; path=/; max-age=31536000; samesite=lax`;
@@ -88,7 +103,19 @@ export default function AjustesPageClient({
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
-        <aside className={styles.sidebar}>
+        <ResponsiveSidebar
+          locale={language}
+          sidebarClassName={styles.sidebar}
+          mobileActions={
+            <NotificationBell
+              locale={language}
+              iconSrc="/assets/figma/admin-menu-bell.svg"
+              viewAllHref={notificationsHref}
+              items={notificationItems}
+              count={notificationCount}
+            />
+          }
+        >
           <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
           <p className={styles.menuLabel}>{t.menu}</p>
           <nav className={styles.menuList}>
@@ -105,9 +132,11 @@ export default function AjustesPageClient({
             <Link href="/directo" className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-live.svg" alt="" />
               <span>{t.live}</span>
-              <span className={styles.liveTag}>
-                {t.liveTag} <i />
-              </span>
+              {hasLiveNow ? (
+                <span className={styles.liveTag}>
+                  {t.liveTag} <i />
+                </span>
+              ) : null}
             </Link>
             <Link href="/videos" className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-events.svg" alt="" />
@@ -117,28 +146,17 @@ export default function AjustesPageClient({
               <img src="/assets/figma/admin-menu-services.svg" alt="" />
               <span>{t.services}</span>
             </Link>
-            <Link href="/dashboard#notificaciones" className={styles.menuItem}>
+            <Link href={notificationsHref} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-bell.svg" alt="" />
               <span>{t.notifications}</span>
-              <span className={styles.badge}>22</span>
+              <NotificationDateBadge count={notificationCount} className={styles.badge} />
             </Link>
             <Link href="/app/ajustes" className={`${styles.menuItem} ${styles.active}`}>
               <img src="/assets/figma/admin-menu-settings.svg" alt="" />
               <span>{t.settings}</span>
             </Link>
           </nav>
-          <div className={styles.subscribeCard}>
-            <div className={`kdam ${styles.subscribeTitle}`}>
-              {t.subscribe.split(" ").slice(0, -1).join(" ")}
-              <br />
-              {t.subscribe.split(" ").slice(-1)}
-            </div>
-            <div className={styles.subscribeFooter}>
-              <p>{t.subscribeText}</p>
-              <img src="/assets/figma/icon-arrow-up-right.svg" alt="" />
-            </div>
-          </div>
-        </aside>
+        </ResponsiveSidebar>
 
         <section className={styles.content}>
           <header className={styles.header}>
@@ -158,12 +176,19 @@ export default function AjustesPageClient({
                 <span className={styles.adminIcon}>
                   <img src="/assets/figma/admin2-icon-user.png" alt="" />
                 </span>
-                <div>
-                  <strong>{displayName}</strong>
+              <div>
+                  <strong>{currentDisplayName}</strong>
                   <p>{roleLabel}</p>
                 </div>
               </div>
-              <NotificationBell locale={language} iconSrc="/assets/figma/admin-menu-bell.svg" />
+              <NotificationBell
+                locale={language}
+                iconSrc="/assets/figma/admin-menu-bell.svg"
+                viewAllHref={notificationsHref}
+                className={styles.mobileHiddenBell}
+                items={notificationItems}
+                count={notificationCount}
+              />
               <Link href="/logout" className={styles.headerLogoutButton}>
                 {t.logout}
               </Link>
@@ -171,10 +196,16 @@ export default function AjustesPageClient({
           </header>
           <div className={styles.settingsContent}>
             <SettingsPanel
-              displayName={displayName}
+              displayName={currentDisplayName}
+              email={currentEmail}
+              role={role}
               roleLabel={roleLabel}
               language={language}
               onLanguageChange={setLanguage}
+              onProfileUpdated={({ displayName: nextDisplayName, email: nextEmail }) => {
+                setCurrentDisplayName(nextDisplayName);
+                setCurrentEmail(nextEmail);
+              }}
             />
           </div>
         </section>

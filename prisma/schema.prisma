@@ -1,0 +1,251 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Role {
+  admin    Int       @id @default(autoincrement()) @map("admin")
+  rol      String    @unique @db.VarChar(20)
+  usuarios Usuario[]
+
+  @@map("roles")
+}
+
+model Tipo {
+  id_tipo    Int        @id @default(autoincrement())
+  tipo       String     @db.VarChar(20)
+  materiales Material[]
+
+  @@map("tipos")
+}
+
+model Estado {
+  id_estado  Int        @id @default(autoincrement())
+  estado     String     @db.VarChar(30)
+  materiales Material[]
+
+  @@map("estados")
+}
+
+model Genero {
+  id_genero     Int           @id @default(autoincrement())
+  nombre        String        @db.VarChar(20)
+  equipos       Equipo[]
+  competiciones Competicion[]
+
+  @@map("generos")
+}
+
+model Deporte {
+  id_deporte     Int           @id @default(autoincrement())
+  nombre_deporte String        @db.VarChar(50)
+  descripcion    String?       @db.VarChar(234)
+  federaciones   Federacion[]
+  equipos        Equipo[]
+  competiciones  Competicion[]
+
+  @@map("deportes")
+}
+
+model Directo {
+  id_directo       Int          @id @default(autoincrement())
+  nombre_directo   String?      @db.VarChar(80)
+  descripcion      String?      @db.VarChar(160)
+  url_streaming    String       @db.VarChar(255)
+  estado           String       @db.VarChar(20)
+  fecha_programada DateTime?    @db.Timestamp(0)
+  comentarios      Comentario[]
+
+  @@map("directos")
+}
+
+model Usuario {
+  id_usuario             Int                 @id @default(autoincrement())
+  nombre                 String              @db.VarChar(80)
+  email                  String              @unique @db.VarChar(255)
+  password               String              @db.VarChar(255)
+  fecha_registro         DateTime            @db.Date
+  admin                  Int
+  bloqueado              Boolean             @default(false)
+  role                   Role                @relation(fields: [admin], references: [admin], onDelete: Restrict, onUpdate: Cascade)
+  materiales             Material[]
+  comentarios            Comentario[]
+  solicitudes_servicio   SolicitudServicio[]
+  notificaciones_destino AppNotification[]   @relation("NotificationRecipient")
+  notificaciones_creadas AppNotification[]   @relation("NotificationCreator")
+  registros_auditoria    AuditLog[]          @relation("AuditLogActor")
+
+  @@index([admin], map: "ix_usuarios_admin")
+  @@map("usuarios")
+}
+
+model Federacion {
+  id_federacion     Int           @id @default(autoincrement())
+  nombre_federacion String        @db.VarChar(20)
+  genero_federacion String        @db.VarChar(20)
+  id_deporte        Int
+  deporte           Deporte       @relation(fields: [id_deporte], references: [id_deporte], onDelete: Restrict, onUpdate: Cascade)
+  equipos           Equipo[]
+  competiciones     Competicion[]
+
+  @@index([id_deporte], map: "ix_federaciones_id_deporte")
+  @@map("federaciones")
+}
+
+model Equipo {
+  id_equipo          Int        @id @default(autoincrement())
+  nombre_equipo      String     @db.VarChar(30)
+  id_deporte         Int
+  id_federacion      Int
+  id_genero          Int
+  deporte            Deporte    @relation(fields: [id_deporte], references: [id_deporte], onDelete: Restrict, onUpdate: Cascade)
+  federacion         Federacion @relation(fields: [id_federacion], references: [id_federacion], onDelete: Restrict, onUpdate: Cascade)
+  genero             Genero     @relation(fields: [id_genero], references: [id_genero], onDelete: Restrict, onUpdate: Cascade)
+  partidos_local     Partido[]  @relation("PartidoEquipoLocal")
+  partidos_visitante Partido[]  @relation("PartidoEquipoVisitante")
+
+  @@index([id_deporte], map: "ix_equipos_id_deporte")
+  @@index([id_federacion], map: "ix_equipos_id_federacion")
+  @@index([id_genero], map: "ix_equipos_id_genero")
+  @@map("equipos")
+}
+
+model Competicion {
+  id_competicion     Int        @id @default(autoincrement())
+  nombre_competicion String     @db.VarChar(80)
+  tipo_competicion   String     @db.VarChar(20)
+  temporada          String     @db.VarChar(20)
+  id_deporte         Int
+  id_federacion      Int
+  id_genero          Int
+  categoria_edad     String?    @db.VarChar(30)
+  ambito             String?    @db.VarChar(20)
+  deporte            Deporte    @relation(fields: [id_deporte], references: [id_deporte], onDelete: Restrict, onUpdate: Cascade)
+  federacion         Federacion @relation(fields: [id_federacion], references: [id_federacion], onDelete: Restrict, onUpdate: Cascade)
+  genero             Genero     @relation(fields: [id_genero], references: [id_genero], onDelete: Restrict, onUpdate: Cascade)
+  partidos           Partido[]
+
+  @@index([id_deporte], map: "ix_competiciones_id_deporte")
+  @@index([id_federacion], map: "ix_competiciones_id_federacion")
+  @@index([id_genero], map: "ix_competiciones_id_genero")
+  @@index([temporada], map: "ix_competiciones_temporada")
+  @@map("competiciones")
+}
+
+model Partido {
+  id_partido              Int         @id @default(autoincrement())
+  id_competicion          Int
+  id_equipo_local         Int?
+  id_equipo_visitante     Int?
+  equipo_local_nombre     String      @db.VarChar(60)
+  equipo_visitante_nombre String      @db.VarChar(60)
+  fecha_partido           DateTime    @db.Timestamp(0)
+  jornada                 String?     @db.VarChar(20)
+  grupo                   String?     @db.VarChar(30)
+  destacado               Boolean     @default(false)
+  emitido                 Boolean     @default(false)
+  competicion             Competicion @relation(fields: [id_competicion], references: [id_competicion], onDelete: Restrict, onUpdate: Cascade)
+  equipo_local            Equipo?     @relation("PartidoEquipoLocal", fields: [id_equipo_local], references: [id_equipo], onDelete: SetNull, onUpdate: Cascade)
+  equipo_visitante        Equipo?     @relation("PartidoEquipoVisitante", fields: [id_equipo_visitante], references: [id_equipo], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([id_competicion], map: "ix_partidos_id_competicion")
+  @@index([id_equipo_local], map: "ix_partidos_id_equipo_local")
+  @@index([id_equipo_visitante], map: "ix_partidos_id_equipo_visitante")
+  @@index([fecha_partido], map: "ix_partidos_fecha_partido")
+  @@map("partidos")
+}
+
+model SolicitudServicio {
+  id_solicitud    Int      @id @default(autoincrement())
+  id_usuario      Int?
+  nombre_contacto String   @db.VarChar(80)
+  email_contacto  String   @db.VarChar(255)
+  servicios       String   @db.VarChar(255)
+  fecha_servicio  DateTime @db.Date
+  horas_servicio  Int
+  detalles        String?  @db.VarChar(500)
+  extras          String?  @db.VarChar(255)
+  total_estimado  Decimal  @db.Decimal(10, 2)
+  estado          String   @default("pendiente") @db.VarChar(20)
+  fecha_creacion  DateTime @default(now()) @db.Timestamp(0)
+  usuario         Usuario? @relation(fields: [id_usuario], references: [id_usuario], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([id_usuario], map: "ix_solicitudes_servicio_id_usuario")
+  @@index([estado], map: "ix_solicitudes_servicio_estado")
+  @@index([fecha_creacion], map: "ix_solicitudes_servicio_fecha_creacion")
+  @@map("solicitudes_servicio")
+}
+
+model AppNotification {
+  id_notificacion    Int      @id @default(autoincrement())
+  titulo             String?  @db.VarChar(80)
+  mensaje            String   @db.VarChar(255)
+  tipo               String   @default("info") @db.VarChar(20)
+  actor              String?  @db.VarChar(80)
+  id_usuario_destino Int?
+  rol_destino        String?  @db.VarChar(20)
+  leida              Boolean  @default(false)
+  enlace             String?  @db.VarChar(255)
+  fecha_creacion     DateTime @default(now()) @db.Timestamp(0)
+  id_actor_usuario   Int?
+  usuario_destino    Usuario? @relation("NotificationRecipient", fields: [id_usuario_destino], references: [id_usuario], onDelete: SetNull, onUpdate: Cascade)
+  actor_usuario      Usuario? @relation("NotificationCreator", fields: [id_actor_usuario], references: [id_usuario], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([id_usuario_destino], map: "ix_app_notifications_id_usuario_destino")
+  @@index([rol_destino], map: "ix_app_notifications_rol_destino")
+  @@index([leida], map: "ix_app_notifications_leida")
+  @@index([fecha_creacion], map: "ix_app_notifications_fecha_creacion")
+  @@map("app_notifications")
+}
+
+model AuditLog {
+  id_log           Int      @id @default(autoincrement())
+  accion           String   @db.VarChar(40)
+  entidad          String   @db.VarChar(40)
+  entidad_id       Int?
+  descripcion      String   @db.VarChar(255)
+  metadata         Json?
+  fecha_creacion   DateTime @default(now()) @db.Timestamp(0)
+  id_usuario_actor Int?
+  actor            Usuario? @relation("AuditLogActor", fields: [id_usuario_actor], references: [id_usuario], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([id_usuario_actor], map: "ix_audit_logs_id_usuario_actor")
+  @@index([entidad], map: "ix_audit_logs_entidad")
+  @@index([fecha_creacion], map: "ix_audit_logs_fecha_creacion")
+  @@map("audit_logs")
+}
+
+model Material {
+  id_material  Int      @id @default(autoincrement())
+  fecha_inicio DateTime @db.Timestamp(0)
+  fecha_fin    DateTime @db.Timestamp(0)
+  id_usuario   Int
+  id_tipo      Int
+  id_estado    Int
+  usuario      Usuario  @relation(fields: [id_usuario], references: [id_usuario], onDelete: Restrict, onUpdate: Cascade)
+  tipo         Tipo     @relation(fields: [id_tipo], references: [id_tipo], onDelete: Restrict, onUpdate: Cascade)
+  estado       Estado   @relation(fields: [id_estado], references: [id_estado], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([id_usuario], map: "ix_materiales_id_usuario")
+  @@index([id_tipo], map: "ix_materiales_id_tipo")
+  @@index([id_estado], map: "ix_materiales_id_estado")
+  @@map("materiales")
+}
+
+model Comentario {
+  id_comentario     Int      @id @default(autoincrement())
+  fecha_publicacion DateTime @db.Date
+  minuto_video      String   @db.VarChar(20)
+  contenido         String   @db.VarChar(50)
+  id_directo        Int
+  id_usuario        Int
+  directo           Directo  @relation(fields: [id_directo], references: [id_directo], onDelete: Restrict, onUpdate: Cascade)
+  usuario           Usuario  @relation(fields: [id_usuario], references: [id_usuario], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([id_directo], map: "ix_comentarios_id_directo")
+  @@index([id_usuario], map: "ix_comentarios_id_usuario")
+  @@map("comentarios")
+}

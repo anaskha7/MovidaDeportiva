@@ -12,13 +12,17 @@
   align-items: start;
 }
 
+.layout > * {
+  min-width: 0;
+}
+
 .sidebar {
   background: #f2f2f2;
   border-radius: 20px;
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-height: calc(100vh - 48px);
 }
 
@@ -158,6 +162,10 @@
   gap: 16px;
 }
 
+.mainColumn > * {
+  min-width: 0;
+}
+
 .topbar {
   background: #f2f2f2;
   border-radius: 13px;
@@ -233,6 +241,11 @@
   gap: 24px;
 }
 
+.mobileHiddenBell {
+  display: inline-flex;
+  align-items: center;
+}
+
 .iconGroup span {
   position: relative;
 }
@@ -256,6 +269,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
   gap: 16px;
+}
+
+.bookingGrid > * {
+  min-width: 0;
 }
 
 .bookingPanel,
@@ -480,4 +497,157 @@
 .summaryHint {
   font-size: 14px;
   color: #4b4b4b;
+}
+
+@media (max-width: 1200px) {
+  .page {
+    padding: 20px;
+  }
+
+  .layout,
+  .bookingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    min-height: auto;
+  }
+
+  .serviceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summaryCard {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 12px;
+  }
+
+  .sidebar {
+    gap: 12px;
+  }
+
+  .logo {
+    margin-bottom: 0;
+  }
+
+  .menuBlock {
+    gap: 12px;
+  }
+
+  .subscribeCard {
+    margin-top: 0;
+  }
+
+  .subscribeTitle {
+    font-size: 32px;
+    line-height: 30px;
+    letter-spacing: -2.4px;
+  }
+
+  .subscribeFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .subscribeFooter img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .topbarActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .userInfo {
+    width: 100%;
+  }
+
+  .userInfo strong {
+    font-size: 22px;
+  }
+
+  .searchBox {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    padding: 10px 14px;
+  }
+
+  .searchBox input {
+    font-size: 16px;
+  }
+
+  .iconGroup {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobileHiddenBell {
+    display: none;
+  }
+
+  .bookingPanel,
+  .summaryCard {
+    padding: 20px 16px;
+  }
+
+  .sectionHeading h1 {
+    font-size: 30px;
+  }
+
+  .sectionHeading p,
+  .summaryCard h2 {
+    font-size: 16px;
+  }
+
+  .serviceGrid,
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .serviceCard strong,
+  .summaryBlock strong {
+    font-size: 20px;
+  }
+
+  .serviceCard span {
+    font-size: 20px;
+  }
+
+  .extraButton,
+  .summaryLine,
+  .totalLine {
+    gap: 12px;
+  }
+
+  .extraButton,
+  .summaryLine,
+  .totalLine {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summaryLine strong,
+  .totalLine strong {
+    align-self: flex-end;
+  }
 }

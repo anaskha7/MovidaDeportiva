@@ -12,13 +12,17 @@
   align-items: start;
 }
 
+.layout > * {
+  min-width: 0;
+}
+
 .sidebar {
   background: #f2f2f2;
   border-radius: 20px;
   padding: 16px;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-height: calc(100vh - 48px);
 }
 
@@ -32,6 +36,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1 1 auto;
 }
 
 .menuList {
@@ -119,7 +124,7 @@
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  margin-bottom: 12px;
+  margin-top: auto;
   border-radius: 999px;
   background: #1a2c2a;
   color: #ffffff;
@@ -384,8 +389,16 @@
 }
 
 @media (max-width: 1200px) {
+  .page {
+    padding: 20px;
+  }
+
   .layout {
     grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    min-height: auto;
   }
 
   .chatPanel {
@@ -394,7 +407,85 @@
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding: 12px;
+  }
+
+  .sidebar {
+    gap: 12px;
+  }
+
+  .logo {
+    margin-bottom: 0;
+  }
+
+  .menu {
+    gap: 12px;
+  }
+
+  .subscribeCard {
+    margin-top: 0;
+  }
+
+  .subscribeTitle {
+    font-size: 32px;
+    line-height: 30px;
+    letter-spacing: -2.4px;
+  }
+
+  .subscribeFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .subscribeFooter img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .mainContent {
+    padding: 16px;
+  }
+
+  .videoWrapper {
+    height: 260px;
+  }
+
+  .scoreBoard {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .scoreBoard strong {
+    font-size: 20px;
+  }
+
+  .playButton {
+    width: 64px;
+    height: 64px;
+  }
+
+  .videoInfo h2 {
+    font-size: 20px;
+  }
+
+  .videoInfo p {
+    font-size: 16px;
+  }
+
   .otherGrid {
     grid-template-columns: 1fr;
+  }
+
+  .otherTeams {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .chatHeader {
+    padding: 20px 15px;
+    font-size: 20px;
   }
 }

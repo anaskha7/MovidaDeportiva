@@ -118,3 +118,17 @@
 .item strong {
   font-weight: 700;
 }
+
+@media (max-width: 420px) {
+  .panel {
+    width: min(340px, calc(100vw - 24px));
+    right: -8px;
+    padding: 16px;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

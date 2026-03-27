@@ -1,17 +1,44 @@
 import Link from "next/link";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { getAdminMetrics, getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
-import { getNotificationItems } from "@/lib/notifications";
+import { getCategorias } from "@/lib/repos/categorias";
+import { hasActiveLiveMatch } from "@/lib/repos/partidos";
+import { getCompetitionSchedule } from "@/lib/schedules";
 import { formatUserName, getSession } from "@/lib/session";
 import NotificationBell from "@/components/NotificationBell";
-import AdminDashboardPanel from "./AdminDashboardPanel";
+import NotificationDateBadge from "@/components/NotificationDateBadge";
 import DashboardSidebarWidgets from "./DashboardSidebarWidgets";
 import styles from "./Dashboard.module.css";
+
+function getMadridDateKey() {
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
+      now.getDate(),
+    ).padStart(2, "0")}`;
+  }
+
+  return `${year}-${month}-${day}`;
+}
 
 export default async function DashboardPage(props: {
   searchParams?: Promise<{ q?: string }>;
 }) {
   const session = await getSession();
   const locale = await getLocale();
+  const hasLiveNow = hasActiveLiveMatch();
   const searchParams = props.searchParams ? await props.searchParams : undefined;
   const searchQuery =
     typeof searchParams?.q === "string" ? searchParams.q.trim().toLowerCase() : "";
@@ -20,21 +47,95 @@ export default async function DashboardPage(props: {
     ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", request: "Sol·licitar serveis", requestText: "Escull quin tipus de servei vols contractar.", from: "Des de", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
     en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", request: "Request services", requestText: "Choose the type of service you want to hire.", from: "From", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
   }[locale];
+  const metricsCopy = {
+    es: {
+      metrics: "Resumen del panel",
+      activeUsers: "Usuarios activos",
+      blockedUsers: "Bloqueados",
+      pendingRequests: "Solicitudes pendientes",
+      activeDirects: "Directos activos",
+      scheduledDirects: "Programados",
+      unread: "Sin leer",
+    },
+    ca: {
+      metrics: "Resum del panell",
+      activeUsers: "Usuaris actius",
+      blockedUsers: "Bloquejats",
+      pendingRequests: "Sol·licituds pendents",
+      activeDirects: "Directes actius",
+      scheduledDirects: "Programats",
+      unread: "Sense llegir",
+    },
+    en: {
+      metrics: "Panel overview",
+      activeUsers: "Active users",
+      blockedUsers: "Blocked",
+      pendingRequests: "Pending requests",
+      activeDirects: "Live broadcasts",
+      scheduledDirects: "Scheduled",
+      unread: "Unread",
+    },
+  }[locale];
   const matchesSearch = (value: string) =>
     !searchQuery || value.toLowerCase().includes(searchQuery);
   const serviceCards = [
     { title: "SERVICIOS RETRANSMISION", price: "19,99€/hora", className: styles.serviceBox, icon: "video" },
     { title: "SPEAKERS Y ANIMACIÓN", price: "27,99€/hora", className: styles.serviceBoxLight, icon: "audio" },
   ].filter((item) => matchesSearch(item.title));
-  const notificationItems = getNotificationItems(locale).filter((item) =>
-    matchesSearch(`${item.actor ?? ""} ${item.message}`),
+  const [metrics, notificationFeed] = await Promise.all([
+    getAdminMetrics({ session, locale }),
+    getNotificationFeedForSession({ session, locale, limit: 6 }),
+  ]);
+  const notificationItems = notificationFeed.items.filter(
+    (item: (typeof notificationFeed.items)[number]) =>
+      matchesSearch(`${item.actor ?? ""} ${item.message}`),
   );
+  const todayIso = getMadridDateKey();
+  const categoriasConCalendario = getCategorias().filter((categoria) => categoria.calendarioUrl);
+  const dashboardCalendarEvents = (
+    await Promise.all(
+      categoriasConCalendario.map(async (categoria) => ({
+        categoria,
+        schedule: categoria.calendarioUrl
+          ? await getCompetitionSchedule(categoria.calendarioUrl)
+          : null,
+      })),
+    )
+  )
+    .flatMap(({ categoria, schedule }) =>
+      schedule?.rounds.flatMap((round) =>
+        round.matches.map((match, index) => ({
+          id: `${categoria.id}-${round.round}-${round.dateIso}-${index}`,
+          title: `${match.homeTeam} vs ${match.awayTeam}`,
+          competition: categoria.nombre,
+          timeLabel: match.timeLabel ?? round.dateLabel,
+          dateIso: round.dateIso,
+        })),
+      ) ?? [],
+    )
+    .filter((event) => matchesSearch(`${event.title} ${event.competition}`))
+    .sort((a, b) =>
+      a.dateIso === b.dateIso
+        ? a.competition.localeCompare(b.competition, locale === "ca" ? "ca" : locale)
+        : a.dateIso.localeCompare(b.dateIso),
+    );
   const showLiveCard = matchesSearch("GRAMA vs VILANOVA 3ª Federación Grupo V Jornada 19");
   const showEventsCard = matchesSearch("Partidos y eventos Disfruta del mejor fútbol siempre que quieras");
   return (
     <main className={styles.dashboardPage}>
       <div className={styles.dashboardGrid}>
-        <aside className={styles.sidebar}>
+        <ResponsiveSidebar
+          locale={locale}
+          sidebarClassName={styles.sidebar}
+          mobileActions={
+            <NotificationBell
+              locale={locale}
+              viewAllHref="/admin/notificaciones"
+              items={notificationFeed.items}
+              count={notificationFeed.count}
+            />
+          }
+        >
           <img
             className={styles.logo}
             src="/assets/figma/logo-md-dark.svg"
@@ -50,9 +151,7 @@ export default async function DashboardPage(props: {
               <Link href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
-                <span className={styles.liveTag}>
-                  Live <i />
-                </span>
+                {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
               </Link>
               <Link href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
@@ -62,10 +161,10 @@ export default async function DashboardPage(props: {
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
               </Link>
-              <Link href="/dashboard#notificaciones" className={styles.menuItem}>
+              <Link href="/admin/notificaciones" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
-                <span className={styles.badge}>22</span>
+                <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
               </Link>
               <Link href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
@@ -73,18 +172,7 @@ export default async function DashboardPage(props: {
               </Link>
             </nav>
           </div>
-          <div className={styles.subscribeCard}>
-            <div className={`kdam ${styles.subscribeTitle}`}>
-              {t.subscribe}
-              <br />
-              {t.subscribe2}
-            </div>
-            <div className={styles.subscribeFooter}>
-              <p>{t.subscribeText}</p>
-              <img src="/assets/figma/icon-arrow-up-right.svg" alt="" />
-            </div>
-          </div>
-        </aside>
+        </ResponsiveSidebar>
 
         <section className={styles.mainColumn}>
           <header className={styles.topbar}>
@@ -97,7 +185,7 @@ export default async function DashboardPage(props: {
             </div>
             <div className={styles.topbarActions}>
               <form className={styles.searchBox} action="/dashboard" method="get">
-                <img src="/assets/figma/icon-search.png" alt="" />
+                <img src="/assets/figma/icon-search.svg" alt="" />
                 <input
                   type="text"
                   name="q"
@@ -107,7 +195,13 @@ export default async function DashboardPage(props: {
                 />
               </form>
               <div className={styles.iconGroup}>
-                <NotificationBell locale={locale} />
+                <NotificationBell
+                  locale={locale}
+                  viewAllHref="/admin/notificaciones"
+                  className={styles.mobileHiddenBell}
+                  items={notificationFeed.items}
+                  count={notificationFeed.count}
+                />
                 <Link href="/logout" className={styles.headerLogoutButton}>
                   {t.logout}
                 </Link>
@@ -117,6 +211,34 @@ export default async function DashboardPage(props: {
 
           <div className={styles.mainContent}>
             <div className={styles.leftStack}>
+              <article className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <strong>{metricsCopy.metrics}</strong>
+                    <p>{metricsCopy.unread}: {metrics.unreadNotifications}</p>
+                  </div>
+                </div>
+                <div className={styles.metricsGrid}>
+                  <div className={styles.metricCard}>
+                    <span>{metricsCopy.activeUsers}</span>
+                    <strong>{metrics.activeUsers}</strong>
+                  </div>
+                  <div className={styles.metricCard}>
+                    <span>{metricsCopy.blockedUsers}</span>
+                    <strong>{metrics.blockedUsers}</strong>
+                  </div>
+                  <div className={styles.metricCard}>
+                    <span>{metricsCopy.pendingRequests}</span>
+                    <strong>{metrics.pendingRequests}</strong>
+                  </div>
+                  <div className={styles.metricCard}>
+                    <span>{metricsCopy.activeDirects}</span>
+                    <strong>{metrics.activeDirects}</strong>
+                    <small>{metricsCopy.scheduledDirects}: {metrics.scheduledDirects}</small>
+                  </div>
+                </div>
+              </article>
+
               {showLiveCard ? <Link href="/directo" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -206,17 +328,24 @@ export default async function DashboardPage(props: {
             </div>
 
             <div className={styles.rightStack}>
-              <DashboardSidebarWidgets locale={locale} />
+              <DashboardSidebarWidgets
+                locale={locale}
+                todayIso={todayIso}
+                events={dashboardCalendarEvents}
+              />
 
               <article id="notificaciones" className={styles.cardSmall}>
                 <div className={styles.cardHeader}>
                   <div className={styles.noticeHeader}>
                     <strong>{t.notifications}</strong>
-                    <span className={styles.badge}>22</span>
+                    <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
                   </div>
                 </div>
-                {notificationItems.map((item) => (
-                  <div key={`${item.actor ?? "system"}-${item.message}`} className={styles.noticeItem}>
+                {notificationItems.map((item: (typeof notificationItems)[number]) => (
+                  <div
+                    key={item.id}
+                    className={styles.noticeItem}
+                  >
                     <span className={styles.noticeDot} />
                     <p>
                       {item.actor ? <strong>{item.actor}</strong> : null}

@@ -1,13 +1,34 @@
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
+import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { getAdminPanelData } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
+import { hasActiveLiveMatch } from "@/lib/repos/partidos";
 import { formatUserName, getSession } from "@/lib/session";
 import AdminDashboardPanel from "@/app/(admin)/dashboard/AdminDashboardPanel";
+import {
+  changeUserRoleAction,
+  createDirectoAction,
+  createPlatformNotificationAction,
+  toggleUserBlockedAction,
+  updateDirectoStatusAction,
+  updateServiceRequestStatusAction,
+} from "@/app/(admin)/dashboard/actions";
 import styles from "@/app/(admin)/dashboard/Dashboard.module.css";
 
-export default async function AdminPanelPage() {
+export default async function AdminPanelPage(props: {
+  searchParams?: Promise<{ q?: string }>;
+}) {
   const session = await getSession();
   const locale = await getLocale();
+  const hasLiveNow = hasActiveLiveMatch();
+  const searchParams = props.searchParams ? await props.searchParams : undefined;
+  const searchQuery = searchParams?.q?.trim() ?? "";
+  const adminData = await getAdminPanelData({
+    locale,
+    session,
+  });
   const t = {
     es: {
       menu: "Menú",
@@ -62,7 +83,18 @@ export default async function AdminPanelPage() {
   return (
     <main className={styles.dashboardPage}>
       <div className={styles.dashboardGrid}>
-        <aside className={styles.sidebar}>
+        <ResponsiveSidebar
+          locale={locale}
+          sidebarClassName={styles.sidebar}
+          mobileActions={
+            <NotificationBell
+              locale={locale}
+              viewAllHref="/admin/notificaciones"
+              items={adminData.notifications}
+              count={adminData.notificationCount}
+            />
+          }
+        >
           <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
           <div className={styles.menuBlock}>
             <p className={styles.menuLabel}>{t.menu}</p>
@@ -78,7 +110,7 @@ export default async function AdminPanelPage() {
               <Link href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
-                <span className={styles.liveTag}>Live <i /></span>
+                {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
               </Link>
               <Link href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
@@ -88,10 +120,13 @@ export default async function AdminPanelPage() {
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
               </Link>
-              <Link href="/dashboard#notificaciones" className={styles.menuItem}>
+              <Link href="/admin/notificaciones" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
-                <span className={styles.badge}>22</span>
+                <NotificationDateBadge
+                  count={adminData.notificationCount}
+                  className={styles.badge}
+                />
               </Link>
               <Link href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
@@ -99,18 +134,7 @@ export default async function AdminPanelPage() {
               </Link>
             </nav>
           </div>
-          <div className={styles.subscribeCard}>
-            <div className={`kdam ${styles.subscribeTitle}`}>
-              {t.subscribe}
-              <br />
-              {t.subscribe2}
-            </div>
-            <div className={styles.subscribeFooter}>
-              <p>{t.subscribeText}</p>
-              <img src="/assets/figma/icon-arrow-up-right.svg" alt="" />
-            </div>
-          </div>
-        </aside>
+        </ResponsiveSidebar>
 
         <section className={styles.mainColumn}>
           <header className={styles.topbar}>
@@ -123,11 +147,23 @@ export default async function AdminPanelPage() {
             </div>
             <div className={styles.topbarActions}>
               <form className={styles.searchBox} action="/admin/panel" method="get">
-                <img src="/assets/figma/icon-search.png" alt="" />
-                <input type="text" name="q" placeholder={t.search} aria-label={t.search} />
+                <img src="/assets/figma/icon-search.svg" alt="" />
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={searchQuery}
+                  placeholder={t.search}
+                  aria-label={t.search}
+                />
               </form>
               <div className={styles.iconGroup}>
-                <NotificationBell locale={locale} />
+                <NotificationBell
+                  locale={locale}
+                  viewAllHref="/admin/notificaciones"
+                  className={styles.mobileHiddenBell}
+                  items={adminData.notifications}
+                  count={adminData.notificationCount}
+                />
                 <Link href="/logout" className={styles.headerLogoutButton}>
                   {t.logout}
                 </Link>
@@ -135,7 +171,23 @@ export default async function AdminPanelPage() {
             </div>
           </header>
 
-          <AdminDashboardPanel locale={locale} />
+          <AdminDashboardPanel
+            locale={locale}
+            initialQuery={searchQuery}
+            users={adminData.users}
+            roles={adminData.roles}
+            requests={adminData.requests}
+            directs={adminData.directs}
+            logs={adminData.logs}
+            notifications={adminData.notifications}
+            metrics={adminData.metrics}
+            onChangeUserRole={changeUserRoleAction}
+            onToggleUserBlocked={toggleUserBlockedAction}
+            onCreateDirect={createDirectoAction}
+            onUpdateDirectStatus={updateDirectoStatusAction}
+            onUpdateRequestStatus={updateServiceRequestStatusAction}
+            onCreateNotification={createPlatformNotificationAction}
+          />
         </section>
       </div>
     </main>

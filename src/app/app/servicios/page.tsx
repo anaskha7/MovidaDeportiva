@@ -1,7 +1,12 @@
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
+import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
+import { hasActiveLiveMatch } from "@/lib/repos/partidos";
 import { formatUserName, getSession } from "@/lib/session";
+import { submitServiceRequestAction } from "./actions";
 import ContratarServiciosClient from "./ContratarServiciosClient";
 import styles from "./ServiciosPrivados.module.css";
 
@@ -10,9 +15,17 @@ export default async function ServiciosPrivadosPage(props: {
 }) {
   const session = await getSession();
   const locale = await getLocale();
+  const hasLiveNow = hasActiveLiveMatch();
   const homeHref = session?.role === "admin" ? "/dashboard" : "/app";
+  const notificationsHref =
+    session?.role === "admin" ? "/admin/notificaciones" : "/app/notificaciones";
   const searchParams = props.searchParams ? await props.searchParams : undefined;
   const searchQuery = searchParams?.q?.trim() || "";
+  const notificationFeed = await getNotificationFeedForSession({
+    session,
+    locale,
+    limit: 6,
+  });
   const t = {
     es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "Buscar servicio..." },
     ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Cercar servei..." },
@@ -22,7 +35,18 @@ export default async function ServiciosPrivadosPage(props: {
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
-        <aside className={styles.sidebar}>
+        <ResponsiveSidebar
+          locale={locale}
+          sidebarClassName={styles.sidebar}
+          mobileActions={
+            <NotificationBell
+              locale={locale}
+              viewAllHref={notificationsHref}
+              items={notificationFeed.items}
+              count={notificationFeed.count}
+            />
+          }
+        >
           <img
             className={styles.logo}
             src="/assets/figma/logo-md-dark.svg"
@@ -44,9 +68,7 @@ export default async function ServiciosPrivadosPage(props: {
               <Link href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
-                <span className={styles.liveTag}>
-                  Live <i />
-                </span>
+                {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
               </Link>
               <Link href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
@@ -56,10 +78,10 @@ export default async function ServiciosPrivadosPage(props: {
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
               </Link>
-              <Link href="/dashboard#notificaciones" className={styles.menuItem}>
+              <Link href={notificationsHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
-                <span className={styles.badge}>22</span>
+                <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
               </Link>
               <Link href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
@@ -67,18 +89,7 @@ export default async function ServiciosPrivadosPage(props: {
               </Link>
             </nav>
           </div>
-          <div className={styles.subscribeCard}>
-            <div className={`kdam ${styles.subscribeTitle}`}>
-              {t.subscribe}
-              <br />
-              {t.subscribe2}
-            </div>
-            <div className={styles.subscribeFooter}>
-              <p>{t.subscribeText}</p>
-              <img src="/assets/figma/icon-arrow-up-right.svg" alt="" />
-            </div>
-          </div>
-        </aside>
+        </ResponsiveSidebar>
 
         <section className={styles.mainColumn}>
           <header className={styles.topbar}>
@@ -91,7 +102,7 @@ export default async function ServiciosPrivadosPage(props: {
             </div>
             <div className={styles.topbarActions}>
               <form className={styles.searchBox} action="/app/servicios" method="get">
-                <img src="/assets/figma/icon-search.png" alt="" />
+                <img src="/assets/figma/icon-search.svg" alt="" />
                 <input
                   type="text"
                   name="q"
@@ -101,7 +112,13 @@ export default async function ServiciosPrivadosPage(props: {
                 />
               </form>
               <div className={styles.iconGroup}>
-                <NotificationBell locale={locale} />
+                <NotificationBell
+                  locale={locale}
+                  viewAllHref={notificationsHref}
+                  className={styles.mobileHiddenBell}
+                  items={notificationFeed.items}
+                  count={notificationFeed.count}
+                />
                 <Link href="/logout" className={styles.headerLogoutButton}>
                   {t.logout}
                 </Link>
@@ -109,7 +126,13 @@ export default async function ServiciosPrivadosPage(props: {
             </div>
           </header>
 
-          <ContratarServiciosClient locale={locale} initialQuery={searchQuery} />
+          <ContratarServiciosClient
+            locale={locale}
+            initialQuery={searchQuery}
+            initialName={session?.name ?? ""}
+            initialEmail={session?.email ?? ""}
+            onSubmitRequest={submitServiceRequestAction}
+          />
         </section>
       </div>
     </main>

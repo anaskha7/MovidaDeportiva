@@ -3,6 +3,11 @@ export type Rol = 'admin' | 'user' | 'suscriptor';
 export interface Categoria {
   id: string;
   nombre: string;
+  deporteId?: string;
+  organizador?: string;
+  resumen?: string;
+  clasificacionUrl?: string;
+  calendarioUrl?: string;
 }
 
 export interface Deporte {

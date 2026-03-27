@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState, useTransition } from "react";
 import type { Locale } from "@/lib/i18n-shared";
 import styles from "./ServiciosPrivados.module.css";
 
@@ -38,9 +38,24 @@ const EXTRA_OPTIONS = [
 export default function ContratarServiciosClient({
   locale,
   initialQuery = "",
+  initialName = "",
+  initialEmail = "",
+  onSubmitRequest,
 }: {
   locale: Locale;
   initialQuery?: string;
+  initialName?: string;
+  initialEmail?: string;
+  onSubmitRequest: (input: {
+    name: string;
+    email: string;
+    services: string[];
+    hours: number;
+    date: string;
+    details?: string;
+    extras: string[];
+    total: number;
+  }) => Promise<{ ok: boolean; requestId: number }>;
 }) {
   const copy = {
     es: {
@@ -57,7 +72,11 @@ export default function ContratarServiciosClient({
       extrasLabel: "Extras",
       total: "Total estimado",
       confirm: "Confirmar solicitud",
-      hint: "Solicitud interna preparada. El siguiente paso es revisión comercial y confirmación final.",
+      hint: "La solicitud se registrará en la base de datos y pasará al panel admin.",
+      success: "Solicitud enviada correctamente. Ya aparece en el panel admin.",
+      error: "No se ha podido registrar la solicitud. Revisa los datos e inténtalo otra vez.",
+      contactName: "Nombre de contacto",
+      contactEmail: "Correo de contacto",
       from: "desde",
     },
     ca: {
@@ -74,7 +93,11 @@ export default function ContratarServiciosClient({
       extrasLabel: "Extres",
       total: "Total estimat",
       confirm: "Confirmar sol·licitud",
-      hint: "Sol·licitud interna preparada. El següent pas és revisió comercial i confirmació final.",
+      hint: "La sol·licitud es registrarà a la base de dades i passarà al panell admin.",
+      success: "Sol·licitud enviada correctament. Ja apareix al panell admin.",
+      error: "No s'ha pogut registrar la sol·licitud. Revisa les dades i torna-ho a provar.",
+      contactName: "Nom de contacte",
+      contactEmail: "Correu de contacte",
       from: "des de",
     },
     en: {
@@ -91,7 +114,11 @@ export default function ContratarServiciosClient({
       extrasLabel: "Extras",
       total: "Estimated total",
       confirm: "Confirm request",
-      hint: "Internal request prepared. The next step is commercial review and final confirmation.",
+      hint: "The request will be stored in the database and moved to the admin panel.",
+      success: "Request sent successfully. It is now visible in the admin panel.",
+      error: "The request could not be saved. Check the details and try again.",
+      contactName: "Contact name",
+      contactEmail: "Contact email",
       from: "from",
     },
   }[locale];
@@ -125,6 +152,14 @@ export default function ContratarServiciosClient({
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([services[0].id]);
   const [hours, setHours] = useState(2);
   const [extras, setExtras] = useState<string[]>([]);
+  const [contactName, setContactName] = useState(initialName);
+  const [contactEmail, setContactEmail] = useState(initialEmail);
+  const [plannedDate, setPlannedDate] = useState("2026-03-29");
+  const [details, setDetails] = useState(copy.detailsValue);
+  const [feedback, setFeedback] = useState<{ kind: "success" | "error"; text: string } | null>(
+    null,
+  );
+  const [isPending, startTransition] = useTransition();
   const query = initialQuery.trim().toLowerCase();
 
   const visibleServices = services.filter((service) =>
@@ -136,20 +171,39 @@ export default function ContratarServiciosClient({
 
   const selectedServices = services.filter((service) => selectedServiceIds.includes(service.id));
 
-  const extrasTotal = useMemo(
-    () =>
-      extraOptions.filter((extra) => extras.includes(extra.id)).reduce(
-        (total, extra) => total + extra.price,
-        0
-      ),
-    [extras]
-  );
+  const extrasTotal = extraOptions
+    .filter((extra) => extras.includes(extra.id))
+    .reduce((total, extra) => total + extra.price, 0);
 
   const baseTotal = selectedServices.reduce(
     (total, service) => total + service.pricePerHour * hours,
     0
   );
   const total = baseTotal + extrasTotal;
+
+  const submitRequest = () => {
+    setFeedback(null);
+
+    startTransition(async () => {
+      try {
+        await onSubmitRequest({
+          name: contactName.trim(),
+          email: contactEmail.trim(),
+          services: selectedServices.map((service) => service.title),
+          hours,
+          date: plannedDate,
+          details,
+          extras: extraOptions
+            .filter((extra) => extras.includes(extra.id))
+            .map((extra) => extra.label),
+          total,
+        });
+        setFeedback({ kind: "success", text: copy.success });
+      } catch {
+        setFeedback({ kind: "error", text: copy.error });
+      }
+    });
+  };
 
   return (
     <div className={styles.bookingGrid}>
@@ -187,6 +241,24 @@ export default function ContratarServiciosClient({
         <div className={styles.formCard}>
           <div className={styles.formRow}>
             <label className={styles.field}>
+              <span>{copy.contactName}</span>
+              <input
+                type="text"
+                value={contactName}
+                onChange={(event) => setContactName(event.target.value)}
+              />
+            </label>
+            <label className={styles.field}>
+              <span>{copy.contactEmail}</span>
+              <input
+                type="email"
+                value={contactEmail}
+                onChange={(event) => setContactEmail(event.target.value)}
+              />
+            </label>
+          </div>
+          <div className={styles.formRow}>
+            <label className={styles.field}>
               <span>{copy.serviceHours}</span>
               <input
                 type="number"
@@ -198,7 +270,7 @@ export default function ContratarServiciosClient({
             </label>
             <label className={styles.field}>
               <span>{copy.date}</span>
-              <input type="date" defaultValue="2026-03-20" />
+              <input type="date" value={plannedDate} onChange={(event) => setPlannedDate(event.target.value)} />
             </label>
           </div>
 
@@ -206,7 +278,8 @@ export default function ContratarServiciosClient({
             <span>{copy.details}</span>
             <textarea
               rows={4}
-              defaultValue={copy.detailsValue}
+              value={details}
+              onChange={(event) => setDetails(event.target.value)}
             />
           </label>
 
@@ -276,12 +349,31 @@ export default function ContratarServiciosClient({
             <span>{copy.total}</span>
             <strong>{total.toFixed(2)}€</strong>
           </div>
-          <button type="button" className={styles.confirmButton}>
+          <button
+            type="button"
+            className={styles.confirmButton}
+            disabled={
+              isPending ||
+              selectedServices.length === 0 ||
+              !contactName.trim() ||
+              !contactEmail.trim() ||
+              !plannedDate
+            }
+            onClick={submitRequest}
+          >
             {copy.confirm}
           </button>
           <p className={styles.summaryHint}>
             {copy.hint}
           </p>
+          {feedback ? (
+            <p
+              className={styles.summaryHint}
+              style={{ color: feedback.kind === "success" ? "#14613b" : "#8b2b2b" }}
+            >
+              {feedback.text}
+            </p>
+          ) : null}
         </div>
       </aside>
     </div>

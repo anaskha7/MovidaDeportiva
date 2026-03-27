@@ -11,6 +11,10 @@
   gap: 24px;
 }
 
+.layout > * {
+  min-width: 0;
+}
+
 .sidebar {
   background: #f2f2f2;
   border-radius: 20px;
@@ -184,6 +188,11 @@
   align-items: center;
 }
 
+.mobileHiddenBell {
+  display: inline-flex;
+  align-items: center;
+}
+
 .iconButton {
   position: relative;
   width: 36px;
@@ -250,6 +259,10 @@
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   gap: 24px;
   align-items: start;
+}
+
+.settingsGrid > * {
+  min-width: 0;
 }
 
 .primaryColumn,
@@ -401,12 +414,32 @@
 .primaryAction {
   background: #31aaa0;
   color: #1a2c2a;
+  border: none;
+  cursor: pointer;
 }
 
 .secondaryAction {
   border: 1px solid #dcdcdc;
   color: #1a2c2a;
   background: #ffffff;
+}
+
+.primaryAction:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.formMessage {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.formMessageSuccess {
+  color: #157a6e;
+}
+
+.formMessageError {
+  color: #b42318;
 }
 
 .preferenceList,
@@ -480,15 +513,122 @@
 .subscriptionInfo {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
+}
+
+.subscriptionInfo > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .subscriptionInfo span {
+  display: block;
   font-size: 14px;
+  line-height: 1.3;
   color: #4b4b4b;
 }
 
 .subscriptionInfo strong {
+  display: block;
   font-size: 18px;
+  line-height: 1.35;
   color: #1a2c2a;
+}
+
+@media (max-width: 1200px) {
+  .page {
+    padding: 20px;
+  }
+
+  .layout,
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 12px;
+  }
+
+  .sidebar {
+    gap: 12px;
+  }
+
+  .subscribeTitle {
+    font-size: 30px;
+    line-height: 28px;
+    letter-spacing: -2px;
+  }
+
+  .subscribeFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .subscribeFooter img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .headerLeft {
+    align-items: flex-start;
+  }
+
+  .headerLeft h1 {
+    font-size: 24px;
+  }
+
+  .headerRight {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .mobileHiddenBell {
+    display: none;
+  }
+
+  .adminCard {
+    width: 100%;
+  }
+
+  .settingsContent,
+  .settingsCard {
+    padding: 20px 16px;
+  }
+
+  .sectionHeader h2 {
+    font-size: 24px;
+  }
+
+  .avatarSection,
+  .preferenceRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionRow {
+    flex-direction: column;
+  }
+
+  .primaryAction,
+  .secondaryAction,
+  .avatarButton {
+    width: 100%;
+  }
 }

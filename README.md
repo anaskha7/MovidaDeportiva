@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movida Deportiva TV
 
-## Getting Started
+Aplicación Next.js con PostgreSQL, Prisma, login propio y acceso con Google.
 
-First, run the development server:
+## Base local con Docker
+
+La base local recomendada para desarrollo está preparada en Docker Compose.
+
+Nota:
+El contenedor publica PostgreSQL en `localhost:5433` para no chocar con una instalación local que ya esté usando `5432`.
+
+### 1. Preparar variables de entorno
+
+Usa `.env.example` como base:
+
+```bash
+cp .env.example .env
+```
+
+Rellena después tus claves reales de Google OAuth si las necesitas.
+
+Para local, `DATABASE_URL` y `DIRECT_URL` pueden apuntar a la misma base Docker.
+Para Neon/Vercel:
+- `DATABASE_URL`: URL pooled para la app en runtime
+- `DIRECT_URL`: URL directa para migraciones y Prisma CLI
+
+### 2. Levantar PostgreSQL
+
+```bash
+npm run db:up
+```
+
+Ver logs:
+
+```bash
+npm run db:logs
+```
+
+Parar contenedor:
+
+```bash
+npm run db:down
+```
+
+Parar y borrar volumen:
+
+```bash
+npm run db:down:volumes
+```
+
+### 3. Aplicar migraciones
+
+```bash
+npm run db:migrate
+```
+
+### 4. Cargar datos base de desarrollo
+
+```bash
+npm run db:seed
+```
+
+Esto crea:
+- roles base: `admin`, `user`, `suscriptor`
+- géneros base: `masculino`, `femenino`, `mixto`
+- usuarios demo
+
+### 5. Arrancar la app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App: [http://localhost:3000](http://localhost:3000)  
+Swagger: [http://localhost:3000/swagger](http://localhost:3000/swagger)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 6. Ver la base de datos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run db:studio
+```
 
-## Learn More
+## Usuarios de prueba
 
-To learn more about Next.js, take a look at the following resources:
+- `admin@movida.tv` / `Admin12345!`
+- `user@movida.tv` / `User12345!`
+- `suscriptor@movida.tv` / `Suscriptor12345!`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Despliegue en Neon + Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Crear la base de datos en Neon
 
-## Deploy on Vercel
+En Neon crea un proyecto PostgreSQL nuevo y copia dos cadenas de conexión:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `DATABASE_URL`: conexión pooled para runtime
+- `DIRECT_URL`: conexión directa para migraciones y seed
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+En Prisma CLI ya está preparado este patrón en `prisma.config.ts`.
+
+### 2. Variables de entorno en Vercel
+
+Añade estas variables en el proyecto de Vercel:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require&channel_binding=require"
+DIRECT_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require&channel_binding=require"
+NEXTAUTH_URL="https://TU-PROYECTO.vercel.app"
+NEXTAUTH_SECRET="GENERA_UN_SECRETO_LARGO_Y_ALEATORIO"
+GOOGLE_CLIENT_ID="TU_GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_SECRET="TU_GOOGLE_CLIENT_SECRET"
+```
+
+Notas:
+
+- `DATABASE_URL` se usa en runtime por la app.
+- `DIRECT_URL` se usa para `prisma migrate deploy` y `prisma db seed`.
+- Si usas dominio propio, `NEXTAUTH_URL` debe ser ese dominio final.
+
+### 3. Callback de Google OAuth
+
+En Google Cloud Console configura estos valores:
+
+- JavaScript origin:
+  - `https://TU-PROYECTO.vercel.app`
+- Redirect URI:
+  - `https://TU-PROYECTO.vercel.app/api/auth/callback/google`
+
+Si usas dominio propio, sustituye el dominio de Vercel por el dominio final.
+
+### 4. Aplicar migraciones y seed en la base remota
+
+Con las variables cargadas localmente o en CI:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+Eso deja creados:
+
+- roles base: `admin`, `user`, `suscriptor`
+- géneros base: `masculino`, `femenino`, `mixto`
+- usuarios demo:
+  - `admin@movida.tv` / `Admin12345!`
+  - `user@movida.tv` / `User12345!`
+  - `suscriptor@movida.tv` / `Suscriptor12345!`
+
+### 5. Qué queda todavía en mock
+
+Aunque la autenticación y varias partes del backoffice ya usan PostgreSQL, todavía quedan datos mock en algunas áreas:
+
+- vídeos
+- partidos en directo
+- mensajes/chat
+- categorías y federaciones
+
+Eso no bloquea el despliegue, pero sí significa que parte del contenido todavía no es administrable desde base de datos.

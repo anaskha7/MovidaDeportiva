@@ -1,14 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
 import type { Locale } from "@/lib/i18n-shared";
+import type { Rol } from "@/lib/types";
+import {
+  type SettingsActionState,
+  updatePasswordSettingsAction,
+  updateProfileSettingsAction,
+} from "@/app/app/ajustes/actions";
 import styles from "./Administracion.module.css";
 
 type SettingsPanelProps = {
   displayName: string;
+  email: string;
+  role: Rol;
   roleLabel: string;
   language: Locale;
   onLanguageChange: (language: Locale) => void;
+  onProfileUpdated: (input: { displayName: string; email: string }) => void;
 };
 
 const content = {
@@ -40,12 +50,18 @@ const content = {
     quality: "Calidad de reproducción por defecto",
     auto: "Automática",
     subscription: "Suscripción",
-    subscriptionDesc: "Estado actual y acceso premium.",
-    activePlan: "Plan Premium activo",
-    renewal: "Renovación",
+    subscriptionDesc: "Plan detectado según el acceso real de tu cuenta.",
+    currentPlan: "Plan actual",
     access: "Acceso",
-    accessValue: "Contenido premium + directos",
     manageSubscription: "Gestionar suscripción",
+    subscribeNow: "Quiero suscribirme",
+    goToAdmin: "Ir al panel admin",
+    planBasic: "Plan básico",
+    planSubscriber: "Plan suscriptor",
+    planAdmin: "Acceso administrador",
+    accessBasic: "Clasificaciones, calendario y área privada básica",
+    accessSubscriber: "Contenido premium, VODs y directos",
+    accessAdmin: "Acceso total a gestión, métricas y directos",
   },
   ca: {
     account: "El meu compte",
@@ -75,12 +91,18 @@ const content = {
     quality: "Qualitat de reproducció per defecte",
     auto: "Automàtica",
     subscription: "Subscripció",
-    subscriptionDesc: "Estat actual i accés premium.",
-    activePlan: "Pla Premium actiu",
-    renewal: "Renovació",
+    subscriptionDesc: "Pla detectat segons l'accés real del teu compte.",
+    currentPlan: "Pla actual",
     access: "Accés",
-    accessValue: "Contingut premium + directes",
     manageSubscription: "Gestionar subscripció",
+    subscribeNow: "Vull subscriure'm",
+    goToAdmin: "Anar al panell admin",
+    planBasic: "Pla bàsic",
+    planSubscriber: "Pla subscriptor",
+    planAdmin: "Accés administrador",
+    accessBasic: "Classificacions, calendari i àrea privada bàsica",
+    accessSubscriber: "Contingut premium, VODs i directes",
+    accessAdmin: "Accés total a gestió, mètriques i directes",
   },
   en: {
     account: "My account",
@@ -110,37 +132,60 @@ const content = {
     quality: "Default playback quality",
     auto: "Automatic",
     subscription: "Subscription",
-    subscriptionDesc: "Current status and premium access.",
-    activePlan: "Premium plan active",
-    renewal: "Renewal",
+    subscriptionDesc: "Plan detected from your account's real access level.",
+    currentPlan: "Current plan",
     access: "Access",
-    accessValue: "Premium content + live events",
     manageSubscription: "Manage subscription",
+    subscribeNow: "I want to subscribe",
+    goToAdmin: "Go to admin panel",
+    planBasic: "Basic plan",
+    planSubscriber: "Subscriber plan",
+    planAdmin: "Administrator access",
+    accessBasic: "Standings, schedule and basic private area",
+    accessSubscriber: "Premium content, VODs and live events",
+    accessAdmin: "Full access to management, metrics and live operations",
   },
 } as const;
 
 export default function SettingsPanel({
   displayName,
+  email,
+  role,
   roleLabel,
   language,
   onLanguageChange,
+  onProfileUpdated,
 }: SettingsPanelProps) {
+  const initialActionState: SettingsActionState = {
+    status: "idle",
+    message: null,
+  };
   const avatarStorageKey = "mdv_profile_avatar";
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [liveNotifications, setLiveNotifications] = useState(true);
   const [marketingNotifications, setMarketingNotifications] = useState(false);
   const [defaultQuality, setDefaultQuality] = useState("1080p");
   const [avatarUrl, setAvatarUrl] = useState("/assets/figma/dashboard-user.png");
+  const [fullName, setFullName] = useState(displayName);
+  const [profileState, profileAction] = useActionState(
+    updateProfileSettingsAction,
+    initialActionState,
+  );
+  const [passwordState, passwordAction] = useActionState(
+    updatePasswordSettingsAction,
+    initialActionState,
+  );
+  const passwordFormRef = useRef<HTMLFormElement>(null);
   const t = content[language];
   const initials = useMemo(
     () =>
-      displayName
+      fullName
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
         .map((part) => part.charAt(0).toUpperCase())
         .join(""),
-    [displayName]
+    [fullName]
   );
 
   useEffect(() => {
@@ -150,10 +195,69 @@ export default function SettingsPanel({
     }
   }, []);
 
+  useEffect(() => {
+    setFullName(displayName);
+  }, [displayName]);
+
+  useEffect(() => {
+    if (profileState.status === "success" && profileState.updatedName && profileState.updatedEmail) {
+      setFullName(profileState.updatedName);
+      onProfileUpdated({
+        displayName: profileState.updatedName,
+        email: profileState.updatedEmail,
+      });
+    }
+  }, [onProfileUpdated, profileState]);
+
+  useEffect(() => {
+    if (passwordState.status === "success") {
+      passwordFormRef.current?.reset();
+    }
+  }, [passwordState]);
+
+  const subscriptionDetails = useMemo(() => {
+    if (role === "admin") {
+      return {
+        badge: t.planAdmin,
+        access: t.accessAdmin,
+        actionLabel: t.goToAdmin,
+        actionHref: "/dashboard",
+      };
+    }
+
+    if (role === "suscriptor") {
+      return {
+        badge: t.planSubscriber,
+        access: t.accessSubscriber,
+        actionLabel: t.manageSubscription,
+        actionHref: "/app/servicios",
+      };
+    }
+
+    return {
+      badge: t.planBasic,
+      access: t.accessBasic,
+      actionLabel: t.subscribeNow,
+      actionHref: "/app/servicios",
+    };
+  }, [
+    role,
+    t.accessAdmin,
+    t.accessBasic,
+    t.accessSubscriber,
+    t.goToAdmin,
+    t.manageSubscription,
+    t.planAdmin,
+    t.planBasic,
+    t.planSubscriber,
+    t.subscribeNow,
+  ]);
+
   return (
     <div className={styles.settingsGrid}>
       <section className={styles.primaryColumn}>
-        <article className={styles.settingsCard}>
+        <form action={profileAction} className={styles.settingsCard}>
+          <input type="hidden" name="locale" value={language} />
           <div className={styles.sectionHeader}>
             <div>
               <h2>{t.account}</h2>
@@ -170,7 +274,7 @@ export default function SettingsPanel({
               )}
             </div>
             <div className={styles.avatarActions}>
-              <strong>{displayName}</strong>
+              <strong>{fullName}</strong>
               <p>{roleLabel}</p>
               <label className={styles.avatarButton}>
                 {language === "en"
@@ -201,11 +305,16 @@ export default function SettingsPanel({
           <div className={styles.formGrid}>
             <label className={styles.field}>
               <span>{t.fullName}</span>
-              <input type="text" defaultValue={displayName} />
+              <input
+                type="text"
+                name="fullName"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+              />
             </label>
             <label className={styles.field}>
               <span>{t.email}</span>
-              <input type="email" defaultValue="usuario@movidadeportiva.tv" />
+              <input type="email" value={email} readOnly />
             </label>
             <label className={styles.field}>
               <span>{t.profile}</span>
@@ -213,12 +322,17 @@ export default function SettingsPanel({
             </label>
             <label className={styles.field}>
               <span>{t.club}</span>
-              <input type="text" defaultValue="Movida Deportiva Club" />
+              <input type="text" defaultValue="Movida Deportiva TV" readOnly />
             </label>
           </div>
-        </article>
+          <div className={styles.actionRow}>
+            <SubmitButton label={t.save} />
+          </div>
+          <FormMessage state={profileState} />
+        </form>
 
-        <article className={styles.settingsCard}>
+        <form ref={passwordFormRef} action={passwordAction} className={styles.settingsCard}>
+          <input type="hidden" name="locale" value={language} />
           <div className={styles.sectionHeader}>
             <div>
               <h2>{t.security}</h2>
@@ -229,27 +343,26 @@ export default function SettingsPanel({
           <div className={styles.formGrid}>
             <label className={styles.field}>
               <span>{t.currentPassword}</span>
-              <input type="password" defaultValue="********" />
+              <input type="password" name="currentPassword" />
             </label>
             <label className={styles.field}>
               <span>{t.newPassword}</span>
-              <input type="password" defaultValue="********" />
+              <input type="password" name="newPassword" />
             </label>
             <label className={`${styles.field} ${styles.fullWidth}`}>
               <span>{t.confirmPassword}</span>
-              <input type="password" defaultValue="********" />
+              <input type="password" name="confirmPassword" />
             </label>
           </div>
 
           <div className={styles.actionRow}>
-            <button type="button" className={styles.primaryAction}>
-              {t.save}
-            </button>
+            <SubmitButton label={t.save} />
             <a href="/logout" className={styles.secondaryAction}>
               {t.logout}
             </a>
           </div>
-        </article>
+          <FormMessage state={passwordState} />
+        </form>
       </section>
 
       <aside className={styles.secondaryColumn}>
@@ -345,22 +458,55 @@ export default function SettingsPanel({
             </div>
           </div>
 
-          <div className={styles.planBadge}>{t.activePlan}</div>
+          <div className={styles.planBadge}>{subscriptionDetails.badge}</div>
           <div className={styles.subscriptionInfo}>
             <div>
-              <span>{t.renewal}</span>
-              <strong>28 marzo 2026</strong>
+              <span>{t.currentPlan}</span>
+              <strong>{subscriptionDetails.badge}</strong>
             </div>
             <div>
               <span>{t.access}</span>
-              <strong>{t.accessValue}</strong>
+              <strong>{subscriptionDetails.access}</strong>
             </div>
           </div>
-          <button type="button" className={styles.primaryAction}>
-            {t.manageSubscription}
-          </button>
+          <a href={subscriptionDetails.actionHref} className={styles.primaryAction}>
+            {subscriptionDetails.actionLabel}
+          </a>
         </article>
       </aside>
     </div>
+  );
+}
+
+function SubmitButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" className={styles.primaryAction} disabled={pending}>
+      {pending ? "Guardando..." : label}
+    </button>
+  );
+}
+
+function FormMessage({
+  state,
+}: {
+  state: {
+    status: "idle" | "success" | "error";
+    message: string | null;
+  };
+}) {
+  if (!state.message || state.status === "idle") {
+    return null;
+  }
+
+  return (
+    <p
+      className={`${styles.formMessage} ${
+        state.status === "success" ? styles.formMessageSuccess : styles.formMessageError
+      }`}
+    >
+      {state.message}
+    </p>
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SESSION_COOKIE_ROLE } from "./lib/session";
+import { SESSION_COOKIE_ROLE } from "./lib/session-cookies";
 
 const PRIVATE_PATHS = ["/directo", "/videos", "/app", "/administracion"];
 

@@ -9,99 +9,28 @@ type CalendarEvent = {
   title: string;
   competition: string;
   timeLabel: string;
-  isLive?: boolean;
+  dateIso: string;
+};
+
+type DashboardSidebarWidgetsProps = {
+  locale: Locale;
+  todayIso: string;
+  events: CalendarEvent[];
 };
 
 const weekDays = ["LUN", "MAR", "MIE", "JUE", "VIE", "SAB", "DOM"];
 
-const eventMap: Record<string, CalendarEvent[]> = {
-  "2026-02-06": [
-    {
-      id: "live-1",
-      title: "GRAMA vs VILANOVA",
-      competition: "3ª Federación - GRUPO V",
-      timeLabel: "Ahora",
-      isLive: true,
-    },
-    {
-      id: "match-1",
-      title: "V.HEBRON vs VILAFRANCA",
-      competition: "2ª Federación - GRUPO V",
-      timeLabel: "11:30 h",
-    },
-    {
-      id: "match-2",
-      title: "VILASSAR vs GRAMA",
-      competition: "2ª Nacional - B",
-      timeLabel: "12:40 h",
-    },
-    {
-      id: "match-3",
-      title: "LES CORTS vs LLEFIÀ",
-      competition: "3ª Federación - GRUPO V",
-      timeLabel: "14:00 h",
-    },
-  ],
-  "2026-02-09": [
-    {
-      id: "match-4",
-      title: 'UE SANTS vs MANRESA',
-      competition: "Primera Catalana",
-      timeLabel: "18:00 h",
-    },
-  ],
-  "2026-02-13": [
-    {
-      id: "match-5",
-      title: "BADALONA FUTUR vs EUROPA",
-      competition: "2ª Federación",
-      timeLabel: "20:15 h",
-    },
-  ],
-  "2026-02-14": [
-    {
-      id: "match-6",
-      title: "MATARÓ vs SABADELL B",
-      competition: "Liga Elite",
-      timeLabel: "17:30 h",
-    },
-  ],
-  "2026-02-17": [
-    {
-      id: "match-7",
-      title: "CERDANYOLA vs PERALADA",
-      competition: "3ª Federación",
-      timeLabel: "19:00 h",
-    },
-  ],
-  "2026-02-20": [
-    {
-      id: "match-8",
-      title: "GRANOLLERS vs FE GRANADA",
-      competition: "Liga ASOBAL",
-      timeLabel: "20:30 h",
-    },
-  ],
-  "2026-02-21": [
-    {
-      id: "match-9",
-      title: "SEAGULL FEM vs EUROPA FEM",
-      competition: "Primera Nacional Fem.",
-      timeLabel: "12:00 h",
-    },
-  ],
-  "2026-02-24": [
-    {
-      id: "match-10",
-      title: "JOVENTUT B vs GIRONA B",
-      competition: "Liga EBA",
-      timeLabel: "18:30 h",
-    },
-  ],
-};
+function pad(value: number) {
+  return String(value).padStart(2, "0");
+}
 
 function toKey(date: Date) {
-  return date.toISOString().slice(0, 10);
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function fromKey(key: string) {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
 function startOfMonth(date: Date) {
@@ -116,44 +45,76 @@ function sameDay(a: Date, b: Date) {
   );
 }
 
-export default function DashboardSidebarWidgets({ locale }: { locale: Locale }) {
-  const initialSelected = new Date(2026, 1, 6);
-  const [selectedDate, setSelectedDate] = useState(initialSelected);
-  const [visibleMonth, setVisibleMonth] = useState(startOfMonth(initialSelected));
+function buildEventMap(events: CalendarEvent[]) {
+  return events.reduce<Record<string, CalendarEvent[]>>((accumulator, event) => {
+    if (!accumulator[event.dateIso]) {
+      accumulator[event.dateIso] = [];
+    }
+
+    accumulator[event.dateIso].push(event);
+    return accumulator;
+  }, {});
+}
+
+export default function DashboardSidebarWidgets({
+  locale,
+  todayIso,
+  events,
+}: DashboardSidebarWidgetsProps) {
+  const today = useMemo(() => fromKey(todayIso), [todayIso]);
+  const eventMap = useMemo(() => buildEventMap(events), [events]);
+  const firstEventDay = useMemo(() => Object.keys(eventMap).sort()[0], [eventMap]);
+  const defaultSelectedDate = useMemo(() => {
+    if (eventMap[todayIso]?.length) {
+      return today;
+    }
+
+    return firstEventDay ? fromKey(firstEventDay) : today;
+  }, [eventMap, firstEventDay, today, todayIso]);
+  const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
+  const [visibleMonth, setVisibleMonth] = useState(startOfMonth(defaultSelectedDate));
+  const [showAllEvents, setShowAllEvents] = useState(false);
 
   const intlLocale = locale === "ca" ? "ca-ES" : locale === "en" ? "en-US" : "es-ES";
   const copy = {
     es: {
       today: "Hoy",
-      liveNow: "Live now",
-      noLive: "No hay directos ahora",
+      scheduled: "Programado",
+      noLive: "No hay partidos para este día",
       noLiveText: "Selecciona otro día del calendario para ver los eventos programados.",
       noMore: "No hay más partidos programados para este día.",
-      back: "Volver al día principal",
+      showMore: "Ver más",
+      showLess: "Ver menos",
+      back: "Volver a hoy",
       prev: "Mes anterior",
       next: "Mes siguiente",
     },
     ca: {
       today: "Avui",
-      liveNow: "En directe",
-      noLive: "No hi ha directes ara",
+      scheduled: "Programat",
+      noLive: "No hi ha partits per a aquest dia",
       noLiveText: "Selecciona un altre dia del calendari per veure els esdeveniments programats.",
       noMore: "No hi ha més partits programats per a aquest dia.",
-      back: "Tornar al dia principal",
+      showMore: "Veure més",
+      showLess: "Veure menys",
+      back: "Tornar a avui",
       prev: "Mes anterior",
       next: "Mes següent",
     },
     en: {
       today: "Today",
-      liveNow: "Live now",
-      noLive: "No live events right now",
+      scheduled: "Scheduled",
+      noLive: "There are no matches for this day",
       noLiveText: "Select another day on the calendar to see scheduled events.",
       noMore: "There are no more matches scheduled for this day.",
-      back: "Back to main day",
+      showMore: "Show more",
+      showLess: "Show less",
+      back: "Back to today",
       prev: "Previous month",
       next: "Next month",
     },
   }[locale];
+  const isTodaySelected = sameDay(selectedDate, today);
 
   const monthLabel = new Intl.DateTimeFormat(intlLocale, {
     month: "long",
@@ -184,26 +145,27 @@ export default function DashboardSidebarWidgets({ locale }: { locale: Locale }) 
   }, [visibleMonth]);
 
   const selectedEvents = eventMap[toKey(selectedDate)] ?? [];
-  const liveEvent = selectedEvents.find((event) => event.isLive);
-  const upcomingEvents = selectedEvents.filter((event) => !event.isLive);
-
-  const eventDays = useMemo(() => new Set(Object.keys(eventMap)), []);
+  const featuredEvent = selectedEvents[0];
+  const upcomingEvents = selectedEvents.slice(1);
+  const visibleUpcomingEvents = showAllEvents ? upcomingEvents : upcomingEvents.slice(0, 2);
+  const hasHiddenEvents = upcomingEvents.length > visibleUpcomingEvents.length;
+  const eventDays = useMemo(() => new Set(Object.keys(eventMap)), [eventMap]);
 
   return (
     <>
       <article className={styles.cardSmall}>
         <div className={styles.cardHeader}>
-          <strong>{copy.today}, {dayLabel}</strong>
+          <strong>{isTodaySelected ? `${copy.today}, ${dayLabel}` : dayLabel}</strong>
         </div>
 
-        {liveEvent ? (
+        {featuredEvent ? (
           <div className={styles.scheduleItemActive}>
             <div>
-              <span className={styles.scheduleLive}>{copy.liveNow}</span>
-              <strong>{liveEvent.title}</strong>
-              <p>{liveEvent.competition}</p>
+              <span className={styles.scheduleLive}>{copy.scheduled}</span>
+              <strong>{featuredEvent.title}</strong>
+              <p>{featuredEvent.competition}</p>
             </div>
-            <span>{liveEvent.timeLabel}</span>
+            <span>{featuredEvent.timeLabel}</span>
           </div>
         ) : (
           <div className={styles.scheduleEmpty}>
@@ -212,28 +174,43 @@ export default function DashboardSidebarWidgets({ locale }: { locale: Locale }) 
           </div>
         )}
 
-        {upcomingEvents.length > 0 ? (
-          upcomingEvents.map((event) => (
-            <div key={event.id} className={styles.scheduleItem}>
-              <div>
-                <strong>{event.title}</strong>
-                <p>{event.competition}</p>
-              </div>
-              <span>{event.timeLabel}</span>
-            </div>
-          ))
-        ) : !liveEvent ? null : (
+        {featuredEvent && upcomingEvents.length === 0 ? (
           <div className={styles.scheduleEmptyAlt}>
             <p>{copy.noMore}</p>
           </div>
-        )}
+        ) : null}
+
+        {visibleUpcomingEvents.length > 0
+          ? visibleUpcomingEvents.map((event) => (
+              <div key={event.id} className={styles.scheduleItem}>
+                <div>
+                  <strong>{event.title}</strong>
+                  <p>{event.competition}</p>
+                </div>
+                <span>{event.timeLabel}</span>
+              </div>
+            ))
+          : null}
+
+        {featuredEvent && upcomingEvents.length > 0 ? (
+          hasHiddenEvents || showAllEvents ? (
+            <button
+              className={styles.linkButton}
+              type="button"
+              onClick={() => setShowAllEvents((current) => !current)}
+            >
+              {showAllEvents ? copy.showLess : copy.showMore}
+            </button>
+          ) : null
+        ) : null}
 
         <button
           className={styles.linkButton}
           type="button"
           onClick={() => {
-            setSelectedDate(initialSelected);
-            setVisibleMonth(startOfMonth(initialSelected));
+            setSelectedDate(today);
+            setVisibleMonth(startOfMonth(today));
+            setShowAllEvents(false);
           }}
         >
           {copy.back}
@@ -282,16 +259,18 @@ export default function DashboardSidebarWidgets({ locale }: { locale: Locale }) 
           {days.map((date, index) =>
             date ? (
               <button
-                key={date.toISOString()}
+                key={toKey(date)}
                 type="button"
                 className={[
                   styles.calendarDay,
                   sameDay(date, selectedDate) ? styles.calendarDaySelected : "",
+                  sameDay(date, today) ? styles.calendarDayToday : "",
                   eventDays.has(toKey(date)) ? styles.calendarDayEvent : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
                 onClick={() => setSelectedDate(date)}
+                onClickCapture={() => setShowAllEvents(false)}
               >
                 {date.getDate()}
               </button>

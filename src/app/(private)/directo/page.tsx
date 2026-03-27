@@ -1,14 +1,26 @@
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
+import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
 import { getChatMessagesByMatchId } from "@/lib/repos/mensajes";
-import { getLiveMatch, getOtherLiveMatches } from "@/lib/repos/partidos";
+import { getLiveMatch, getOtherLiveMatches, hasActiveLiveMatch } from "@/lib/repos/partidos";
 import styles from "./Directo.module.css";
 
 export default async function DirectoPage() {
   const session = await getSession();
   const locale = await getLocale();
+  const hasLiveNow = hasActiveLiveMatch();
   const homeHref = session?.role === "admin" ? "/dashboard" : "/app";
+  const notificationsHref =
+    session?.role === "admin" ? "/admin/notificaciones" : "/app/notificaciones";
+  const notificationFeed = await getNotificationFeedForSession({
+    session,
+    locale,
+    limit: 6,
+  });
   const t = {
     es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", liveNow: "EN VIVO", other: "Otros partidos", round: "Jornada", chat: "Chat en directo", write: "Escribe un mensaje..." },
     ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", liveNow: "EN DIRECTE", other: "Altres partits", round: "Jornada", chat: "Xat en directe", write: "Escriu un missatge..." },
@@ -21,7 +33,18 @@ export default async function DirectoPage() {
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
-        <aside className={styles.sidebar}>
+        <ResponsiveSidebar
+          locale={locale}
+          sidebarClassName={styles.sidebar}
+          mobileActions={
+            <NotificationBell
+              locale={locale}
+              viewAllHref={notificationsHref}
+              items={notificationFeed.items}
+              count={notificationFeed.count}
+            />
+          }
+        >
           <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
           <div className={styles.menu}>
             <span className={styles.menuLabel}>{t.menu}</span>
@@ -39,9 +62,7 @@ export default async function DirectoPage() {
               <Link href="/directo" className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
-                <span className={styles.liveTag}>
-                  Live <i />
-                </span>
+                {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
               </Link>
               <Link href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
@@ -51,10 +72,10 @@ export default async function DirectoPage() {
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
               </Link>
-              <Link href="/dashboard#notificaciones" className={styles.menuItem}>
+              <Link href={notificationsHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
-                <span className={styles.badge}>22</span>
+                <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
               </Link>
               <Link href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
@@ -62,21 +83,10 @@ export default async function DirectoPage() {
               </Link>
             </nav>
           </div>
-          <div className={styles.subscribeCard}>
-            <Link href="/logout" className={styles.logoutButton}>
-              {t.logout}
-            </Link>
-            <div className={`kdam ${styles.subscribeTitle}`}>
-              {t.subscribe}
-              <br />
-              {t.subscribe2}
-            </div>
-            <div className={styles.subscribeFooter}>
-              <p>{t.subscribeText}</p>
-              <img src="/assets/figma/icon-arrow-up-right.svg" alt="" />
-            </div>
-          </div>
-        </aside>
+          <Link href="/logout" className={styles.logoutButton}>
+            {t.logout}
+          </Link>
+        </ResponsiveSidebar>
 
         <section className={styles.mainContent}>
           <div className={styles.videoCard}>
