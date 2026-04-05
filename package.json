@@ -13,6 +13,11 @@
     "db:down": "docker compose down",
     "db:down:volumes": "docker compose down -v",
     "db:logs": "docker compose logs -f postgres",
+    "db:target": "node scripts/db-profile.mjs show",
+    "db:use:local": "node scripts/db-profile.mjs switch local",
+    "db:use:neon": "node scripts/db-profile.mjs switch neon",
+    "db:save:local": "node scripts/db-profile.mjs save local",
+    "db:save:neon": "node scripts/db-profile.mjs save neon",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio"

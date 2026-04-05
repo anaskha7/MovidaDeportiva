@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useRouter } from "next/navigation";
+import AuthHistoryGuard from "@/components/AuthHistoryGuard";
 import type { Locale } from "@/lib/i18n-shared";
 import styles from "./ResponsiveSidebar.module.css";
 
@@ -45,7 +45,6 @@ export default function ResponsiveSidebar({
   children,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
   const t = labels[locale];
   const desktopChildren = Children.map(children, (child, index) =>
     isValidElement(child)
@@ -121,11 +120,12 @@ export default function ResponsiveSidebar({
 
     event.preventDefault();
     setOpen(false);
-    router.push(href);
+    window.location.assign(href);
   };
 
   return (
     <>
+      <AuthHistoryGuard />
       <div className={styles.mobileBar}>
         <img className={styles.mobileLogo} src={logoSrc} alt={logoAlt} />
         <div className={styles.mobileBarActions}>

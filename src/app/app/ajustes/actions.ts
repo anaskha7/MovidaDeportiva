@@ -2,17 +2,11 @@
 
 import { compare, hash } from "bcrypt";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createAuditLog, getSessionUserRecord } from "@/lib/backoffice";
 import { prisma } from "@/lib/prisma";
 import { formatUserName, getSession } from "@/lib/session";
-import {
-  SESSION_COOKIE_EMAIL,
-  SESSION_COOKIE_NAME,
-  SESSION_COOKIE_ROLE,
-  SESSION_COOKIE_USER_ID,
-} from "@/lib/session-cookies";
+import { applySessionToCookieStore } from "@/lib/session-response";
 import type { Locale } from "@/lib/i18n-shared";
 
 export type SettingsActionState = {
@@ -81,27 +75,11 @@ async function refreshSessionCookies(input: {
   userId: number;
   email: string;
 }) {
-  const cookieStore = await cookies();
-
-  cookieStore.set(SESSION_COOKIE_ROLE, input.role, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-  });
-  cookieStore.set(SESSION_COOKIE_NAME, input.name, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-  });
-  cookieStore.set(SESSION_COOKIE_USER_ID, String(input.userId), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-  });
-  cookieStore.set(SESSION_COOKIE_EMAIL, input.email, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
+  await applySessionToCookieStore({
+    role: input.role as "admin" | "user" | "suscriptor",
+    name: input.name,
+    userId: input.userId,
+    email: input.email,
   });
 }
 

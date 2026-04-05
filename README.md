@@ -24,6 +24,33 @@ Para Neon/Vercel:
 - `DATABASE_URL`: URL pooled para la app en runtime
 - `DIRECT_URL`: URL directa para migraciones y Prisma CLI
 
+### Alternar entre base local y Neon
+
+El proyecto queda preparado para mantener dos perfiles de conexión:
+
+- `.env.db.local`
+- `.env.db.neon`
+
+Scripts disponibles:
+
+```bash
+npm run db:target
+npm run db:use:local
+npm run db:use:neon
+npm run db:save:local
+npm run db:save:neon
+```
+
+Uso recomendado:
+
+- `npm run db:use:local` cambia `.env` para usar la base local
+- `npm run db:use:neon` cambia `.env` para usar Neon
+- `npm run db:save:local` guarda en `.env.db.local` la conexión actual
+- `npm run db:save:neon` guarda en `.env.db.neon` la conexión actual
+- `npm run db:target` muestra qué perfil está activo
+
+Los archivos `.env.db.local` y `.env.db.neon` no se suben a Git.
+
 ### 2. Levantar PostgreSQL
 
 ```bash

@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { ApiRequestError, created, handleApiError, ok, parsePagination } from "@/lib/api/http";
+import { requireApiAdmin } from "@/lib/api/auth";
 import { getResourceConfig } from "@/lib/api/resources";
 import { prisma } from "@/lib/prisma";
 
@@ -37,6 +38,7 @@ export async function GET(
   context: ResourceRouteContext,
 ) {
   try {
+    await requireApiAdmin();
     const { resource } = await context.params;
     const config = resolveConfig(resource);
     const delegate = getDelegate(config.delegate);
@@ -79,6 +81,7 @@ export async function POST(
   context: ResourceRouteContext,
 ) {
   try {
+    await requireApiAdmin();
     const { resource } = await context.params;
     const config = resolveConfig(resource);
     const delegate = getDelegate(config.delegate);

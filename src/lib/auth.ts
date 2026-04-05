@@ -276,20 +276,9 @@ export async function syncGoogleUser(input: {
       throw new AuthActionError("blocked");
     }
 
-    if (existingUser.nombre !== normalizedName) {
-      await prisma.usuario.update({
-        where: {
-          id_usuario: existingUser.id_usuario,
-        },
-        data: {
-          nombre: normalizedName,
-        },
-      });
-    }
-
     return {
       id: existingUser.id_usuario,
-      name: formatUserName(normalizedName),
+      name: formatUserName(existingUser.nombre),
       email: existingUser.email,
       role: existingUser.role.rol,
     };

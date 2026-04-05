@@ -1,4 +1,4 @@
-import Link from "next/link";
+import HardNavLink from "@/components/HardNavLink";
 import type { NotificationFeedItem } from "@/lib/backoffice";
 import type { Locale } from "@/lib/i18n-shared";
 import NotificationBell from "@/components/NotificationBell";
@@ -93,40 +93,40 @@ export default function NotificationsPage({
           <div className={styles.menuBlock}>
             <p className={styles.menuLabel}>{t.menu}</p>
             <nav className={styles.menuList}>
-              <Link href={homeHref} prefetch={false} className={styles.menuItem}>
+              <HardNavLink href={homeHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
-              </Link>
+              </HardNavLink>
               {isAdmin ? (
-                <Link href="/admin/panel" prefetch={false} className={styles.menuItem}>
+                <HardNavLink href="/admin/panel" className={styles.menuItem}>
                   <img src="/assets/figma/admin-menu-panel.svg" alt="" />
                   <span>{t.adminPanel}</span>
-                </Link>
+                </HardNavLink>
               ) : null}
-              <Link href="/directo" prefetch={false} className={styles.menuItem}>
+              <HardNavLink href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
                 <span className={styles.liveTag}>
                   Live <i />
                 </span>
-              </Link>
-              <Link href="/videos" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
-              </Link>
-              <Link href="/app/servicios" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/app/servicios" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
-              </Link>
-              <Link href={notificationsHref} prefetch={false} className={`${styles.menuItem} ${styles.active}`}>
+              </HardNavLink>
+              <HardNavLink href={notificationsHref} className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
                 <NotificationDateBadge count={notificationCount} className={styles.badge} />
-              </Link>
-              <Link href="/app/ajustes" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
                 <span>{t.settings}</span>
-              </Link>
+              </HardNavLink>
             </nav>
           </div>
         </ResponsiveSidebar>
@@ -148,9 +148,9 @@ export default function NotificationsPage({
                 items={items.slice(0, 6)}
                 count={notificationCount}
               />
-              <Link href="/logout" className={styles.headerLogoutButton}>
+              <HardNavLink href="/logout" className={styles.headerLogoutButton}>
                 {t.logout}
-              </Link>
+              </HardNavLink>
             </div>
           </header>
 

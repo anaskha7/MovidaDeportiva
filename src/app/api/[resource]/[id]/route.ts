@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { ApiRequestError, handleApiError, ok, parseIdParam } from "@/lib/api/http";
+import { requireApiAdmin } from "@/lib/api/auth";
 import { getResourceConfig } from "@/lib/api/resources";
 import { prisma } from "@/lib/prisma";
 
@@ -44,6 +45,7 @@ export async function GET(
   context: ResourceItemRouteContext,
 ) {
   try {
+    await requireApiAdmin();
     const { resource, id } = await context.params;
     const config = resolveConfig(resource);
     const delegate = getDelegate(config.delegate);
@@ -77,6 +79,7 @@ async function updateRecord(
   context: ResourceItemRouteContext,
 ) {
   const { resource, id } = await context.params;
+  await requireApiAdmin();
   const config = resolveConfig(resource);
   const delegate = getDelegate(config.delegate);
   const parsedId = parseIdParam(id, config.idField);
@@ -137,6 +140,7 @@ export async function DELETE(
   context: ResourceItemRouteContext,
 ) {
   try {
+    await requireApiAdmin();
     const { resource, id } = await context.params;
     const config = resolveConfig(resource);
     const delegate = getDelegate(config.delegate);

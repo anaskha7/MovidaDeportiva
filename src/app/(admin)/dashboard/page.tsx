@@ -1,4 +1,4 @@
-import Link from "next/link";
+import HardNavLink from "@/components/HardNavLink";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
 import { getAdminMetrics, getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
@@ -144,32 +144,32 @@ export default async function DashboardPage(props: {
           <div className={styles.menuBlock}>
             <p className={styles.menuLabel}>{t.menu}</p>
             <nav className={styles.menuList}>
-              <Link href="/dashboard" prefetch={false} className={`${styles.menuItem} ${styles.active}`}>
+              <HardNavLink href="/dashboard" className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
-              </Link>
-              <Link href="/directo" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
                 {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
-              </Link>
-              <Link href="/videos" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
-              </Link>
-              <Link href="/app/servicios" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/app/servicios" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
-              </Link>
-              <Link href="/admin/notificaciones" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/admin/notificaciones" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
                 <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
-              </Link>
-              <Link href="/app/ajustes" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
                 <span>{t.settings}</span>
-              </Link>
+              </HardNavLink>
             </nav>
           </div>
         </ResponsiveSidebar>
@@ -202,9 +202,9 @@ export default async function DashboardPage(props: {
                   items={notificationFeed.items}
                   count={notificationFeed.count}
                 />
-                <Link href="/logout" className={styles.headerLogoutButton}>
+                <HardNavLink href="/logout" className={styles.headerLogoutButton}>
                   {t.logout}
-                </Link>
+                </HardNavLink>
               </div>
             </div>
           </header>
@@ -239,7 +239,7 @@ export default async function DashboardPage(props: {
                 </div>
               </article>
 
-              {showLiveCard ? <Link href="/directo" prefetch={false} className={styles.cardLink}>
+              {showLiveCard ? <HardNavLink href="/directo" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
@@ -263,7 +263,7 @@ export default async function DashboardPage(props: {
                   />
                 </div>
               </article>
-              </Link> : null}
+              </HardNavLink> : null}
 
               {serviceCards.length > 0 ? <article className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -275,7 +275,7 @@ export default async function DashboardPage(props: {
                 </div>
                 <div className={styles.serviceRow}>
                   {serviceCards.map((card) => (
-                  <Link key={card.title} href="/app/servicios" prefetch={false} className={card.className}>
+                  <HardNavLink key={card.title} href="/app/servicios" className={card.className}>
                     <div className={styles.serviceBoxInner}>
                       <strong>{card.title}</strong>
                       <span>{t.from} {card.price}</span>
@@ -297,12 +297,12 @@ export default async function DashboardPage(props: {
                       </svg>
                       )}
                     </span>
-                  </Link>
+                  </HardNavLink>
                   ))}
                 </div>
               </article> : null}
 
-              {showEventsCard ? <Link href="/videos" prefetch={false} className={styles.cardLink}>
+              {showEventsCard ? <HardNavLink href="/videos" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
@@ -324,7 +324,7 @@ export default async function DashboardPage(props: {
                   </div>
                 </div>
               </article>
-              </Link> : null}
+              </HardNavLink> : null}
             </div>
 
             <div className={styles.rightStack}>

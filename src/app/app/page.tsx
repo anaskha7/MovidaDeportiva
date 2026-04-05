@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import HardNavLink from "@/components/HardNavLink";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
@@ -7,9 +7,7 @@ import { getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
 import { getCategorias } from "@/lib/repos/categorias";
 import { hasActiveLiveMatch } from "@/lib/repos/partidos";
-import { getVideos } from "@/lib/repos/videos";
 import { getCompetitionSchedule } from "@/lib/schedules";
-import { prisma } from "@/lib/prisma";
 import { formatUserName, getSession } from "@/lib/session";
 import DashboardSidebarWidgets from "../(admin)/dashboard/DashboardSidebarWidgets";
 import styles from "../(admin)/dashboard/Dashboard.module.css";
@@ -104,29 +102,6 @@ export default async function AppPage(props: {
       noResults: "No results found for this search.",
     },
   }[locale];
-  const metricsCopy = {
-    es: {
-      metrics: "Resumen del panel",
-      savedVideos: "Partidos guardados",
-      nextMatches: "Próximos partidos",
-      requests: "Mis solicitudes",
-      unread: "Sin leer",
-    },
-    ca: {
-      metrics: "Resum del panell",
-      savedVideos: "Partits desats",
-      nextMatches: "Pròxims partits",
-      requests: "Les meves sol·licituds",
-      unread: "Sense llegir",
-    },
-    en: {
-      metrics: "Panel overview",
-      savedVideos: "Saved matches",
-      nextMatches: "Upcoming matches",
-      requests: "My requests",
-      unread: "Unread",
-    },
-  }[locale];
   const matchesSearch = (value: string) =>
     !searchQuery || value.toLowerCase().includes(searchQuery);
   const serviceCards = [
@@ -134,16 +109,11 @@ export default async function AppPage(props: {
     { title: "SPEAKERS Y ANIMACIÓN", price: "27,99€/hora", className: styles.serviceBoxLight, icon: "audio" },
   ].filter((item) => matchesSearch(item.title));
 
-  const [notificationFeed, ownRequestsCount] = await Promise.all([
-    getNotificationFeedForSession({ session, locale, limit: 6 }),
-    prisma.solicitudServicio.count({
-      where: session?.userId
-        ? { id_usuario: session.userId }
-        : session?.email
-          ? { email_contacto: session.email }
-          : undefined,
-    }),
-  ]);
+  const notificationFeed = await getNotificationFeedForSession({
+    session,
+    locale,
+    limit: 6,
+  });
 
   const todayIso = getMadridDateKey();
   const categoriasConCalendario = getCategorias().filter((categoria) => categoria.calendarioUrl);
@@ -175,9 +145,6 @@ export default async function AppPage(props: {
         : a.dateIso.localeCompare(b.dateIso),
     );
 
-  const savedVideosCount = getVideos({
-    deportes: ["dep-futbol", "dep-futsal"],
-  }).total;
   const showLiveCard = matchesSearch("GRAMA vs VILANOVA 3ª Federación Grupo V Jornada 19");
   const showEventsCard = matchesSearch("Partidos y eventos Disfruta del mejor fútbol siempre que quieras");
   const notificationItems = notificationFeed.items.filter(
@@ -208,32 +175,32 @@ export default async function AppPage(props: {
           <div className={styles.menuBlock}>
             <p className={styles.menuLabel}>{t.menu}</p>
             <nav className={styles.menuList}>
-              <Link href="/app" prefetch={false} className={`${styles.menuItem} ${styles.active}`}>
+              <HardNavLink href="/app" className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
-              </Link>
-              <Link href="/directo" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
                 {hasLiveNow ? <span className={styles.liveTag}>Live <i /></span> : null}
-              </Link>
-              <Link href="/videos" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
-              </Link>
-              <Link href="/app/servicios" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/app/servicios" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-services.svg" alt="" />
                 <span>{t.services}</span>
-              </Link>
-              <Link href={notificationsHref} prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href={notificationsHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
                 <NotificationDateBadge count={notificationFeed.count} className={styles.badge} />
-              </Link>
-              <Link href="/app/ajustes" prefetch={false} className={styles.menuItem}>
+              </HardNavLink>
+              <HardNavLink href="/app/ajustes" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-settings.svg" alt="" />
                 <span>{t.settings}</span>
-              </Link>
+              </HardNavLink>
             </nav>
           </div>
         </ResponsiveSidebar>
@@ -266,43 +233,16 @@ export default async function AppPage(props: {
                   items={notificationFeed.items}
                   count={notificationFeed.count}
                 />
-                <Link href="/logout" className={styles.headerLogoutButton}>
+                <HardNavLink href="/logout" className={styles.headerLogoutButton}>
                   {t.logout}
-                </Link>
+                </HardNavLink>
               </div>
             </div>
           </header>
 
           <div className={styles.mainContent}>
             <div className={styles.leftStack}>
-              <article className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <div>
-                    <strong>{metricsCopy.metrics}</strong>
-                    <p>{metricsCopy.unread}: {notificationFeed.count}</p>
-                  </div>
-                </div>
-                <div className={styles.metricsGrid}>
-                  <div className={styles.metricCard}>
-                    <span>{metricsCopy.savedVideos}</span>
-                    <strong>{savedVideosCount}</strong>
-                  </div>
-                  <div className={styles.metricCard}>
-                    <span>{metricsCopy.nextMatches}</span>
-                    <strong>{dashboardCalendarEvents.length}</strong>
-                  </div>
-                  <div className={styles.metricCard}>
-                    <span>{metricsCopy.requests}</span>
-                    <strong>{ownRequestsCount}</strong>
-                  </div>
-                  <div className={styles.metricCard}>
-                    <span>{metricsCopy.unread}</span>
-                    <strong>{notificationFeed.count}</strong>
-                  </div>
-                </div>
-              </article>
-
-              {showLiveCard ? <Link href="/directo" prefetch={false} className={styles.cardLink}>
+              {showLiveCard ? <HardNavLink href="/directo" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
@@ -326,7 +266,7 @@ export default async function AppPage(props: {
                   />
                 </div>
               </article>
-              </Link> : null}
+              </HardNavLink> : null}
 
               {serviceCards.length > 0 ? <article className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -338,7 +278,7 @@ export default async function AppPage(props: {
                 </div>
                 <div className={styles.serviceRow}>
                   {serviceCards.map((card) => (
-                  <Link key={card.title} href="/app/servicios" prefetch={false} className={card.className}>
+                  <HardNavLink key={card.title} href="/app/servicios" className={card.className}>
                     <div className={styles.serviceBoxInner}>
                       <strong>{card.title}</strong>
                       <span>{t.from} {card.price}</span>
@@ -360,12 +300,12 @@ export default async function AppPage(props: {
                       </svg>
                       )}
                     </span>
-                  </Link>
+                  </HardNavLink>
                   ))}
                 </div>
               </article> : null}
 
-              {showEventsCard ? <Link href="/videos" prefetch={false} className={styles.cardLink}>
+              {showEventsCard ? <HardNavLink href="/videos" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div>
@@ -387,7 +327,7 @@ export default async function AppPage(props: {
                   </div>
                 </div>
               </article>
-              </Link> : null}
+              </HardNavLink> : null}
             </div>
 
             <div className={styles.rightStack}>

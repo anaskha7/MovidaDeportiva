@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { requireApiAdmin } from "@/lib/api/auth";
+import { handleApiError } from "@/lib/api/http";
 import { buildOpenApiDocument } from "@/lib/api/openapi";
 
 export const runtime = "nodejs";
@@ -18,8 +20,13 @@ function getOriginFromHeaders(headerList: Headers) {
 }
 
 export async function GET() {
-  const headerList = await headers();
-  const origin = getOriginFromHeaders(headerList);
+  try {
+    await requireApiAdmin();
+    const headerList = await headers();
+    const origin = getOriginFromHeaders(headerList);
 
-  return NextResponse.json(buildOpenApiDocument(origin));
+    return NextResponse.json(buildOpenApiDocument(origin));
+  } catch (error) {
+    return handleApiError(error);
+  }
 }
