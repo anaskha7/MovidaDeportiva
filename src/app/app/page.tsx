@@ -55,15 +55,11 @@ export default async function AppPage(props: {
       home: "Inicio",
       live: "En directo",
       events: "Partidos y eventos",
-      services: "Nuestros servicios",
       notifications: "Notificaciones",
       settings: "Ajustes",
       logout: "Cerrar sesión",
       greeting: "Buenos días,",
       search: "¿Qué estás buscando?",
-      request: "Solicitar servicios",
-      requestText: "Escoje que tipo de servicio quieres contratar.",
-      from: "Desde",
       eventsText: "Disfruta del mejor fútbol siempre que quieras",
       noResults: "No hay resultados para esta búsqueda.",
     },
@@ -72,15 +68,11 @@ export default async function AppPage(props: {
       home: "Inici",
       live: "En directe",
       events: "Partits i esdeveniments",
-      services: "Els nostres serveis",
       notifications: "Notificacions",
       settings: "Ajustos",
       logout: "Tancar sessió",
       greeting: "Bon dia,",
       search: "Què estàs buscant?",
-      request: "Sol·licitar serveis",
-      requestText: "Escull quin tipus de servei vols contractar.",
-      from: "Des de",
       eventsText: "Gaudeix del millor futbol sempre que vulguis",
       noResults: "No s'han trobat resultats per a aquesta cerca.",
     },
@@ -89,26 +81,17 @@ export default async function AppPage(props: {
       home: "Home",
       live: "Live",
       events: "Matches and events",
-      services: "Our services",
       notifications: "Notifications",
       settings: "Settings",
       logout: "Log out",
       greeting: "Good morning,",
       search: "What are you looking for?",
-      request: "Request services",
-      requestText: "Choose the type of service you want to hire.",
-      from: "From",
       eventsText: "Enjoy the best football whenever you want",
       noResults: "No results found for this search.",
     },
   }[locale];
   const matchesSearch = (value: string) =>
     !searchQuery || value.toLowerCase().includes(searchQuery);
-  const serviceCards = [
-    { title: "SERVICIOS RETRANSMISION", price: "19,99€/hora", className: styles.serviceBox, icon: "video" },
-    { title: "SPEAKERS Y ANIMACIÓN", price: "27,99€/hora", className: styles.serviceBoxLight, icon: "audio" },
-  ].filter((item) => matchesSearch(item.title));
-
   const notificationFeed = await getNotificationFeedForSession({
     session,
     locale,
@@ -188,10 +171,6 @@ export default async function AppPage(props: {
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
               </HardNavLink>
-              <HardNavLink href="/app/servicios" className={styles.menuItem}>
-                <img src="/assets/figma/admin-menu-services.svg" alt="" />
-                <span>{t.services}</span>
-              </HardNavLink>
               <HardNavLink href={notificationsHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
                 <span>{t.notifications}</span>
@@ -268,43 +247,6 @@ export default async function AppPage(props: {
               </article>
               </HardNavLink> : null}
 
-              {serviceCards.length > 0 ? <article className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <div>
-                    <strong>{t.request}</strong>
-                    <p>{t.requestText}</p>
-                  </div>
-                  <img src="/assets/figma/icon-arrow-up-right-dark.svg" alt="" />
-                </div>
-                <div className={styles.serviceRow}>
-                  {serviceCards.map((card) => (
-                  <HardNavLink key={card.title} href="/app/servicios" className={card.className}>
-                    <div className={styles.serviceBoxInner}>
-                      <strong>{card.title}</strong>
-                      <span>{t.from} {card.price}</span>
-                    </div>
-                    <span className={styles.serviceBoxIcon} aria-hidden="true">
-                      {card.icon === "video" ? (
-                      <svg viewBox="0 0 24 24">
-                        <rect x="3" y="7" width="12" height="10" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                        <path d="M15 10.2 20.5 7.5v9L15 13.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                        <circle cx="7.5" cy="10.5" r="1.1" fill="currentColor" />
-                        <path d="M6.5 14.2h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                      </svg>
-                      ) : (
-                      <svg viewBox="0 0 24 24">
-                        <path d="M5 13.5V12a7 7 0 1 1 14 0v1.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                        <rect x="4" y="12.5" width="3.8" height="6.5" rx="1.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                        <rect x="16.2" y="12.5" width="3.8" height="6.5" rx="1.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                        <path d="M7.8 19h3.2c.3 1 1.2 1.7 2.3 1.7h1.2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      )}
-                    </span>
-                  </HardNavLink>
-                  ))}
-                </div>
-              </article> : null}
-
               {showEventsCard ? <HardNavLink href="/videos" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -354,7 +296,7 @@ export default async function AppPage(props: {
                     </p>
                   </div>
                 ))}
-                {!showLiveCard && !showEventsCard && serviceCards.length === 0 && notificationItems.length === 0 ? (
+                {!showLiveCard && !showEventsCard && notificationItems.length === 0 ? (
                   <div className={styles.scheduleEmptyAlt}>
                     <p>{t.noResults}</p>
                   </div>

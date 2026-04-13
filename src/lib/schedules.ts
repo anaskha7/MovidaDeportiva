@@ -49,6 +49,12 @@ function normalizeTeamName(value: string) {
     .trim();
 }
 
+function toNumber(value: string | undefined) {
+  if (!value) return undefined;
+  const parsed = Number.parseInt(value.trim(), 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function toIsoDate(value: string) {
   const match = value.match(/^(\d{2})-(\d{2})-(\d{4})$/);
 
@@ -150,6 +156,86 @@ function parseSchedule(html: string, fromDateIso: string): CompetitionSchedule |
   };
 }
 
+function parseResultadosFutbolSchedule(
+  html: string,
+  fromDateIso: string,
+): CompetitionSchedule | null {
+  const sectionMatches = [
+    ...html.matchAll(
+      /<div class="boxhome boxhome-2col" id="col-resultados">([\s\S]*?)<\/table>\s*<\/div>\s*<\/div>/gi,
+    ),
+  ];
+
+  const rounds = sectionMatches.flatMap((sectionMatch) => {
+    const sectionHtml = sectionMatch[1];
+    const roundMatch = sectionHtml.match(/<span class="titlebox">Jornada\s+(\d+)<\/span>/i);
+    const round = toNumber(roundMatch?.[1]);
+    const rowMatches = [...sectionHtml.matchAll(/<tr[^>]*class="[^"]*vevent[^"]*"[\s\S]*?<\/tr>/gi)];
+
+    const matches = rowMatches.flatMap((rowMatch) => {
+      const rowHtml = rowMatch[0];
+      const homeTeam = stripTags(
+        rowHtml.match(/<td class="equipo1">[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i)?.[1] ?? "",
+      );
+      const awayTeam = stripTags(
+        rowHtml.match(/<td class="equipo2">[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i)?.[1] ?? "",
+      );
+      const dtStart = rowHtml.match(/<span class="dtstart hidden" title="(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})"/i);
+      const rawDateLabel = stripTags(
+        rowHtml.match(/<td class="fecha">([\s\S]*?)<\/td>/i)?.[1] ?? "",
+      );
+
+      const dateIso = dtStart?.[1] ?? "";
+
+      if (!homeTeam || !awayTeam || !dateIso || dateIso < fromDateIso) {
+        return [];
+      }
+
+      const linkLabel = stripTags(
+        rowHtml.match(/<a class="url"[^>]*>([\s\S]*?)<\/a>/i)?.[1] ?? "",
+      );
+      const scoreLike = /^\d+\s*-\s*\d+$/.test(linkLabel) || /^\d+\-\d+$/.test(linkLabel);
+      const timeLabel = !scoreLike && dtStart?.[2]
+        ? dtStart[2].slice(0, 5)
+        : undefined;
+
+      return [{
+        homeTeam: normalizeTeamName(homeTeam),
+        awayTeam: normalizeTeamName(awayTeam),
+        timeLabel: timeLabel ?? rawDateLabel,
+        dateIso,
+      }];
+    });
+
+    if (!round || !matches.length) {
+      return [];
+    }
+
+    const dateIso = matches[0].dateIso;
+    const dateLabel = matches[0].timeLabel ?? dateIso;
+
+    return [{
+      round,
+      dateIso,
+      dateLabel,
+      matches: matches.map(({ dateIso: _dateIso, ...match }) => match),
+    } satisfies ScheduleRound];
+  });
+
+  if (!rounds.length) {
+    return null;
+  }
+
+  rounds.sort((a, b) =>
+    a.dateIso === b.dateIso ? a.round - b.round : a.dateIso.localeCompare(b.dateIso),
+  );
+
+  return {
+    title: "Tercera Federación Grupo XII",
+    rounds,
+  };
+}
+
 export const getCompetitionSchedule = cache(async (url: string) => {
   try {
     const response = await fetch(url, {
@@ -165,6 +251,10 @@ export const getCompetitionSchedule = cache(async (url: string) => {
     }
 
     const html = await response.text();
+    if (url.includes("resultados-futbol.com")) {
+      return parseResultadosFutbolSchedule(html, getMadridDateKey());
+    }
+
     return parseSchedule(html, getMadridDateKey());
   } catch {
     return null;

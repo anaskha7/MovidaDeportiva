@@ -183,6 +183,10 @@
   white-space: nowrap;
 }
 
+.mobileHiddenPublicButton {
+  display: flex;
+}
+
 .panel {
   padding: 28px;
   display: flex;
@@ -332,6 +336,10 @@
   }
 
   .mobileHiddenBell {
+    display: none;
+  }
+
+  .mobileHiddenPublicButton {
     display: none;
   }
 

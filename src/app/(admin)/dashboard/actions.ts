@@ -239,7 +239,7 @@ export async function updateServiceRequestStatusAction(formData: FormData) {
       message: `Tu solicitud de servicios ahora está en estado ${request.estado}.`,
       type: request.estado === "confirmada" ? "success" : "info",
       targetUserId: request.id_usuario,
-      href: "/app/servicios",
+      href: "/servicios/contacto",
       actorUserId: adminUser.id_usuario,
       actor: adminUser.nombre,
     });

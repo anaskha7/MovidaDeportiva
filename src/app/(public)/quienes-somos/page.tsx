@@ -1,6 +1,8 @@
 import { getLocale } from "@/lib/i18n";
 import styles from "./QuienesSomos.module.css";
 
+const mediaBase = "/assets/figma/Fotografias%20-%20Multimedia/fotos%20mdtv%20pagina%20web";
+
 const values = [
   {
     title: "Pasión",
@@ -109,7 +111,10 @@ export default async function QuienesSomosPage() {
 
       <section className={styles.storySection}>
         <div className={styles.storyImage}>
-          <img src="/assets/figma/team-1.png" alt="Jugador de fútbol" />
+          <img
+            src={`${mediaBase}/1665aec1-55a2-4eea-9bfd-dd02c883b516.jpg`}
+            alt="Equipo de Movida Deportiva TV preparando una retransmisión en grada"
+          />
         </div>
         <div className={styles.storyContent}>
           <div className={styles.storyBody}>
@@ -161,7 +166,10 @@ export default async function QuienesSomosPage() {
 
         <div className={styles.missionImageWrap}>
           <div className={styles.missionImage}>
-            <img src="/assets/figma/team-2.png" alt="Producción deportiva en campo" />
+            <img
+              src={`${mediaBase}/IMG_5980.JPG`}
+              alt="Reportero de Movida Deportiva TV con micrófono en una cobertura deportiva"
+            />
           </div>
         </div>
       </section>

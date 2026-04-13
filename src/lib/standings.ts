@@ -116,6 +116,82 @@ function parseStandings(html: string): StandingsTable | null {
   };
 }
 
+function parseResultadosFutbolStandings(html: string): StandingsTable | null {
+  const currentRoundMatch = html.match(
+    /<div class="j_cur"><a[^>]*>(Jornada\s+\d+)<\/a><\/div>/i,
+  );
+  const tableMatch = html.match(
+    /<table id="tabla2">([\s\S]*?)<\/table>/i,
+  );
+
+  if (!tableMatch) {
+    return null;
+  }
+
+  const rowMatches = tableMatch[1].match(/<tr[\s\S]*?<\/tr>/gi) ?? [];
+
+  const rows = rowMatches.flatMap((rowHtml) => {
+    if (/display:\s*none/i.test(rowHtml)) {
+      return [];
+    }
+
+    const position = toNumber(
+      stripTags(rowHtml.match(/<th[^>]*>(\d+)<\/th>/i)?.[1] ?? ""),
+    );
+    const team = stripTags(
+      rowHtml.match(/<td class="equipo[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i)?.[1] ?? "",
+    );
+    const points = toNumber(
+      rowHtml.match(/<td class="pts"[^>]*data-total="(\d+)"/i)?.[1] ??
+        stripTags(rowHtml.match(/<td class="pts"[^>]*>([\s\S]*?)<\/td>/i)?.[1] ?? ""),
+    );
+    const played = toNumber(rowHtml.match(/<td class="pj"[^>]*data-total="(\d+)"/i)?.[1]);
+    const won = toNumber(rowHtml.match(/<td class="win"[^>]*data-total="(\d+)"/i)?.[1]);
+    const drawn = toNumber(rowHtml.match(/<td class="draw"[^>]*data-total="(\d+)"/i)?.[1]);
+    const lost = toNumber(rowHtml.match(/<td class="lose"[^>]*data-total="(\d+)"/i)?.[1]);
+    const goalsFor = toNumber(
+      stripTags(rowHtml.match(/<td class="f">([\s\S]*?)<\/td>/i)?.[1] ?? ""),
+    );
+    const goalsAgainst = toNumber(
+      stripTags(rowHtml.match(/<td class="c">([\s\S]*?)<\/td>/i)?.[1] ?? ""),
+    );
+
+    if (
+      position === undefined ||
+      !team ||
+      points === undefined ||
+      played === undefined ||
+      won === undefined ||
+      drawn === undefined ||
+      lost === undefined
+    ) {
+      return [];
+    }
+
+    return [{
+      position,
+      team,
+      points,
+      played,
+      won,
+      drawn,
+      lost,
+      goalsFor,
+      goalsAgainst,
+    } satisfies StandingsRow];
+  });
+
+  if (!rows.length) {
+    return null;
+  }
+
+  return {
+    title: "Tercera Federación Grupo XII",
+    updatedAt: currentRoundMatch ? stripTags(currentRoundMatch[1]) : undefined,
+    rows,
+  };
+}
+
 export const getStandingsTable = cache(async (url: string) => {
   try {
     const response = await fetch(url, {
@@ -131,6 +207,10 @@ export const getStandingsTable = cache(async (url: string) => {
     }
 
     const html = await response.text();
+    if (url.includes("resultados-futbol.com")) {
+      return parseResultadosFutbolStandings(html);
+    }
+
     return parseStandings(html);
   } catch {
     return null;

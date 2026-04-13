@@ -139,6 +139,10 @@
   white-space: nowrap;
 }
 
+.mobileHiddenPublicButton {
+  display: flex;
+}
+
 .subscribeTitle {
   font-size: 38px;
   line-height: 35px;
@@ -757,6 +761,27 @@
   color: #1a2c2a;
 }
 
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduleListScrollable {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.scheduleListScrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scheduleListScrollable::-webkit-scrollbar-thumb {
+  background: rgba(26, 44, 42, 0.28);
+  border-radius: 999px;
+}
+
 .linkButton {
   align-self: center;
   color: #1a2c2a;
@@ -995,6 +1020,10 @@
   }
 
   .mobileHiddenBell {
+    display: none;
+  }
+
+  .mobileHiddenPublicButton {
     display: none;
   }
 

@@ -2,23 +2,85 @@ import Link from "next/link";
 import { getLocale } from "@/lib/i18n";
 import styles from "./ServiciosStreaming.module.css";
 
+const mediaBase = "/assets/figma/Fotografias%20-%20Multimedia/fotos%20mdtv%20pagina%20web";
+
 export default async function ServiciosStreamingPage() {
   const locale = await getLocale();
   const t = {
     es: {
       hero: "SERVICIO STREAMING", highlightTitle: "Retransmisiones profesionales de eventos deportivos",
       highlightText: "En MOVIDA DEPORTIVA TV, ofrecemos servicios completos de retransmisión de eventos deportivos, asegurando una cobertura integral y de alta calidad para cada partido. Nuestro compromiso es brindar una experiencia única y envolvente tanto para los espectadores como para los organizadores.",
-      include: "Nuestros servicios incluyen", process: "¿Cómo Trabajamos?", ctaTitle: "¿Listo para llevar tu evento al siguiente nivel?", ctaText: "En MOVIDA DEPORTIVA TV, nos apasiona el deporte y estamos dedicados a ofrecer retransmisiones de la más alta calidad.", contact: "Contactar ahora",
+      include: "Servicios disponibles",
+      serviceNote:
+        "La diferencia entre ambas opciones es que en la primera retransmitimos para la plataforma del cliente. En la segunda, emitimos en nuestro propio canal de producción, con mayor visibilidad y control completo del directo.",
+      focusNote:
+        "Hemos dejado de ofrecer otros servicios para enfocarnos en estas dos líneas y garantizarlas al máximo nivel.",
+      process: "¿Cómo Trabajamos?",
+      ctaTitle: "¿Listo para llevar tu evento al siguiente nivel?",
+      ctaText: "En MOVIDA DEPORTIVA TV, nos apasiona el deporte y estamos dedicados a ofrecer retransmisiones de la más alta calidad.",
+      contact: "Contactar ahora",
+      services: [
+        {
+          num: "1",
+          title: "Retransmisión para tu plataforma",
+          desc: "Emitimos el evento para la plataforma del cliente (web, app o canal propio).",
+        },
+        {
+          num: "2",
+          title: "Retransmisión en nuestra plataforma MDTV",
+          desc: "Emitimos el evento en nuestro canal de producción con toda la infraestructura y difusión MDTV.",
+        },
+      ],
     },
     ca: {
       hero: "SERVEI STREAMING", highlightTitle: "Retransmissions professionals d'esdeveniments esportius",
       highlightText: "A MOVIDA DEPORTIVA TV, oferim serveis complets de retransmissió d'esdeveniments esportius, assegurant una cobertura integral i d'alta qualitat per a cada partit. El nostre compromís és oferir una experiència única i immersiva tant per als espectadors com per als organitzadors.",
-      include: "Els nostres serveis inclouen", process: "Com treballem?", ctaTitle: "Preparat per portar el teu esdeveniment al següent nivell?", ctaText: "A MOVIDA DEPORTIVA TV, ens apassiona l'esport i estem dedicats a oferir retransmissions de la màxima qualitat.", contact: "Contacta ara",
+      include: "Serveis disponibles",
+      serviceNote:
+        "La diferència entre totes dues opcions és que a la primera retransmetem per a la plataforma del client. A la segona, emetem al nostre propi canal de producció, amb més visibilitat i control complet del directe.",
+      focusNote:
+        "Hem deixat d'oferir altres serveis per centrar-nos en aquestes dues línies i garantir-les al màxim nivell.",
+      process: "Com treballem?",
+      ctaTitle: "Preparat per portar el teu esdeveniment al següent nivell?",
+      ctaText: "A MOVIDA DEPORTIVA TV, ens apassiona l'esport i estem dedicats a oferir retransmissions de la màxima qualitat.",
+      contact: "Contacta ara",
+      services: [
+        {
+          num: "1",
+          title: "Retransmissió per a la teva plataforma",
+          desc: "Emetem l'esdeveniment per a la plataforma del client (web, app o canal propi).",
+        },
+        {
+          num: "2",
+          title: "Retransmissió a la nostra plataforma MDTV",
+          desc: "Emetem l'esdeveniment al nostre canal de producció amb tota la infraestructura i difusió MDTV.",
+        },
+      ],
     },
     en: {
       hero: "STREAMING SERVICE", highlightTitle: "Professional live coverage for sporting events",
       highlightText: "At MOVIDA DEPORTIVA TV, we provide comprehensive sports broadcasting services, ensuring high-quality and complete coverage for every match. Our commitment is to deliver a unique and immersive experience for both viewers and organisers.",
-      include: "Our services include", process: "How do we work?", ctaTitle: "Ready to take your event to the next level?", ctaText: "At MOVIDA DEPORTIVA TV, we are passionate about sport and dedicated to offering top-quality broadcasts.", contact: "Contact now",
+      include: "Available services",
+      serviceNote:
+        "The difference is that in the first option we broadcast for the client's platform. In the second, we broadcast on our own MDTV production channel with full control and wider visibility.",
+      focusNote:
+        "We no longer offer other services so we can focus on these two and deliver them at the highest level.",
+      process: "How do we work?",
+      ctaTitle: "Ready to take your event to the next level?",
+      ctaText: "At MOVIDA DEPORTIVA TV, we are passionate about sport and dedicated to offering top-quality broadcasts.",
+      contact: "Contact now",
+      services: [
+        {
+          num: "1",
+          title: "Broadcasting for your platform",
+          desc: "We stream the event to the client's platform (web, app, or own channel).",
+        },
+        {
+          num: "2",
+          title: "Broadcasting on our MDTV platform",
+          desc: "We stream the event on our production channel with full MDTV coverage and distribution.",
+        },
+      ],
     },
   }[locale];
   return (
@@ -69,38 +131,7 @@ export default async function ServiciosStreamingPage() {
       <section className={styles.servicesSection}>
         <h2>{t.include}</h2>
         <div className={styles.servicesGrid}>
-          {[
-            {
-              num: "1",
-              title: "Retransmisión del Partido",
-              desc: "Capturamos cada momento con cámaras de alta definición para ofrecer una visualización impecable desde cualquier ángulo.",
-            },
-            {
-              num: "2",
-              title: "Realización en Vivo",
-              desc: "Coordinamos todas las tomas, gráficos y repeticiones en tiempo real para una producción dinámica y profesional.",
-            },
-            {
-              num: "3",
-              title: "Narración y Locución",
-              desc: "Proporcionamos comentaristas y locutores experimentados que aportan emoción y conocimiento experto al evento.",
-            },
-            {
-              num: "4",
-              title: "Zona Mixta",
-              desc: "Cobertura de entrevistas y reacciones post-partido con jugadores y entrenadores para brindar contenido adicional y exclusivo.",
-            },
-            {
-              num: "5",
-              title: "Producción Completa",
-              desc: "Gestionamos todos los aspectos de la producción, incluyendo gráficos, estadísticas en tiempo real y efectos visuales.",
-            },
-            {
-              num: "6",
-              title: "Soporte Técnico",
-              desc: "Nuestro equipo técnico altamente capacitado asegura el funcionamiento perfecto de todos los equipos y sistemas durante el evento.",
-            },
-          ].map((item) => (
+          {t.services.map((item) => (
             <article key={item.num} className={styles.serviceCard}>
               <div className={styles.serviceNumber}>{item.num}</div>
               <div>
@@ -110,11 +141,18 @@ export default async function ServiciosStreamingPage() {
             </article>
           ))}
         </div>
+        <div className={styles.serviceNotes}>
+          <p>{t.serviceNote}</p>
+          <p>{t.focusNote}</p>
+        </div>
       </section>
 
       <section className={styles.processSection}>
         <div className={styles.processImage}>
-          <img src="/assets/figma/servicios-image-25.png" alt="" />
+          <img
+            src={`${mediaBase}/IMG_6300.JPG`}
+            alt="Puesto técnico de retransmisión en directo con monitores y realización"
+          />
         </div>
         <div className={styles.processContent}>
           <h2>{t.process}</h2>
@@ -151,14 +189,17 @@ export default async function ServiciosStreamingPage() {
 
       <section className={styles.ctaSection}>
         <div className={styles.ctaBackground}>
-          <img src="/assets/figma/servicios-cta-bg.png" alt="" />
+          <img
+            src={`${mediaBase}/IMG_6313.JPG`}
+            alt="Retransmisión profesional de un partido de fútbol sala"
+          />
         </div>
         <div className={styles.ctaContent}>
           <h2>{t.ctaTitle}</h2>
           <p>{t.ctaText}</p>
           <Link
             className={styles.primaryButton}
-            href="mailto:movidadeportiva.direccion@gmail.com?subject=Quiero%20informaci%C3%B3n%20sobre%20streaming"
+            href="/servicios/contacto"
           >
             {t.contact}
             <img src="/assets/figma/arrow-right.png" alt="" />

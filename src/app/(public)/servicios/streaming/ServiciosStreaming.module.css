@@ -110,7 +110,7 @@
 
 .servicesGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 
@@ -154,6 +154,15 @@
 .serviceCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+}
+
+.serviceNotes {
+  display: grid;
+  gap: 12px;
+  max-width: 860px;
+  color: #e6f2f0;
+  font-size: 20px;
+  line-height: 1.5;
 }
 
 .processSection {
@@ -387,6 +396,10 @@
   .processCard {
     font-size: 18px;
     letter-spacing: -0.4px;
+  }
+
+  .serviceNotes {
+    font-size: 16px;
   }
 
   .processSection {

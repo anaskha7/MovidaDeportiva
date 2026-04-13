@@ -230,16 +230,16 @@ export default function SettingsPanel({
         badge: t.planSubscriber,
         access: t.accessSubscriber,
         actionLabel: t.manageSubscription,
-        actionHref: "/app/servicios",
+        actionHref: "/servicios/contacto",
       };
     }
 
-    return {
-      badge: t.planBasic,
-      access: t.accessBasic,
-      actionLabel: t.subscribeNow,
-      actionHref: "/app/servicios",
-    };
+      return {
+        badge: t.planBasic,
+        access: t.accessBasic,
+        actionLabel: t.subscribeNow,
+        actionHref: "/servicios/contacto",
+      };
   }, [
     role,
     t.accessAdmin,

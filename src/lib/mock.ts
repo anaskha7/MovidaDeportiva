@@ -9,8 +9,6 @@ import type {
 
 export const mockDeportes: Deporte[] = [
   { id: "dep-futbol", nombre: "Fútbol", icono: "⚽" },
-  { id: "dep-baloncesto", nombre: "Baloncesto", icono: "🏀" },
-  { id: "dep-balonmano", nombre: "Balonmano", icono: "🤾" },
   { id: "dep-futsal", nombre: "Fútbol sala", icono: "🥅" },
 ];
 
@@ -23,6 +21,17 @@ export const mockCategorias: Categoria[] = [
     resumen: "Clasificación exacta del Grupo 5 en la federación catalana, con tabla detallada y estado actual.",
     clasificacionUrl: "https://www.fcf.cat/classificacio/2526/futbol-11/tercera-federacio/grup-v",
     calendarioUrl: "https://www.fcf.cat/calendari/2526/futbol-11/tercera-federacio/grup-v",
+  },
+  {
+    id: "cat-tercera-fed-g12",
+    nombre: "Tercera Federación G12",
+    deporteId: "dep-futbol",
+    organizador: "FTF / RFEF",
+    resumen: "Clasificación y calendario de la Tercera Federación Grupo XII con seguimiento de la recta final de temporada.",
+    clasificacionUrl:
+      "https://www.resultados-futbol.com/competicion/tercera_division_rfef/2026/grupo12/clasificacion",
+    calendarioUrl:
+      "https://www.resultados-futbol.com/competicion/tercera_division_rfef/2026/grupo12/calendario",
   },
   {
     id: "cat-segunda-futfem-g2",

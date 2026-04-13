@@ -135,6 +135,10 @@
   white-space: nowrap;
 }
 
+.mobileHiddenPublicButton {
+  display: flex;
+}
+
 .subscribeTitle {
   font-size: 38px;
   line-height: 35px;
@@ -602,6 +606,10 @@
   }
 
   .mobileHiddenBell {
+    display: none;
+  }
+
+  .mobileHiddenPublicButton {
     display: none;
   }
 

@@ -180,8 +180,16 @@ export default function DashboardSidebarWidgets({
           </div>
         ) : null}
 
-        {visibleUpcomingEvents.length > 0
-          ? visibleUpcomingEvents.map((event) => (
+        {visibleUpcomingEvents.length > 0 ? (
+          <div
+            className={[
+              styles.scheduleList,
+              showAllEvents && upcomingEvents.length > 2 ? styles.scheduleListScrollable : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {visibleUpcomingEvents.map((event) => (
               <div key={event.id} className={styles.scheduleItem}>
                 <div>
                   <strong>{event.title}</strong>
@@ -189,8 +197,9 @@ export default function DashboardSidebarWidgets({
                 </div>
                 <span>{event.timeLabel}</span>
               </div>
-            ))
-          : null}
+            ))}
+          </div>
+        ) : null}
 
         {featuredEvent && upcomingEvents.length > 0 ? (
           hasHiddenEvents || showAllEvents ? (

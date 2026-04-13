@@ -30,7 +30,6 @@ export default function NotificationsPage({
       adminPanel: "Panel admin",
       live: "En directo",
       events: "Partidos y eventos",
-      services: "Nuestros servicios",
       notifications: "Notificaciones",
       settings: "Ajustes",
       logout: "Cerrar sesión",
@@ -46,7 +45,6 @@ export default function NotificationsPage({
       adminPanel: "Panell admin",
       live: "En directe",
       events: "Partits i esdeveniments",
-      services: "Els nostres serveis",
       notifications: "Notificacions",
       settings: "Ajustos",
       logout: "Tancar sessió",
@@ -62,7 +60,6 @@ export default function NotificationsPage({
       adminPanel: "Admin panel",
       live: "Live",
       events: "Matches and events",
-      services: "Our services",
       notifications: "Notifications",
       settings: "Settings",
       logout: "Log out",
@@ -113,10 +110,6 @@ export default function NotificationsPage({
               <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
-              </HardNavLink>
-              <HardNavLink href="/app/servicios" className={styles.menuItem}>
-                <img src="/assets/figma/admin-menu-services.svg" alt="" />
-                <span>{t.services}</span>
               </HardNavLink>
               <HardNavLink href={notificationsHref} className={`${styles.menuItem} ${styles.active}`}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />

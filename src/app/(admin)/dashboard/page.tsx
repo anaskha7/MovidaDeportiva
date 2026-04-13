@@ -43,9 +43,9 @@ export default async function DashboardPage(props: {
   const searchQuery =
     typeof searchParams?.q === "string" ? searchParams.q.trim().toLowerCase() : "";
   const t = {
-    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "¿Qué estás buscando?", request: "Solicitar servicios", requestText: "Escoje que tipo de servicio quieres contratar.", from: "Desde", eventsText: "Disfruta del mejor fútbol siempre que quieras", noResults: "No hay resultados para esta búsqueda." },
-    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", request: "Sol·licitar serveis", requestText: "Escull quin tipus de servei vols contractar.", from: "Des de", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
-    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", request: "Request services", requestText: "Choose the type of service you want to hire.", from: "From", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
+    es: { menu: "Menú", home: "Inicio", adminPanel: "Panel admin", live: "En directo", events: "Partidos y eventos", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", greeting: "Buenos días,", search: "¿Qué estás buscando?", eventsText: "Disfruta del mejor fútbol siempre que quieras", noResults: "No hay resultados para esta búsqueda." },
+    ca: { menu: "Menú", home: "Inici", adminPanel: "Panell admin", live: "En directe", events: "Partits i esdeveniments", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
+    en: { menu: "Menu", home: "Home", adminPanel: "Admin panel", live: "Live", events: "Matches and events", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
   }[locale];
   const metricsCopy = {
     es: {
@@ -78,10 +78,6 @@ export default async function DashboardPage(props: {
   }[locale];
   const matchesSearch = (value: string) =>
     !searchQuery || value.toLowerCase().includes(searchQuery);
-  const serviceCards = [
-    { title: "SERVICIOS RETRANSMISION", price: "19,99€/hora", className: styles.serviceBox, icon: "video" },
-    { title: "SPEAKERS Y ANIMACIÓN", price: "27,99€/hora", className: styles.serviceBoxLight, icon: "audio" },
-  ].filter((item) => matchesSearch(item.title));
   const [metrics, notificationFeed] = await Promise.all([
     getAdminMetrics({ session, locale }),
     getNotificationFeedForSession({ session, locale, limit: 6 }),
@@ -148,6 +144,10 @@ export default async function DashboardPage(props: {
                 <img src="/assets/figma/admin-menu-home.svg" alt="" />
                 <span>{t.home}</span>
               </HardNavLink>
+              <HardNavLink href="/admin/panel" className={styles.menuItem}>
+                <img src="/assets/figma/admin-menu-panel.svg" alt="" />
+                <span>{t.adminPanel}</span>
+              </HardNavLink>
               <HardNavLink href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
@@ -156,10 +156,6 @@ export default async function DashboardPage(props: {
               <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
-              </HardNavLink>
-              <HardNavLink href="/app/servicios" className={styles.menuItem}>
-                <img src="/assets/figma/admin-menu-services.svg" alt="" />
-                <span>{t.services}</span>
               </HardNavLink>
               <HardNavLink href="/admin/notificaciones" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />
@@ -265,43 +261,6 @@ export default async function DashboardPage(props: {
               </article>
               </HardNavLink> : null}
 
-              {serviceCards.length > 0 ? <article className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <div>
-                    <strong>{t.request}</strong>
-                    <p>{t.requestText}</p>
-                  </div>
-                  <img src="/assets/figma/icon-arrow-up-right-dark.svg" alt="" />
-                </div>
-                <div className={styles.serviceRow}>
-                  {serviceCards.map((card) => (
-                  <HardNavLink key={card.title} href="/app/servicios" className={card.className}>
-                    <div className={styles.serviceBoxInner}>
-                      <strong>{card.title}</strong>
-                      <span>{t.from} {card.price}</span>
-                    </div>
-                    <span className={styles.serviceBoxIcon} aria-hidden="true">
-                      {card.icon === "video" ? (
-                      <svg viewBox="0 0 24 24">
-                        <rect x="3" y="7" width="12" height="10" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                        <path d="M15 10.2 20.5 7.5v9L15 13.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                        <circle cx="7.5" cy="10.5" r="1.1" fill="currentColor" />
-                        <path d="M6.5 14.2h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                      </svg>
-                      ) : (
-                      <svg viewBox="0 0 24 24">
-                        <path d="M5 13.5V12a7 7 0 1 1 14 0v1.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                        <rect x="4" y="12.5" width="3.8" height="6.5" rx="1.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                        <rect x="16.2" y="12.5" width="3.8" height="6.5" rx="1.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-                        <path d="M7.8 19h3.2c.3 1 1.2 1.7 2.3 1.7h1.2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      )}
-                    </span>
-                  </HardNavLink>
-                  ))}
-                </div>
-              </article> : null}
-
               {showEventsCard ? <HardNavLink href="/videos" className={styles.cardLink}>
               <article className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -354,7 +313,7 @@ export default async function DashboardPage(props: {
                     </p>
                   </div>
                 ))}
-                {!showLiveCard && !showEventsCard && serviceCards.length === 0 && notificationItems.length === 0 ? (
+                {!showLiveCard && !showEventsCard && notificationItems.length === 0 ? (
                   <div className={styles.scheduleEmptyAlt}>
                     <p>{t.noResults}</p>
                   </div>

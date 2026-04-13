@@ -28,7 +28,6 @@ const translations = {
     home: "Inicio",
     live: "En directo",
     events: "Partidos y eventos",
-    services: "Nuestros servicios",
       notifications: "Notificaciones",
       settings: "Ajustes",
       logout: "Cerrar sesión",
@@ -45,7 +44,6 @@ const translations = {
     home: "Inici",
     live: "En directe",
     events: "Partits i esdeveniments",
-    services: "Els nostres serveis",
       notifications: "Notificacions",
       settings: "Ajustos",
       logout: "Tancar sessió",
@@ -62,7 +60,6 @@ const translations = {
     home: "Home",
     live: "Live",
     events: "Matches and events",
-    services: "Our services",
       notifications: "Notifications",
       settings: "Settings",
       logout: "Log out",
@@ -142,10 +139,6 @@ export default function AjustesPageClient({
             <HardNavLink href="/videos" className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-events.svg" alt="" />
               <span>{t.events}</span>
-            </HardNavLink>
-            <HardNavLink href="/app/servicios" className={styles.menuItem}>
-              <img src="/assets/figma/admin-menu-services.svg" alt="" />
-              <span>{t.services}</span>
             </HardNavLink>
             <HardNavLink href={notificationsHref} className={styles.menuItem}>
               <img src="/assets/figma/admin-menu-bell.svg" alt="" />

@@ -4,7 +4,7 @@ import { clearSessionCookies } from "@/lib/session-response";
 
 export function GET(request: NextRequest) {
   const response = clearSessionCookies(
-    NextResponse.redirect(new URL("/login", request.url)),
+    NextResponse.redirect(new URL("/", request.url)),
   );
   response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   response.headers.set("Pragma", "no-cache");

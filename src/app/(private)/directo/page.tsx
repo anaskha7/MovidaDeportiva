@@ -22,9 +22,9 @@ export default async function DirectoPage() {
     limit: 6,
   });
   const t = {
-    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", services: "Nuestros servicios", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", liveNow: "EN VIVO", other: "Otros partidos", round: "Jornada", chat: "Chat en directo", write: "Escribe un mensaje..." },
-    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", services: "Els nostres serveis", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", liveNow: "EN DIRECTE", other: "Altres partits", round: "Jornada", chat: "Xat en directe", write: "Escriu un missatge..." },
-    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", services: "Our services", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", liveNow: "LIVE", other: "Other matches", round: "Matchday", chat: "Live chat", write: "Write a message..." },
+    es: { menu: "Menú", home: "Inicio", live: "En directo", events: "Partidos y eventos", notifications: "Notificaciones", settings: "Ajustes", logout: "Cerrar sesión", subscribe: "¡SÚSCRIBETE", subscribe2: "AHORA!", subscribeText: "Para disfrutar de todas las ventajas del Premium", liveNow: "EN VIVO", other: "Otros partidos", round: "Jornada", chat: "Chat en directo", write: "Escribe un mensaje..." },
+    ca: { menu: "Menú", home: "Inici", live: "En directe", events: "Partits i esdeveniments", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", liveNow: "EN DIRECTE", other: "Altres partits", round: "Jornada", chat: "Xat en directe", write: "Escriu un missatge..." },
+    en: { menu: "Menu", home: "Home", live: "Live", events: "Matches and events", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", liveNow: "LIVE", other: "Other matches", round: "Matchday", chat: "Live chat", write: "Write a message..." },
   }[locale];
   const liveMatch = getLiveMatch();
   const otherMatches = getOtherLiveMatches();
@@ -67,10 +67,6 @@ export default async function DirectoPage() {
               <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
                 <span>{t.events}</span>
-              </HardNavLink>
-              <HardNavLink href="/app/servicios" className={styles.menuItem}>
-                <img src="/assets/figma/admin-menu-services.svg" alt="" />
-                <span>{t.services}</span>
               </HardNavLink>
               <HardNavLink href={notificationsHref} className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-bell.svg" alt="" />

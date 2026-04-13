@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getLocale } from "@/lib/i18n";
 import styles from "./Home.module.css";
 
+const mediaBase = "/assets/figma/Fotografias%20-%20Multimedia/fotos%20mdtv%20pagina%20web";
+
 export default async function HomePage() {
   const locale = await getLocale();
   const t = {
@@ -14,11 +16,15 @@ export default async function HomePage() {
       knowMore: "Quiero saber más",
       streaming: "Servicio streaming",
       streamingText: "Disponible en múltiples plataformas. YouTube, Facebook, Instagram, Twitch y más. Calidad 4K, audio profesional y chat interactivo.",
+      streamingDetail: "Diseñamos la retransmisión completa para que tu evento se vea sólido, profesional y listo para crecer en audiencia.",
       speakers: "Speakers y animación",
       speakersText: "Servicios de locución profesional y animación para dar vida a tus eventos con energía y profesionalismo.",
       livePill: "Directos",
       liveTitle: "Transmisiones exclusivas y chat en directo.",
       watchNow: "Ver ahora",
+      liveCard1: "Cobertura multicámara con realización en vivo para que no te pierdas ningún detalle.",
+      liveCard2: "Narración, realización y seguimiento del evento con una experiencia pensada para tu audiencia.",
+      liveCard3: "Producción audiovisual preparada para emitir con calidad profesional desde cualquier recinto.",
       aboutPill: "¿Quiénes somos?",
       aboutTitle: "Conócenos",
       aboutText: "Contamos historias que conectan, inspiran y trascienden",
@@ -44,11 +50,15 @@ export default async function HomePage() {
       knowMore: "Vull saber-ne més",
       streaming: "Servei d'Streaming",
       streamingText: "Disponible en múltiples plataformes. YouTube, Facebook, Instagram, Twitch i més. Qualitat 4K, àudio professional i xat interactiu.",
+      streamingDetail: "Dissenyem la retransmissió completa perquè el teu esdeveniment es vegi sòlid, professional i preparat per créixer en audiència.",
       speakers: "Speakers i animació",
       speakersText: "Serveis de locució professional i animació per donar vida als teus esdeveniments amb energia i professionalitat.",
       livePill: "Directes",
       liveTitle: "Transmissions exclusives i xat en directe.",
       watchNow: "Veure ara",
+      liveCard1: "Cobertura multicàmera amb realització en viu perquè no et perdis cap detall.",
+      liveCard2: "Narració, realització i seguiment de l'esdeveniment amb una experiència pensada per a la teva audiència.",
+      liveCard3: "Producció audiovisual preparada per emetre amb qualitat professional des de qualsevol recinte.",
       aboutPill: "Qui som?",
       aboutTitle: "Coneix-nos",
       aboutText: "Expliquem històries que connecten, inspiren i transcendeixen",
@@ -74,11 +84,15 @@ export default async function HomePage() {
       knowMore: "I want to know more",
       streaming: "Streaming service",
       streamingText: "Available on multiple platforms. YouTube, Facebook, Instagram, Twitch and more. 4K quality, professional audio and interactive chat.",
+      streamingDetail: "We design the full live production so your event feels polished, professional and ready to grow its audience.",
       speakers: "Speakers and entertainment",
       speakersText: "Professional voice-over and entertainment services to bring your events to life with energy and professionalism.",
       livePill: "Live",
       liveTitle: "Exclusive broadcasts and live chat.",
       watchNow: "Watch now",
+      liveCard1: "Multi-camera coverage with live direction so your audience catches every key moment.",
+      liveCard2: "Commentary, live production and event tracking designed for a more immersive broadcast.",
+      liveCard3: "Audiovisual production ready to go live with professional quality from any venue.",
       aboutPill: "Who are we?",
       aboutTitle: "Get to know us",
       aboutText: "We tell stories that connect, inspire and transcend",
@@ -133,43 +147,46 @@ export default async function HomePage() {
             <img src="/assets/figma/arrow-right.png" alt="" />
           </Link>
         </div>
-        <div className={styles.servicesGrid}>
-          <Link href="/servicios/streaming" className={styles.cardLink}>
-          <article className={styles.serviceCard}>
-            <div className={styles.cardTop}>
-              <span className={styles.cardArrow} aria-hidden="true" />
-            </div>
-            <div>
-              <h3>{t.streaming}</h3>
-              <p>{t.streamingText}</p>
-            </div>
-          </article>
-          </Link>
-          <Link href="/servicios/streaming" className={styles.cardLink}>
-          <article className={styles.serviceCard}>
-            <div className={styles.cardTop}>
-              <span className={styles.cardArrow} aria-hidden="true" />
-            </div>
-            <div>
-              <h3>MDTV</h3>
-              <p>
-                Producción audiovisual completa. Desde la idea hasta la pantalla,
-                creamos contenido que conecta con tu audiencia.
-              </p>
-            </div>
-          </article>
-          </Link>
-          <Link href="/servicios/streaming" className={styles.cardLink}>
-          <article className={styles.serviceCard}>
-            <div className={styles.cardTop}>
-              <span className={styles.cardArrow} aria-hidden="true" />
-            </div>
-            <div>
-              <h3>{t.speakers}</h3>
-              <p>{t.speakersText}</p>
-            </div>
-          </article>
-          </Link>
+        <div className={styles.servicesVisualGroup}>
+          <div className={styles.servicesGrid}>
+            <Link href="/servicios/streaming" className={`${styles.cardLink} ${styles.cardLinkFeatured}`}>
+              <article className={`${styles.serviceCard} ${styles.serviceCardFeatured}`}>
+                <div className={styles.cardTop}>
+                  <span className={styles.cardArrow} aria-hidden="true" />
+                </div>
+                <div>
+                  <h3>{t.streaming}</h3>
+                  <p>{t.streamingText}</p>
+                  <p>{t.streamingDetail}</p>
+                </div>
+              </article>
+            </Link>
+            <Link href="/servicios/streaming" className={styles.cardLink}>
+              <article className={styles.serviceCard}>
+                <div className={styles.cardTop}>
+                  <span className={styles.cardArrow} aria-hidden="true" />
+                </div>
+                <div>
+                  <h3>MDTV</h3>
+                  <p>
+                    Producción audiovisual completa. Desde la idea hasta la pantalla,
+                    creamos contenido que conecta con tu audiencia.
+                  </p>
+                </div>
+              </article>
+            </Link>
+            <Link href="/servicios/streaming" className={styles.cardLink}>
+              <article className={styles.serviceCard}>
+                <div className={styles.cardTop}>
+                  <span className={styles.cardArrow} aria-hidden="true" />
+                </div>
+                <div>
+                  <h3>{t.speakers}</h3>
+                  <p>{t.speakersText}</p>
+                </div>
+              </article>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -179,39 +196,36 @@ export default async function HomePage() {
         <div className={styles.directosGrid}>
           {[
             {
-              img: "/assets/figma/home-directo-1.png",
+              img: `${mediaBase}/IMG_6291.JPG`,
               title: "GRAMA vs VILANOVA",
-              subtitle: "3ª FEDERACIÓN - GRUPO V - JORNADA 19",
+              subtitle: t.liveCard1,
             },
             {
-              img: "/assets/figma/home-directo-2.png",
+              img: `${mediaBase}/IMG_6300.JPG`,
               title: "UD SALUD vs ALCALÁ",
-              subtitle: "SEGUNDA REGIONAL - GRUPO 2 - JORNADA 14",
+              subtitle: t.liveCard2,
             },
             {
-              img: "/assets/figma/home-directo-3.png",
+              img: `${mediaBase}/1665aec1-55a2-4eea-9bfd-dd02c883b516.jpg`,
               title: "REAL LION FEM vs BADALONA FEM",
-              subtitle: "3ª FEDERACIÓN - GRUPO 2 - JORNADA 16",
+              subtitle: t.liveCard3,
             },
           ].map((item) => (
             <Link key={item.title} href="/directo" prefetch={false} className={styles.cardLink}>
             <article className={styles.directoCard}>
               <div className={styles.directoImage}>
-                <img src={item.img} alt="" />
+                <img src={item.img} alt={`Cobertura multimedia de ${item.title}`} />
                 <div className={styles.directoOverlay} />
                 <span className={styles.secondaryButton}>
                   {t.watchNow}
                 </span>
               </div>
               <div className={styles.directoMeta}>
-                <div className={styles.liveBadge}>
-                  <span>Live</span>
-                  <span className={styles.liveDot} />
-                </div>
+                <span className={styles.directoCategory}>{t.livePill}</span>
                 <img src="/assets/figma/arrow-right.png" alt="" />
               </div>
               <p className={styles.directoTitle}>
-                <strong>{item.title}</strong> - <span>{item.subtitle}</span>
+                <span>{item.subtitle}</span>
               </p>
             </article>
             </Link>
@@ -253,7 +267,10 @@ export default async function HomePage() {
           </div>
         </div>
         <div className={styles.aboutImage}>
-          <img src="/assets/figma/home-about.png" alt="" />
+          <img
+            src={`${mediaBase}/IMG_5975.JPG`}
+            alt="Operador de cámara de Movida Deportiva TV durante una retransmisión"
+          />
         </div>
       </section>
 
