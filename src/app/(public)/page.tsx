@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getLocale } from "@/lib/i18n";
+import { getCollaborationsLabel, PUBLIC_COLLABORATORS } from "./collaborations";
 import styles from "./Home.module.css";
 
 const mediaBase = "/assets/figma/Fotografias%20-%20Multimedia/fotos%20mdtv%20pagina%20web";
@@ -39,7 +40,6 @@ export default async function HomePage() {
       create: "Crear cuenta",
       haveAccount: "¿Ya tienes cuenta?",
       login: "Iniciar sesión",
-      collaborators: "Nuestros colaboradores",
     },
     ca: {
       hero: "Producció audiovisual i retransmissions en directe",
@@ -73,7 +73,6 @@ export default async function HomePage() {
       create: "Crear compte",
       haveAccount: "Ja tens compte?",
       login: "Iniciar sessió",
-      collaborators: "Els nostres col·laboradors",
     },
     en: {
       hero: "Audiovisual production & live broadcasts",
@@ -107,7 +106,6 @@ export default async function HomePage() {
       create: "Create account",
       haveAccount: "Already have an account?",
       login: "Log in",
-      collaborators: "Our collaborators",
     },
   }[locale];
 
@@ -291,19 +289,11 @@ export default async function HomePage() {
       </section>
 
       <section className={styles.collabSection}>
-        <h2>{t.collaborators}</h2>
+        <h2>{getCollaborationsLabel(locale)}</h2>
         <div className={styles.collabGrid}>
-          {[
-            "/assets/figma/collab-1.png",
-            "/assets/figma/collab-2.png",
-            "/assets/figma/collab-3.png",
-            "/assets/figma/collab-4.png",
-            "/assets/figma/collab-5.png",
-            "/assets/figma/collab-6.png",
-            "/assets/figma/collab-7.png",
-          ].map((src, index) => (
-            <div key={src} className={styles.collabItem}>
-              <img src={src} alt={`Colaborador ${index + 1}`} />
+          {PUBLIC_COLLABORATORS.map((item) => (
+            <div key={item.src} className={styles.collabItem}>
+              <img src={item.src} alt={item.alt} />
             </div>
           ))}
         </div>

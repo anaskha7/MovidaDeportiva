@@ -1,4 +1,5 @@
 import { getLocale } from "@/lib/i18n";
+import { getCollaborationsLabel, PUBLIC_COLLABORATORS } from "../collaborations";
 import styles from "./QuienesSomos.module.css";
 
 const mediaBase = "/assets/figma/Fotografias%20-%20Multimedia/fotos%20mdtv%20pagina%20web";
@@ -40,21 +41,11 @@ const distinguishItems = [
   },
 ];
 
-const collaborators = [
-  "/assets/figma/collab-1.png",
-  "/assets/figma/collab-2.png",
-  "/assets/figma/collab-3.png",
-  "/assets/figma/collab-4.png",
-  "/assets/figma/collab-5.png",
-  "/assets/figma/collab-6.png",
-  "/assets/figma/collab-7.png",
-];
-
 export default async function QuienesSomosPage() {
   const locale = await getLocale();
   const content = {
     es: {
-      hero: "NUESTRO EQUIPO", history: "Nuestra historia", valuesTitle: "Nuestros valores", mission: "Nuestra misión", distinguish: "¿Qué nos Distingue?", collaborators: "Nuestros colaboradores",
+      hero: "NUESTRO EQUIPO", history: "Nuestra historia", valuesTitle: "Nuestros valores", mission: "Nuestra misión", distinguish: "¿Qué nos Distingue?",
       history1: "nació de la pasión por el deporte y la tecnología audiovisual.",
       history2: "Lo que comenzó como un proyecto para documentar eventos locales, se ha convertido en una empresa especializada en streaming profesional y producción audiovisual deportiva.",
       note: "Hemos crecido colaborando con equipos, federaciones y organizaciones que comparten nuestra visión: llevar el deporte a más personas a través de contenido de alta calidad.",
@@ -65,7 +56,7 @@ export default async function QuienesSomosPage() {
       distinguishItems,
     },
     ca: {
-      hero: "EL NOSTRE EQUIP", history: "La nostra història", valuesTitle: "Els nostres valors", mission: "La nostra missió", distinguish: "Què ens distingeix?", collaborators: "Els nostres col·laboradors",
+      hero: "EL NOSTRE EQUIP", history: "La nostra història", valuesTitle: "Els nostres valors", mission: "La nostra missió", distinguish: "Què ens distingeix?",
       history1: "va néixer de la passió per l'esport i la tecnologia audiovisual.",
       history2: "El que va començar com un projecte per documentar esdeveniments locals s'ha convertit en una empresa especialitzada en streaming professional i producció audiovisual esportiva.",
       note: "Hem crescut col·laborant amb equips, federacions i organitzacions que comparteixen la nostra visió: portar l'esport a més persones a través de contingut d'alta qualitat.",
@@ -84,7 +75,7 @@ export default async function QuienesSomosPage() {
       ],
     },
     en: {
-      hero: "OUR TEAM", history: "Our story", valuesTitle: "Our values", mission: "Our mission", distinguish: "What sets us apart?", collaborators: "Our collaborators",
+      hero: "OUR TEAM", history: "Our story", valuesTitle: "Our values", mission: "Our mission", distinguish: "What sets us apart?",
       history1: "was born from a passion for sport and audiovisual technology.",
       history2: "What started as a project to document local events has become a company specialised in professional streaming and sports audiovisual production.",
       note: "We have grown by collaborating with teams, federations and organisations that share our vision: bringing sport to more people through high-quality content.",
@@ -187,11 +178,11 @@ export default async function QuienesSomosPage() {
       </section>
 
       <section className={styles.collabSection}>
-        <h2 className={styles.sectionTitle}>{content.collaborators}</h2>
+        <h2 className={styles.sectionTitle}>{getCollaborationsLabel(locale)}</h2>
         <div className={styles.collabGrid}>
-          {collaborators.map((src, index) => (
-            <div key={src} className={styles.collabItem}>
-              <img src={src} alt={`Colaborador ${index + 1}`} />
+          {PUBLIC_COLLABORATORS.map((item) => (
+            <div key={item.src} className={styles.collabItem}>
+              <img src={item.src} alt={item.alt} />
             </div>
           ))}
         </div>
