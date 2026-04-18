@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import NotificationsPage from "@/components/NotificationsPage";
 import { getCurrentUserBySession } from "@/lib/auth";
-import { getNotificationFeedForSession } from "@/lib/backoffice";
+import {
+  getNotificationFeedForSession,
+  markNotificationsAsReadForSession,
+} from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
 import { formatUserName, getSession } from "@/lib/session";
 
@@ -18,6 +21,7 @@ export default async function UserNotificationsPage() {
     email: session?.email,
   });
   const displayName = formatUserName(session?.name);
+  await markNotificationsAsReadForSession(session);
   const notificationFeed = await getNotificationFeedForSession({
     session,
     locale,

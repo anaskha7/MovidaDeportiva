@@ -206,6 +206,26 @@ export async function getNotificationFeedForSession(params: {
   };
 }
 
+export async function markNotificationsAsReadForSession(session: SessionData | null) {
+  if (!session?.role) {
+    return 0;
+  }
+
+  const where = buildNotificationWhere(session);
+
+  const result = await prisma.appNotification.updateMany({
+    where: {
+      ...where,
+      leida: false,
+    },
+    data: {
+      leida: true,
+    },
+  });
+
+  return result.count;
+}
+
 export async function getAdminMetrics(params: {
   session: SessionData | null;
   locale: Locale;
