@@ -120,8 +120,8 @@ export default async function HomePage() {
         />
         <div className={styles.heroContent}>
           <div className={`${styles.heroTitle} kdam`}>
-            <span>MOVIDA</span>
-            <span>DEPORTIVA TV</span>
+            <span className={styles.heroTitleTop}>MOVIDA</span>
+            <span className={styles.heroTitleBottom}>DEPORTIVA TV</span>
           </div>
           <div className={styles.heroTextBlock}>
             <p>

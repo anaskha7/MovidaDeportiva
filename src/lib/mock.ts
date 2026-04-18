@@ -1,6 +1,5 @@
 import type {
   Categoria,
-  ChatMessage,
   Deporte,
   Federacion,
   PartidoDirecto,
@@ -473,40 +472,5 @@ export const mockVideos: VideoGuardado[] = [
     genero: "masculino",
     publicado: true,
     vodUrl: "#",
-  },
-];
-
-export const mockMensajes: ChatMessage[] = [
-  {
-    id: "msg-1",
-    emoji: "🔥",
-    name: "Lucía",
-    timeLabel: "18:41",
-    message: "Qué golazo, menuda asistencia al espacio.",
-    userRole: "user",
-  },
-  {
-    id: "msg-2",
-    emoji: "👏",
-    name: "Carlos",
-    timeLabel: "18:42",
-    message: "El portero estaba vendidísimo.",
-    userRole: "suscriptor",
-  },
-  {
-    id: "msg-3",
-    emoji: "⚽",
-    name: "Marta",
-    timeLabel: "18:43",
-    message: "A ver si aguantan estos minutos finales.",
-    userRole: "user",
-  },
-  {
-    id: "msg-4",
-    emoji: "🎥",
-    name: "Movida TV",
-    timeLabel: "18:44",
-    message: "Recordad que el resumen estará disponible al terminar.",
-    userRole: "admin",
   },
 ];

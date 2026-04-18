@@ -1,36 +1,26 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { AuthActionError, registerUser } from "@/lib/auth";
+import { AuthActionError, getUserByEmailOrThrow } from "@/lib/auth";
 import { createEmailOtp } from "@/lib/email-otp";
 import { sendOtpEmail } from "@/lib/mailer";
 import { isOtpExemptEmail } from "@/lib/otp-policy";
-import { applySessionToResponse } from "@/lib/session-response";
-import { applyTrustedDeviceToResponse } from "@/lib/trusted-device";
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-  const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
+
+  if (!email) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("tab", "login");
+    return NextResponse.redirect(url, 303);
+  }
 
   try {
-    const user = await registerUser({ name, email, password });
+    const user = await getUserByEmailOrThrow(email);
 
     if (isOtpExemptEmail(user.email)) {
       const destination = user.role === "admin" ? "/dashboard" : "/app";
-      const response = await applySessionToResponse(
-        NextResponse.redirect(new URL(destination, request.url), 303),
-        {
-          role: user.role,
-          name: user.name,
-          userId: user.id,
-          email: user.email,
-        },
-      );
-      return applyTrustedDeviceToResponse(request, response, {
-        userId: user.id,
-        email: user.email,
-      });
+      return NextResponse.redirect(new URL(destination, request.url), 303);
     }
 
     const otp = await createEmailOtp({ email: user.email, userId: user.id });
@@ -42,14 +32,16 @@ export async function POST(request: NextRequest) {
     const url = new URL("/login", request.url);
     url.searchParams.set("step", "otp");
     url.searchParams.set("email", user.email);
+    url.searchParams.set("error", "otp_sent");
     return NextResponse.redirect(url, 303);
   } catch (error) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("step", "otp");
+    url.searchParams.set("email", email);
+
     if (error instanceof AuthActionError) {
-      const errorCode = error.code === "exists" ? "exists" : "register_invalid";
-      return NextResponse.redirect(
-        new URL(`/login?error=${errorCode}&tab=register`, request.url),
-        303,
-      );
+      url.searchParams.set("error", error.code === "blocked" ? "blocked" : "otp_invalid");
+      return NextResponse.redirect(url, 303);
     }
 
     throw error;

@@ -74,6 +74,7 @@ export interface ChatMessage {
   name: string;
   timeLabel: string;
   message: string;
+  avatarUrl?: string | null;
   userRole?: Rol;
   isBanned?: boolean;
 }

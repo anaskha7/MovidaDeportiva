@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getAuthSession } from "@/lib/next-auth";
+import { createEmailOtp } from "@/lib/email-otp";
+import { sendOtpEmail } from "@/lib/mailer";
+import { isOtpExemptEmail } from "@/lib/otp-policy";
 import { applySessionToResponse } from "@/lib/session-response";
+import { applyTrustedDeviceToResponse, hasTrustedDevice } from "@/lib/trusted-device";
 import type { Rol } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -18,12 +22,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const destination = role === "admin" ? "/dashboard" : "/app";
-  const response = NextResponse.redirect(new URL(destination, request.url));
-  return applySessionToResponse(response, {
-    role,
-    name,
-    userId,
+  if (
+    isOtpExemptEmail(email) ||
+    (await hasTrustedDevice(request, { userId, email }))
+  ) {
+    const destination = role === "admin" ? "/dashboard" : "/app";
+    const response = await applySessionToResponse(
+      NextResponse.redirect(new URL(destination, request.url)),
+      {
+        role,
+        name,
+        userId,
+        email,
+      },
+    );
+    return applyTrustedDeviceToResponse(request, response, { userId, email });
+  }
+
+  const otp = await createEmailOtp({ email, userId });
+  await sendOtpEmail({
     email,
+    code: otp.code,
+    expiresMinutes: otp.expiresMinutes,
   });
+  const url = new URL("/login", request.url);
+  url.searchParams.set("step", "otp");
+  url.searchParams.set("email", email);
+  return NextResponse.redirect(url);
 }

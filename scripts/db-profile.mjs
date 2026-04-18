@@ -7,7 +7,6 @@ const profilePaths = {
   local: path.join(root, ".env.db.local"),
   neon: path.join(root, ".env.db.neon"),
 };
-const managedKeys = ["DB_TARGET", "DATABASE_URL", "DIRECT_URL"];
 
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) {

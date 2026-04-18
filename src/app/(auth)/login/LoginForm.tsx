@@ -8,6 +8,8 @@ import styles from "./Login.module.css";
 type Props = {
   error?: string;
   initialTab?: "login" | "register";
+  step?: "otp";
+  otpEmail?: string;
   locale: Locale;
   googleEnabled: boolean;
 };
@@ -15,6 +17,8 @@ type Props = {
 export default function LoginForm({
   error,
   initialTab = "login",
+  step,
+  otpEmail,
   locale,
   googleEnabled,
 }: Props) {
@@ -22,22 +26,67 @@ export default function LoginForm({
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [isGooglePending, startGoogleSignIn] = useTransition();
+  const [isLoginSubmitting, setIsLoginSubmitting] = useState(false);
+  const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
+  const [isOtpSubmitting, setIsOtpSubmitting] = useState(false);
+  const [isOtpResending, setIsOtpResending] = useState(false);
+  const isOtpStep = step === "otp" && otpEmail;
 
   useEffect(() => {
     setTab(initialTab);
   }, [initialTab]);
 
+  useEffect(() => {
+    setIsLoginSubmitting(false);
+    setIsRegisterSubmitting(false);
+    setIsOtpSubmitting(false);
+    setIsOtpResending(false);
+  }, [error, initialTab, otpEmail, step]);
+
   const t = {
     es: {
       login: "Iniciar sesión", register: "Crear cuenta", email: "Correo electrónico", emailPlaceholder: "Escribe tu correo electrónico", password: "Contraseña", passwordPlaceholder: "Mínimo 8 caracteres", forgot: "¿Has olvidado tu contraseña?", forbidden: "No tienes permisos para acceder a esa sección.", invalid: "Credenciales inválidas.", blocked: "Tu cuenta está bloqueada. Contacta con administración.", registerInvalid: "Revisa los datos del registro.", exists: "Ya existe una cuenta con ese correo.", enter: "Entrar", or: "o", privacy: "Al enviar, acepto que Movida Deportiva procese mis datos de acuerdo con la", privacyLink: "política de privacidad.", fullName: "Nombre completo", namePlaceholder: "Tu nombre", showPassword: "Mostrar contraseña", hidePassword: "Ocultar contraseña",
+      otpTitle: "Verifica tu acceso",
+      otpSubtitle: "Te hemos enviado un código al correo",
+      otpCode: "Código",
+      otpCodePlaceholder: "Escribe el código de 6 dígitos",
+      otpVerify: "Verificar",
+      otpResend: "Reenviar código",
+      otpInvalid: "El código es incorrecto.",
+      otpExpired: "El código ha caducado. Solicita uno nuevo.",
+      otpMissing: "Introduce el código recibido.",
+      otpMax: "Has superado los intentos. Solicita otro código.",
+      otpSent: "Te hemos enviado un nuevo código.",
       oauth: "No se pudo completar el acceso con Google.", google: "Google", googleLoading: "Conectando...",
     },
     ca: {
       login: "Iniciar sessió", register: "Crear compte", email: "Correu electrònic", emailPlaceholder: "Escriu el teu correu electrònic", password: "Contrasenya", passwordPlaceholder: "Mínim 8 caràcters", forgot: "Has oblidat la contrasenya?", forbidden: "No tens permisos per accedir a aquesta secció.", invalid: "Credencials invàlides.", blocked: "El teu compte està bloquejat. Contacta amb administració.", registerInvalid: "Revisa les dades del registre.", exists: "Ja existeix un compte amb aquest correu.", enter: "Entrar", or: "o", privacy: "En enviar, accepto que Movida Deportiva processi les meves dades d'acord amb la", privacyLink: "política de privacitat.", fullName: "Nom complet", namePlaceholder: "El teu nom", showPassword: "Mostrar contrasenya", hidePassword: "Ocultar contrasenya",
+      otpTitle: "Verifica l'accés",
+      otpSubtitle: "T'hem enviat un codi al correu",
+      otpCode: "Codi",
+      otpCodePlaceholder: "Escriu el codi de 6 dígits",
+      otpVerify: "Verificar",
+      otpResend: "Tornar a enviar el codi",
+      otpInvalid: "El codi és incorrecte.",
+      otpExpired: "El codi ha caducat. Demana'n un de nou.",
+      otpMissing: "Introdueix el codi rebut.",
+      otpMax: "Has superat els intents. Demana un altre codi.",
+      otpSent: "T'hem enviat un nou codi.",
       oauth: "No s'ha pogut completar l'accés amb Google.", google: "Google", googleLoading: "Connectant...",
     },
     en: {
       login: "Log in", register: "Create account", email: "Email", emailPlaceholder: "Enter your email", password: "Password", passwordPlaceholder: "Minimum 8 characters", forgot: "Forgot your password?", forbidden: "You do not have permission to access that section.", invalid: "Invalid credentials.", blocked: "Your account is blocked. Contact the admin team.", registerInvalid: "Please review the registration details.", exists: "An account with that email already exists.", enter: "Enter", or: "or", privacy: "By submitting, I accept that Movida Deportiva processes my data according to the", privacyLink: "privacy policy.", fullName: "Full name", namePlaceholder: "Your name", showPassword: "Show password", hidePassword: "Hide password",
+      otpTitle: "Verify your access",
+      otpSubtitle: "We sent a code to your email",
+      otpCode: "Code",
+      otpCodePlaceholder: "Enter the 6-digit code",
+      otpVerify: "Verify",
+      otpResend: "Resend code",
+      otpInvalid: "The code is incorrect.",
+      otpExpired: "The code has expired. Request a new one.",
+      otpMissing: "Enter the code you received.",
+      otpMax: "Too many attempts. Request a new code.",
+      otpSent: "We sent you a new code.",
       oauth: "Google sign-in could not be completed.", google: "Google", googleLoading: "Connecting...",
     },
   }[locale];
@@ -47,6 +96,16 @@ export default function LoginForm({
       ? t.forbidden
       : error === "blocked"
         ? t.blocked
+      : error === "otp_invalid"
+        ? t.otpInvalid
+      : error === "otp_expired"
+        ? t.otpExpired
+      : error === "otp_missing"
+        ? t.otpMissing
+      : error === "otp_max"
+        ? t.otpMax
+      : error === "otp_sent"
+        ? t.otpSent
       : error === "invalid"
         ? t.invalid
         : error === "oauth" ||
@@ -61,6 +120,61 @@ export default function LoginForm({
       : error === "register_invalid"
         ? t.registerInvalid
         : null;
+
+  if (isOtpStep) {
+    return (
+      <div className={styles.formPanel}>
+        <div className={styles.otpHeader}>
+          <h2>{t.otpTitle}</h2>
+          <p>
+            {t.otpSubtitle}{" "}
+            <strong>{otpEmail}</strong>
+          </p>
+        </div>
+        <form
+          action="/auth/otp/verify"
+          method="post"
+          onSubmit={() => setIsOtpSubmitting(true)}
+        >
+          <div className={styles.formFields}>
+            <input type="hidden" name="email" value={otpEmail} />
+            <label>
+              {t.otpCode}
+              <div className={styles.inputBox}>
+                <input
+                  name="code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  pattern="[0-9 ]{6,8}"
+                  placeholder={t.otpCodePlaceholder}
+                  required
+                />
+              </div>
+            </label>
+            {loginError && <div className={styles.error}>{loginError}</div>}
+          </div>
+          <div className={styles.actions}>
+            <button className={styles.primaryButton} type="submit" disabled={isOtpSubmitting}>
+              {t.otpVerify}
+              <img src="/assets/figma/arrow-right.png" alt="" />
+            </button>
+          </div>
+        </form>
+        <form
+          action="/auth/otp/resend"
+          method="post"
+          className={styles.otpResend}
+          onSubmit={() => setIsOtpResending(true)}
+        >
+          <input type="hidden" name="email" value={otpEmail} />
+          <button type="submit" className={styles.linkButton} disabled={isOtpResending}>
+            {t.otpResend}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.formPanel}>
@@ -82,7 +196,11 @@ export default function LoginForm({
       </div>
 
       {tab === "login" ? (
-        <form action="/auth/login" method="post">
+        <form
+          action="/auth/login"
+          method="post"
+          onSubmit={() => setIsLoginSubmitting(true)}
+        >
           <div className={styles.formFields}>
             <label>
               {t.email}
@@ -141,7 +259,7 @@ export default function LoginForm({
             )}
           </div>
           <div className={styles.actions}>
-            <button className={styles.primaryButton} type="submit">
+            <button className={styles.primaryButton} type="submit" disabled={isLoginSubmitting}>
               {t.enter}
               <img src="/assets/figma/arrow-right.png" alt="" />
             </button>
@@ -182,7 +300,11 @@ export default function LoginForm({
           </div>
         </form>
       ) : (
-        <form action="/auth/register" method="post">
+        <form
+          action="/auth/register"
+          method="post"
+          onSubmit={() => setIsRegisterSubmitting(true)}
+        >
           <div className={styles.formFields}>
             <label>
               {t.fullName}
@@ -240,7 +362,7 @@ export default function LoginForm({
             {registerError && <div className={styles.error}>{registerError}</div>}
           </div>
           <div className={styles.actions}>
-            <button className={styles.primaryButton} type="submit">
+            <button className={styles.primaryButton} type="submit" disabled={isRegisterSubmitting}>
               {t.register}
               <img src="/assets/figma/arrow-right.png" alt="" />
             </button>

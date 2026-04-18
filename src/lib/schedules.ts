@@ -18,6 +18,9 @@ export interface CompetitionSchedule {
   rounds: ScheduleRound[];
 }
 
+const TIME_VALUE_PATTERN = /^(\d{1,2})[:.](\d{2})$/;
+const TIME_HOUR_PATTERN = /^(\d{1,2})\s*h$/i;
+
 function decodeHtml(value: string) {
   return value
     .replace(/&nbsp;/g, " ")
@@ -79,6 +82,30 @@ function getMadridDateKey() {
   return year && month && day ? `${year}-${month}-${day}` : "";
 }
 
+function normalizeTimeLabel(value?: string | null) {
+  if (!value) return undefined;
+
+  const trimmedValue = value.trim();
+  const timeMatch = trimmedValue.match(TIME_VALUE_PATTERN);
+
+  if (timeMatch) {
+    const [, hours, minutes] = timeMatch;
+    return `${hours.padStart(2, "0")}:${minutes}`;
+  }
+
+  const hourMatch = trimmedValue.match(TIME_HOUR_PATTERN);
+
+  if (hourMatch) {
+    return `${hourMatch[1].padStart(2, "0")}:00`;
+  }
+
+  return undefined;
+}
+
+export function getScheduleMatchTimeLabel(value?: string | null) {
+  return normalizeTimeLabel(value);
+}
+
 function parseSchedule(html: string, fromDateIso: string): CompetitionSchedule | null {
   const titleMatch = html.match(/<title>([^<]+)/i);
   const tableMatches = [...html.matchAll(/<table class="calendaritable">([\s\S]*?)<\/table>/gi)];
@@ -128,7 +155,9 @@ function parseSchedule(html: string, fromDateIso: string): CompetitionSchedule |
         return [];
       }
 
-      const timeLabel = middleTexts.find((text) => /\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s*h\b/i.test(text));
+      const timeLabel = normalizeTimeLabel(
+        middleTexts.find((text) => /\b\d{1,2}[:.]\d{2}\b|\b\d{1,2}\s*h\b/i.test(text)),
+      );
 
       return [
         {
@@ -195,15 +224,14 @@ function parseResultadosFutbolSchedule(
         rowHtml.match(/<a class="url"[^>]*>([\s\S]*?)<\/a>/i)?.[1] ?? "",
       );
       const scoreLike = /^\d+\s*-\s*\d+$/.test(linkLabel) || /^\d+\-\d+$/.test(linkLabel);
-      const timeLabel = !scoreLike && dtStart?.[2]
-        ? dtStart[2].slice(0, 5)
-        : undefined;
+      const timeLabel = !scoreLike ? normalizeTimeLabel(dtStart?.[2]?.slice(0, 5)) : undefined;
 
       return [{
         homeTeam: normalizeTeamName(homeTeam),
         awayTeam: normalizeTeamName(awayTeam),
-        timeLabel: timeLabel ?? rawDateLabel,
+        timeLabel,
         dateIso,
+        rawDateLabel,
       }];
     });
 
@@ -212,13 +240,17 @@ function parseResultadosFutbolSchedule(
     }
 
     const dateIso = matches[0].dateIso;
-    const dateLabel = matches[0].timeLabel ?? dateIso;
+    const dateLabel = matches[0].rawDateLabel || dateIso;
 
     return [{
       round,
       dateIso,
       dateLabel,
-      matches: matches.map(({ dateIso: _dateIso, ...match }) => match),
+      matches: matches.map(({ homeTeam, awayTeam, timeLabel }) => ({
+        homeTeam,
+        awayTeam,
+        timeLabel,
+      })),
     } satisfies ScheduleRound];
   });
 

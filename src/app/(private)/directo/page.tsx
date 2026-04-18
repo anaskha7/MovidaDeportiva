@@ -2,17 +2,23 @@ import HardNavLink from "@/components/HardNavLink";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { createLiveChatToken } from "@/lib/ably-server";
+import { getCurrentUserBySession } from "@/lib/auth";
 import { getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
-import { getChatMessagesByMatchId } from "@/lib/repos/mensajes";
 import { getLiveMatch, getOtherLiveMatches, hasActiveLiveMatch } from "@/lib/repos/partidos";
 import styles from "./Directo.module.css";
+import DirectoChatClient from "./DirectoChatClient";
 
 export default async function DirectoPage() {
   const session = await getSession();
   const locale = await getLocale();
   const hasLiveNow = hasActiveLiveMatch();
+  const currentUser = await getCurrentUserBySession({
+    userId: session?.userId,
+    email: session?.email,
+  });
   const homeHref = session?.role === "admin" ? "/dashboard" : "/app";
   const notificationsHref =
     session?.role === "admin" ? "/admin/notificaciones" : "/app/notificaciones";
@@ -28,7 +34,15 @@ export default async function DirectoPage() {
   }[locale];
   const liveMatch = getLiveMatch();
   const otherMatches = getOtherLiveMatches();
-  const chatMessages = getChatMessagesByMatchId(liveMatch.id);
+  let ablyToken: string | null = null;
+
+  if (session) {
+    try {
+      ablyToken = await createLiveChatToken(session);
+    } catch (error) {
+      console.error("No se pudo preparar el token del chat en directo", error);
+    }
+  }
 
   return (
     <main className={styles.page}>
@@ -142,32 +156,16 @@ export default async function DirectoPage() {
           </div>
         </section>
 
-        <aside className={styles.chatPanel}>
-          <div className={styles.chatHeader}>
-            <strong>{t.chat}</strong>
-            <span className={styles.chatDot} />
-          </div>
-          <div className={styles.chatMessages}>
-            {chatMessages.map((item) => (
-              <div key={item.id} className={styles.chatItem}>
-                <div className={styles.chatEmoji}>{item.emoji}</div>
-                <div>
-                  <div className={styles.chatMeta}>
-                    <strong>{item.name}</strong>
-                    <span>{item.timeLabel}</span>
-                  </div>
-                  <p>{item.message}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.chatInput}>
-            <span>{t.write}</span>
-            <button>
-              <img src="/assets/figma/directo-send.png" alt="" />
-            </button>
-          </div>
-        </aside>
+        <DirectoChatClient
+          ablyToken={ablyToken}
+          avatarUrl={currentUser?.avatar_url ?? null}
+          locale={locale}
+          matchId={liveMatch.id}
+          name={session?.name ?? "Invitado"}
+          role={session?.role ?? null}
+          title={t.chat}
+          placeholder={t.write}
+        />
       </div>
     </main>
   );

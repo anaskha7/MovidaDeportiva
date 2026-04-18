@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   outputFileTracingRoot: process.cwd(),
+  serverExternalPackages: ["ably"],
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {

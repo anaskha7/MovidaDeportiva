@@ -68,6 +68,32 @@
   gap: 28px;
 }
 
+.otpHeader h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #1a2c2a;
+}
+
+.otpHeader p {
+  margin: 8px 0 0;
+  color: #4d4f51;
+  font-size: 16px;
+}
+
+.otpResend {
+  margin-top: 8px;
+}
+
+.linkButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  color: #1a2c2a;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .tabs {
   display: flex;
   gap: 18px;

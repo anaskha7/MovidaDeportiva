@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 40px;
   padding-bottom: 40px;
+  padding-inline: 12px;
   animation: fadeUp 0.6s ease both;
 }
 
@@ -10,8 +11,8 @@
   position: relative;
   border-radius: 48px;
   overflow: hidden;
-  padding: 34px 24px;
-  min-height: 740px;
+  padding: 28px 22px;
+  min-height: 660px;
   display: flex;
   align-items: flex-start;
 }
@@ -42,11 +43,23 @@
 .heroTitle {
   display: flex;
   flex-direction: column;
-  font-size: clamp(118px, 8.2vw, 136px);
-  line-height: 0.94;
+  font-size: clamp(96px, 7.1vw, 114px);
+  line-height: 0.92;
   letter-spacing: -0.06em;
   color: #ffffff;
   animation: fadeUp 0.7s ease both;
+}
+
+.heroTitle span {
+  display: block;
+}
+
+.heroTitleTop {
+  margin-bottom: -0.14em;
+}
+
+.heroTitleBottom {
+  transform: translateY(-0.04em);
 }
 
 .heroTitle span:last-child {
@@ -56,13 +69,13 @@
 .heroTextBlock {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  max-width: 690px;
+  gap: 18px;
+  max-width: 600px;
   animation: fadeUp 0.9s ease both;
 }
 
 .heroTextBlock p {
-  font-size: clamp(50px, 4.2vw, 58px);
+  font-size: clamp(38px, 3.4vw, 46px);
   font-weight: 500;
   letter-spacing: -0.05em;
 }
@@ -508,11 +521,11 @@
 
 @media (max-width: 1200px) {
   .hero {
-    min-height: 680px;
+    min-height: 620px;
   }
 
   .heroTitle {
-    font-size: 90px;
+    font-size: 82px;
     line-height: 0.96;
   }
 
@@ -546,6 +559,7 @@
   .home {
     gap: 28px;
     padding-bottom: 28px;
+    padding-inline: 0;
   }
 
   .hero {
@@ -558,6 +572,14 @@
     font-size: 48px;
     line-height: 50px;
     letter-spacing: -3px;
+  }
+
+  .heroTitleTop {
+    margin-bottom: 0;
+  }
+
+  .heroTitleBottom {
+    transform: none;
   }
 
   .heroTitle span:last-child {

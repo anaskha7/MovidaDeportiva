@@ -73,7 +73,6 @@ export default function DashboardSidebarWidgets({
   }, [eventMap, firstEventDay, today, todayIso]);
   const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
   const [visibleMonth, setVisibleMonth] = useState(startOfMonth(defaultSelectedDate));
-  const [showAllEvents, setShowAllEvents] = useState(false);
 
   const intlLocale = locale === "ca" ? "ca-ES" : locale === "en" ? "en-US" : "es-ES";
   const copy = {
@@ -83,9 +82,6 @@ export default function DashboardSidebarWidgets({
       noLive: "No hay partidos para este día",
       noLiveText: "Selecciona otro día del calendario para ver los eventos programados.",
       noMore: "No hay más partidos programados para este día.",
-      showMore: "Ver más",
-      showLess: "Ver menos",
-      back: "Volver a hoy",
       prev: "Mes anterior",
       next: "Mes siguiente",
     },
@@ -95,9 +91,6 @@ export default function DashboardSidebarWidgets({
       noLive: "No hi ha partits per a aquest dia",
       noLiveText: "Selecciona un altre dia del calendari per veure els esdeveniments programats.",
       noMore: "No hi ha més partits programats per a aquest dia.",
-      showMore: "Veure més",
-      showLess: "Veure menys",
-      back: "Tornar a avui",
       prev: "Mes anterior",
       next: "Mes següent",
     },
@@ -107,9 +100,6 @@ export default function DashboardSidebarWidgets({
       noLive: "There are no matches for this day",
       noLiveText: "Select another day on the calendar to see scheduled events.",
       noMore: "There are no more matches scheduled for this day.",
-      showMore: "Show more",
-      showLess: "Show less",
-      back: "Back to today",
       prev: "Previous month",
       next: "Next month",
     },
@@ -147,8 +137,6 @@ export default function DashboardSidebarWidgets({
   const selectedEvents = eventMap[toKey(selectedDate)] ?? [];
   const featuredEvent = selectedEvents[0];
   const upcomingEvents = selectedEvents.slice(1);
-  const visibleUpcomingEvents = showAllEvents ? upcomingEvents : upcomingEvents.slice(0, 2);
-  const hasHiddenEvents = upcomingEvents.length > visibleUpcomingEvents.length;
   const eventDays = useMemo(() => new Set(Object.keys(eventMap)), [eventMap]);
 
   return (
@@ -180,16 +168,16 @@ export default function DashboardSidebarWidgets({
           </div>
         ) : null}
 
-        {visibleUpcomingEvents.length > 0 ? (
+        {upcomingEvents.length > 0 ? (
           <div
             className={[
               styles.scheduleList,
-              showAllEvents && upcomingEvents.length > 2 ? styles.scheduleListScrollable : "",
+              styles.scheduleListScrollable,
             ]
               .filter(Boolean)
               .join(" ")}
           >
-            {visibleUpcomingEvents.map((event) => (
+            {upcomingEvents.map((event) => (
               <div key={event.id} className={styles.scheduleItem}>
                 <div>
                   <strong>{event.title}</strong>
@@ -200,30 +188,6 @@ export default function DashboardSidebarWidgets({
             ))}
           </div>
         ) : null}
-
-        {featuredEvent && upcomingEvents.length > 0 ? (
-          hasHiddenEvents || showAllEvents ? (
-            <button
-              className={styles.linkButton}
-              type="button"
-              onClick={() => setShowAllEvents((current) => !current)}
-            >
-              {showAllEvents ? copy.showLess : copy.showMore}
-            </button>
-          ) : null
-        ) : null}
-
-        <button
-          className={styles.linkButton}
-          type="button"
-          onClick={() => {
-            setSelectedDate(today);
-            setVisibleMonth(startOfMonth(today));
-            setShowAllEvents(false);
-          }}
-        >
-          {copy.back}
-        </button>
       </article>
 
       <article className={styles.cardSmall}>
@@ -279,7 +243,6 @@ export default function DashboardSidebarWidgets({
                   .filter(Boolean)
                   .join(" ")}
                 onClick={() => setSelectedDate(date)}
-                onClickCapture={() => setShowAllEvents(false)}
               >
                 {date.getDate()}
               </button>

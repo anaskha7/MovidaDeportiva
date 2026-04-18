@@ -9,12 +9,14 @@ import styles from "./Login.module.css";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; tab?: string }>;
+  searchParams?: Promise<{ error?: string; tab?: string; step?: string; email?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const locale = await getLocale();
   const session = await getSession();
   const error = resolvedSearchParams?.error;
+  const step = resolvedSearchParams?.step;
+  const otpEmail = resolvedSearchParams?.email;
   const initialTab =
     resolvedSearchParams?.tab === "register" ? "register" : "login";
 
@@ -37,6 +39,8 @@ export default async function LoginPage({
         <LoginForm
           error={error}
           initialTab={initialTab}
+          step={step === "otp" ? "otp" : undefined}
+          otpEmail={otpEmail}
           locale={locale}
           googleEnabled={isGoogleAuthConfigured}
         />
