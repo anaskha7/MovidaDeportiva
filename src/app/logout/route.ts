@@ -9,7 +9,7 @@ export function GET(request: NextRequest) {
   response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   response.headers.set("Pragma", "no-cache");
   response.headers.set("Expires", "0");
-  response.headers.set("Clear-Site-Data", "\"cache\", \"cookies\", \"storage\"");
+  response.headers.set("Clear-Site-Data", "\"cache\", \"storage\"");
   response.cookies.set("next-auth.session-token", "", { path: "/", maxAge: 0 });
   response.cookies.set("__Secure-next-auth.session-token", "", {
     path: "/",
