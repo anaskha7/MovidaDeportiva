@@ -1,10 +1,12 @@
 import HardNavLink from "@/components/HardNavLink";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import ProfileAvatar from "@/components/ProfileAvatar";
+import { getCurrentUserBySession } from "@/lib/auth";
 import { getAdminMetrics, getNotificationFeedForSession } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
 import { getCategorias } from "@/lib/repos/categorias";
 import { hasActiveLiveMatch } from "@/lib/repos/partidos";
-import { getCompetitionSchedule } from "@/lib/schedules";
+import { getCompetitionSchedule, getScheduleMatchTimeLabel } from "@/lib/schedules";
 import { formatUserName, getSession } from "@/lib/session";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
@@ -39,6 +41,10 @@ export default async function DashboardPage(props: {
   const session = await getSession();
   const locale = await getLocale();
   const hasLiveNow = hasActiveLiveMatch();
+  const currentUser = await getCurrentUserBySession({
+    userId: session?.userId,
+    email: session?.email,
+  });
   const searchParams = props.searchParams ? await props.searchParams : undefined;
   const searchQuery =
     typeof searchParams?.q === "string" ? searchParams.q.trim().toLowerCase() : "";
@@ -47,6 +53,8 @@ export default async function DashboardPage(props: {
     ca: { menu: "Menú", home: "Inici", adminPanel: "Panell admin", live: "En directe", events: "Partits i esdeveniments", notifications: "Notificacions", settings: "Ajustos", logout: "Tancar sessió", subscribe: "SUBSCRIU-TE", subscribe2: "ARA!", subscribeText: "Per gaudir de tots els avantatges del Premium", greeting: "Bon dia,", search: "Què estàs buscant?", eventsText: "Gaudeix del millor futbol sempre que vulguis", noResults: "No s'han trobat resultats per a aquesta cerca." },
     en: { menu: "Menu", home: "Home", adminPanel: "Admin panel", live: "Live", events: "Matches and events", notifications: "Notifications", settings: "Settings", logout: "Log out", subscribe: "SUBSCRIBE", subscribe2: "NOW!", subscribeText: "Enjoy all the benefits of Premium", greeting: "Good morning,", search: "What are you looking for?", eventsText: "Enjoy the best football whenever you want", noResults: "No results found for this search." },
   }[locale];
+  const scheduleTimeFallback =
+    locale === "en" ? "Kick-off TBC" : locale === "ca" ? "Hora pendent" : "Hora por confirmar";
   const metricsCopy = {
     es: {
       metrics: "Resumen del panel",
@@ -104,7 +112,7 @@ export default async function DashboardPage(props: {
           id: `${categoria.id}-${round.round}-${round.dateIso}-${index}`,
           title: `${match.homeTeam} vs ${match.awayTeam}`,
           competition: categoria.nombre,
-          timeLabel: match.timeLabel ?? round.dateLabel,
+          timeLabel: getScheduleMatchTimeLabel(match.timeLabel) ?? scheduleTimeFallback,
           dateIso: round.dateIso,
         })),
       ) ?? [],
@@ -173,7 +181,10 @@ export default async function DashboardPage(props: {
         <section className={styles.mainColumn}>
           <header className={styles.topbar}>
             <div className={styles.userInfo}>
-              <img src="/assets/figma/dashboard-user.png" alt="" />
+              <ProfileAvatar
+                alt={formatUserName(session?.name)}
+                src={currentUser?.avatar_url ?? null}
+              />
               <div>
                 <p>{t.greeting}</p>
                 <strong>{formatUserName(session?.name)}</strong>

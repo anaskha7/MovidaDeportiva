@@ -3,6 +3,13 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { Locale } from "@/lib/i18n-shared";
+import {
+  DEFAULT_PROFILE_AVATAR_URL,
+  PROFILE_AVATAR_STORAGE_KEY,
+  emitProfileAvatarUpdated,
+  normalizeProfileAvatarUrl,
+  sanitizeProfileAvatarUrl,
+} from "@/lib/profile-avatar";
 import type { Rol } from "@/lib/types";
 import {
   type SettingsActionState,
@@ -14,11 +21,16 @@ import styles from "./Administracion.module.css";
 type SettingsPanelProps = {
   displayName: string;
   email: string;
+  avatarUrl?: string | null;
   role: Rol;
   roleLabel: string;
   language: Locale;
   onLanguageChange: (language: Locale) => void;
-  onProfileUpdated: (input: { displayName: string; email: string }) => void;
+  onProfileUpdated: (input: {
+    displayName: string;
+    email: string;
+    avatarUrl: string | null;
+  }) => void;
 };
 
 const content = {
@@ -147,9 +159,61 @@ const content = {
   },
 } as const;
 
+async function readFileAsDataUrl(file: File) {
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      if (!result) {
+        reject(new Error("No se pudo leer la imagen."));
+        return;
+      }
+
+      resolve(result);
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("No se pudo leer la imagen."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function loadImageElement(src: string) {
+  return await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("No se pudo cargar la imagen."));
+    image.src = src;
+  });
+}
+
+async function readAvatarAsDataUrl(file: File) {
+  const sourceDataUrl = await readFileAsDataUrl(file);
+
+  try {
+    const image = await loadImageElement(sourceDataUrl);
+    const maxSize = 256;
+    const ratio = Math.min(maxSize / image.width, maxSize / image.height, 1);
+    const targetWidth = Math.max(1, Math.round(image.width * ratio));
+    const targetHeight = Math.max(1, Math.round(image.height * ratio));
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return sourceDataUrl;
+    }
+
+    context.drawImage(image, 0, 0, targetWidth, targetHeight);
+    return canvas.toDataURL("image/jpeg", 0.82);
+  } catch {
+    return sourceDataUrl;
+  }
+}
+
 export default function SettingsPanel({
   displayName,
   email,
+  avatarUrl: initialAvatarUrl,
   role,
   roleLabel,
   language,
@@ -160,12 +224,13 @@ export default function SettingsPanel({
     status: "idle",
     message: null,
   };
-  const avatarStorageKey = "mdv_profile_avatar";
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [liveNotifications, setLiveNotifications] = useState(true);
   const [marketingNotifications, setMarketingNotifications] = useState(false);
   const [defaultQuality, setDefaultQuality] = useState("1080p");
-  const [avatarUrl, setAvatarUrl] = useState("/assets/figma/dashboard-user.png");
+  const [avatarUrl, setAvatarUrl] = useState(
+    normalizeProfileAvatarUrl(initialAvatarUrl),
+  );
   const [fullName, setFullName] = useState(displayName);
   const [profileState, profileAction] = useActionState(
     updateProfileSettingsAction,
@@ -189,11 +254,17 @@ export default function SettingsPanel({
   );
 
   useEffect(() => {
-    const savedAvatar = window.localStorage.getItem(avatarStorageKey);
-    if (savedAvatar) {
-      setAvatarUrl(savedAvatar);
+    const persistedAvatar = sanitizeProfileAvatarUrl(initialAvatarUrl);
+
+    if (persistedAvatar) {
+      window.localStorage.setItem(PROFILE_AVATAR_STORAGE_KEY, persistedAvatar);
+      setAvatarUrl(normalizeProfileAvatarUrl(persistedAvatar));
+      return;
     }
-  }, []);
+
+    window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
+    setAvatarUrl(DEFAULT_PROFILE_AVATAR_URL);
+  }, [initialAvatarUrl]);
 
   useEffect(() => {
     setFullName(displayName);
@@ -201,10 +272,20 @@ export default function SettingsPanel({
 
   useEffect(() => {
     if (profileState.status === "success" && profileState.updatedName && profileState.updatedEmail) {
+      const nextAvatarUrl = sanitizeProfileAvatarUrl(profileState.updatedAvatarUrl) ?? null;
       setFullName(profileState.updatedName);
+      setAvatarUrl(normalizeProfileAvatarUrl(nextAvatarUrl));
+      if (nextAvatarUrl) {
+        window.localStorage.setItem(PROFILE_AVATAR_STORAGE_KEY, nextAvatarUrl);
+        emitProfileAvatarUpdated(nextAvatarUrl);
+      } else {
+        window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
+        emitProfileAvatarUpdated(DEFAULT_PROFILE_AVATAR_URL);
+      }
       onProfileUpdated({
         displayName: profileState.updatedName,
         email: profileState.updatedEmail,
+        avatarUrl: nextAvatarUrl,
       });
     }
   }, [onProfileUpdated, profileState]);
@@ -234,12 +315,12 @@ export default function SettingsPanel({
       };
     }
 
-      return {
-        badge: t.planBasic,
-        access: t.accessBasic,
-        actionLabel: t.subscribeNow,
-        actionHref: "/servicios/contacto",
-      };
+    return {
+      badge: t.planBasic,
+      access: t.accessBasic,
+      actionLabel: t.subscribeNow,
+      actionHref: "/servicios/contacto",
+    };
   }, [
     role,
     t.accessAdmin,
@@ -258,6 +339,11 @@ export default function SettingsPanel({
       <section className={styles.primaryColumn}>
         <form action={profileAction} className={styles.settingsCard}>
           <input type="hidden" name="locale" value={language} />
+          <input
+            type="hidden"
+            name="avatarUrl"
+            value={sanitizeProfileAvatarUrl(avatarUrl) ?? ""}
+          />
           <div className={styles.sectionHeader}>
             <div>
               <h2>{t.account}</h2>
@@ -288,14 +374,14 @@ export default function SettingsPanel({
                   onChange={(event) => {
                     const file = event.target.files?.[0];
                     if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      const result = typeof reader.result === "string" ? reader.result : "";
-                      if (!result) return;
-                      setAvatarUrl(result);
-                      window.localStorage.setItem(avatarStorageKey, result);
+                    const optimizeAvatar = async () => {
+                      const dataUrl = await readAvatarAsDataUrl(file);
+                      if (!dataUrl) return;
+                      const normalizedAvatar = normalizeProfileAvatarUrl(dataUrl);
+                      setAvatarUrl(normalizedAvatar);
                     };
-                    reader.readAsDataURL(file);
+
+                    void optimizeAvatar();
                   }}
                 />
               </label>

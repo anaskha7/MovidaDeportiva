@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import HardNavLink from "@/components/HardNavLink";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ProfileAvatar from "@/components/ProfileAvatar";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
 import type { NotificationFeedItem } from "@/lib/backoffice";
 import { LOCALE_COOKIE, type Locale } from "@/lib/i18n-shared";
@@ -15,6 +15,7 @@ import styles from "@/app/(admin)/administracion/Administracion.module.css";
 type AjustesPageClientProps = {
   displayName: string;
   email: string;
+  avatarUrl?: string | null;
   role: Rol;
   initialLanguage: Locale;
   hasLiveNow: boolean;
@@ -37,6 +38,7 @@ const translations = {
     title: "Ajustes",
     subtitle: "Gestiona tu cuenta, preferencias y suscripción",
     admin: "Administrador",
+    subscriber: "Suscriptor",
     user: "Usuario",
   },
   ca: {
@@ -53,6 +55,7 @@ const translations = {
     title: "Ajustos",
     subtitle: "Gestiona el teu compte, preferències i subscripció",
     admin: "Administrador",
+    subscriber: "Subscriptor",
     user: "Usuari",
   },
   en: {
@@ -69,6 +72,7 @@ const translations = {
     title: "Settings",
     subtitle: "Manage your account, preferences and subscription",
     admin: "Administrator",
+    subscriber: "Subscriber",
     user: "User",
   },
 } as const;
@@ -76,6 +80,7 @@ const translations = {
 export default function AjustesPageClient({
   displayName,
   email,
+  avatarUrl,
   role,
   initialLanguage,
   hasLiveNow,
@@ -85,10 +90,13 @@ export default function AjustesPageClient({
   const [language, setLanguage] = useState<Locale>(initialLanguage);
   const [currentDisplayName, setCurrentDisplayName] = useState(displayName);
   const [currentEmail, setCurrentEmail] = useState(email);
+  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(
+    avatarUrl ?? null,
+  );
   const t = translations[language];
   const roleLabel = useMemo(
-    () => (role === "admin" ? t.admin : t.user),
-    [role, t.admin, t.user]
+    () => (role === "admin" ? t.admin : role === "suscriptor" ? t.subscriber : t.user),
+    [role, t.admin, t.subscriber, t.user]
   );
   const homeHref = role === "admin" ? "/dashboard" : "/app";
   const notificationsHref =
@@ -168,7 +176,10 @@ export default function AjustesPageClient({
             <div className={styles.headerRight}>
               <div className={styles.adminCard}>
                 <span className={styles.adminIcon}>
-                  <img src="/assets/figma/admin2-icon-user.png" alt="" />
+                  <ProfileAvatar
+                    alt={currentDisplayName}
+                    src={currentAvatarUrl}
+                  />
                 </span>
               <div>
                   <strong>{currentDisplayName}</strong>
@@ -192,13 +203,19 @@ export default function AjustesPageClient({
             <SettingsPanel
               displayName={currentDisplayName}
               email={currentEmail}
+              avatarUrl={currentAvatarUrl}
               role={role}
               roleLabel={roleLabel}
               language={language}
               onLanguageChange={setLanguage}
-              onProfileUpdated={({ displayName: nextDisplayName, email: nextEmail }) => {
+              onProfileUpdated={({
+                displayName: nextDisplayName,
+                email: nextEmail,
+                avatarUrl: nextAvatarUrl,
+              }) => {
                 setCurrentDisplayName(nextDisplayName);
                 setCurrentEmail(nextEmail);
+                setCurrentAvatarUrl(nextAvatarUrl);
               }}
             />
           </div>

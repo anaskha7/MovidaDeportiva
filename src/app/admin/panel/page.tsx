@@ -1,7 +1,9 @@
 import HardNavLink from "@/components/HardNavLink";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ProfileAvatar from "@/components/ProfileAvatar";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { getCurrentUserBySession } from "@/lib/auth";
 import { getAdminPanelData } from "@/lib/backoffice";
 import { getLocale } from "@/lib/i18n";
 import { hasActiveLiveMatch } from "@/lib/repos/partidos";
@@ -23,6 +25,10 @@ export default async function AdminPanelPage(props: {
   const session = await getSession();
   const locale = await getLocale();
   const hasLiveNow = hasActiveLiveMatch();
+  const currentUser = await getCurrentUserBySession({
+    userId: session?.userId,
+    email: session?.email,
+  });
   const searchParams = props.searchParams ? await props.searchParams : undefined;
   const searchQuery = searchParams?.q?.trim() ?? "";
   const adminData = await getAdminPanelData({
@@ -132,7 +138,10 @@ export default async function AdminPanelPage(props: {
         <section className={styles.mainColumn}>
           <header className={styles.topbar}>
             <div className={styles.userInfo}>
-              <img src="/assets/figma/dashboard-user.png" alt="" />
+              <ProfileAvatar
+                alt={formatUserName(session?.name)}
+                src={currentUser?.avatar_url ?? null}
+              />
               <div>
                 <p>{t.greeting}</p>
                 <strong>{formatUserName(session?.name)}</strong>

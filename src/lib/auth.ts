@@ -37,6 +37,7 @@ export interface AuthSessionUser {
   name: string;
   email: string;
   role: Rol;
+  avatarUrl?: string | null;
 }
 
 function normalizeStoredName(name: string | null | undefined, email?: string) {
@@ -161,6 +162,7 @@ export async function authenticateUser(input: {
     name: formatUserName(user.nombre),
     email: user.email,
     role: user.role.rol,
+    avatarUrl: user.avatar_url,
   };
 }
 
@@ -233,6 +235,7 @@ export async function registerUser(input: {
     name: formatUserName(createdUser.nombre),
     email: createdUser.email,
     role: createdUser.role.rol,
+    avatarUrl: createdUser.avatar_url,
   };
 }
 
@@ -281,6 +284,7 @@ export async function syncGoogleUser(input: {
       name: formatUserName(existingUser.nombre),
       email: existingUser.email,
       role: existingUser.role.rol,
+      avatarUrl: existingUser.avatar_url,
     };
   }
 
@@ -312,6 +316,7 @@ export async function syncGoogleUser(input: {
     name: formatUserName(createdUser.nombre),
     email: createdUser.email,
     role: createdUser.role.rol,
+    avatarUrl: createdUser.avatar_url,
   };
 }
 
@@ -351,6 +356,41 @@ export async function getCurrentUserBySession(session: {
   }
 
   return null;
+}
+
+export async function getUserByEmailOrThrow(email: string): Promise<AuthSessionUser> {
+  const normalizedEmail = email.toLowerCase();
+  const user = await prisma.usuario.findFirst({
+    where: {
+      email: {
+        equals: normalizedEmail,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      role: {
+        select: {
+          rol: true,
+        },
+      },
+    },
+  });
+
+  if (!user || !isAppRole(user.role.rol)) {
+    throw new AuthActionError("invalid");
+  }
+
+  if (user.bloqueado) {
+    throw new AuthActionError("blocked");
+  }
+
+  return {
+    id: user.id_usuario,
+    name: formatUserName(user.nombre),
+    email: user.email,
+    role: user.role.rol,
+    avatarUrl: user.avatar_url,
+  };
 }
 
 export async function updateUserRole(userId: number, roleId: number) {

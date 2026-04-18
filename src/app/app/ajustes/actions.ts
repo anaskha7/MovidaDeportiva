@@ -4,6 +4,7 @@ import { compare, hash } from "bcrypt";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createAuditLog, getSessionUserRecord } from "@/lib/backoffice";
+import { sanitizeProfileAvatarUrl } from "@/lib/profile-avatar";
 import { prisma } from "@/lib/prisma";
 import { formatUserName, getSession } from "@/lib/session";
 import { applySessionToCookieStore } from "@/lib/session-response";
@@ -14,6 +15,7 @@ export type SettingsActionState = {
   message: string | null;
   updatedName?: string;
   updatedEmail?: string;
+  updatedAvatarUrl?: string | null;
 };
 
 const profileSchema = z.object({
@@ -42,7 +44,7 @@ const messages = {
   es: {
     expired: "Tu sesión ha expirado. Vuelve a iniciar sesión.",
     invalidName: "Introduce un nombre válido.",
-    profileSaved: "Tu nombre se ha actualizado correctamente.",
+    profileSaved: "Tu perfil se ha actualizado correctamente.",
     invalidPasswordData: "Revisa los datos de seguridad.",
     currentPasswordWrong: "La contraseña actual no es correcta.",
     passwordSaved: "Tu contraseña se ha actualizado correctamente.",
@@ -50,7 +52,7 @@ const messages = {
   ca: {
     expired: "La teva sessió ha caducat. Torna a iniciar sessió.",
     invalidName: "Introdueix un nom vàlid.",
-    profileSaved: "El teu nom s'ha actualitzat correctament.",
+    profileSaved: "El teu perfil s'ha actualitzat correctament.",
     invalidPasswordData: "Revisa les dades de seguretat.",
     currentPasswordWrong: "La contrasenya actual no és correcta.",
     passwordSaved: "La teva contrasenya s'ha actualitzat correctament.",
@@ -58,7 +60,7 @@ const messages = {
   en: {
     expired: "Your session has expired. Please sign in again.",
     invalidName: "Enter a valid name.",
-    profileSaved: "Your name has been updated successfully.",
+    profileSaved: "Your profile has been updated successfully.",
     invalidPasswordData: "Please review the security details.",
     currentPasswordWrong: "The current password is incorrect.",
     passwordSaved: "Your password has been updated successfully.",
@@ -122,12 +124,16 @@ export async function updateProfileSettingsAction(
   }
 
   const normalizedName = formatUserName(parsed.data.fullName).slice(0, 80);
+  const avatarInput = formData.get("avatarUrl");
+  const sanitizedAvatarUrl =
+    typeof avatarInput === "string" ? sanitizeProfileAvatarUrl(avatarInput) : null;
   const updatedUser = await prisma.usuario.update({
     where: {
       id_usuario: currentUser.id_usuario,
     },
     data: {
       nombre: normalizedName,
+      avatar_url: sanitizedAvatarUrl,
     },
     include: {
       role: {
@@ -153,6 +159,7 @@ export async function updateProfileSettingsAction(
     description: "El usuario ha actualizado su nombre desde ajustes.",
     metadata: {
       nombre: updatedUser.nombre,
+      avatarUrl: updatedUser.avatar_url,
     },
   });
 
@@ -163,6 +170,7 @@ export async function updateProfileSettingsAction(
     message: t.profileSaved,
     updatedName: formatUserName(updatedUser.nombre),
     updatedEmail: updatedUser.email,
+    updatedAvatarUrl: updatedUser.avatar_url,
   };
 }
 

@@ -24,6 +24,7 @@ export default async function AjustesPage() {
     <AjustesPageClient
       displayName={displayName}
       email={currentUser?.email ?? session?.email ?? ""}
+      avatarUrl={currentUser?.avatar_url ?? null}
       role={session?.role ?? "user"}
       initialLanguage={initialLanguage}
       hasLiveNow={hasLiveNow}

@@ -3,12 +3,15 @@ import type { NotificationFeedItem } from "@/lib/backoffice";
 import type { Locale } from "@/lib/i18n-shared";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ProfileAvatar from "@/components/ProfileAvatar";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
+import { hasActiveLiveMatch } from "@/lib/repos/partidos";
 import styles from "@/app/app/notificaciones/Notificaciones.module.css";
 
 type NotificationsPageProps = {
   locale: Locale;
   displayName: string;
+  avatarUrl?: string | null;
   isAdmin: boolean;
   items: NotificationFeedItem[];
   notificationCount: number;
@@ -17,12 +20,14 @@ type NotificationsPageProps = {
 export default function NotificationsPage({
   locale,
   displayName,
+  avatarUrl,
   isAdmin,
   items,
   notificationCount,
 }: NotificationsPageProps) {
   const homeHref = isAdmin ? "/dashboard" : "/app";
   const notificationsHref = isAdmin ? "/admin/notificaciones" : "/app/notificaciones";
+  const hasLiveNow = hasActiveLiveMatch();
   const t = {
     es: {
       menu: "Menú",
@@ -103,9 +108,11 @@ export default function NotificationsPage({
               <HardNavLink href="/directo" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-live.svg" alt="" />
                 <span>{t.live}</span>
-                <span className={styles.liveTag}>
-                  Live <i />
-                </span>
+                {hasLiveNow ? (
+                  <span className={styles.liveTag}>
+                    Live <i />
+                  </span>
+                ) : null}
               </HardNavLink>
               <HardNavLink href="/videos" className={styles.menuItem}>
                 <img src="/assets/figma/admin-menu-events.svg" alt="" />
@@ -127,7 +134,7 @@ export default function NotificationsPage({
         <section className={styles.content}>
           <header className={styles.topbar}>
             <div className={styles.userInfo}>
-              <img src="/assets/figma/dashboard-user.png" alt="" />
+              <ProfileAvatar alt={displayName} src={avatarUrl} />
               <div>
                 <p>{t.greeting}</p>
                 <strong>{displayName}</strong>

@@ -2,12 +2,14 @@ import { redirect } from "next/navigation";
 import HardNavLink from "@/components/HardNavLink";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationDateBadge from "@/components/NotificationDateBadge";
+import ProfileAvatar from "@/components/ProfileAvatar";
 import ResponsiveSidebar from "@/components/ResponsiveSidebar";
 import { getNotificationFeedForSession } from "@/lib/backoffice";
+import { getCurrentUserBySession } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n";
 import { getCategorias } from "@/lib/repos/categorias";
 import { hasActiveLiveMatch } from "@/lib/repos/partidos";
-import { getCompetitionSchedule } from "@/lib/schedules";
+import { getCompetitionSchedule, getScheduleMatchTimeLabel } from "@/lib/schedules";
 import { formatUserName, getSession } from "@/lib/session";
 import DashboardSidebarWidgets from "../(admin)/dashboard/DashboardSidebarWidgets";
 import styles from "../(admin)/dashboard/Dashboard.module.css";
@@ -45,6 +47,10 @@ export default async function AppPage(props: {
 
   const locale = await getLocale();
   const hasLiveNow = hasActiveLiveMatch();
+  const currentUser = await getCurrentUserBySession({
+    userId: session?.userId,
+    email: session?.email,
+  });
   const searchParams = props.searchParams ? await props.searchParams : undefined;
   const searchQuery =
     typeof searchParams?.q === "string" ? searchParams.q.trim().toLowerCase() : "";
@@ -90,6 +96,8 @@ export default async function AppPage(props: {
       noResults: "No results found for this search.",
     },
   }[locale];
+  const scheduleTimeFallback =
+    locale === "en" ? "Kick-off TBC" : locale === "ca" ? "Hora pendent" : "Hora por confirmar";
   const matchesSearch = (value: string) =>
     !searchQuery || value.toLowerCase().includes(searchQuery);
   const notificationFeed = await getNotificationFeedForSession({
@@ -116,7 +124,7 @@ export default async function AppPage(props: {
           id: `${categoria.id}-${round.round}-${round.dateIso}-${index}`,
           title: `${match.homeTeam} vs ${match.awayTeam}`,
           competition: categoria.nombre,
-          timeLabel: match.timeLabel ?? round.dateLabel,
+          timeLabel: getScheduleMatchTimeLabel(match.timeLabel) ?? scheduleTimeFallback,
           dateIso: round.dateIso,
         })),
       ) ?? [],
@@ -187,7 +195,10 @@ export default async function AppPage(props: {
         <section className={styles.mainColumn}>
           <header className={styles.topbar}>
             <div className={styles.userInfo}>
-              <img src="/assets/figma/dashboard-user.png" alt="" />
+              <ProfileAvatar
+                alt={formatUserName(session?.name)}
+                src={currentUser?.avatar_url ?? null}
+              />
               <div>
                 <p>{t.greeting}</p>
                 <strong>{formatUserName(session?.name)}</strong>
