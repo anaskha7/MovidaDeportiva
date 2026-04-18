@@ -47,8 +47,16 @@ export default function ProfileAvatar({
         window.localStorage.setItem(PROFILE_AVATAR_STORAGE_KEY, persistedAvatar);
         applyAvatar(persistedAvatar);
       } else {
-        window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
-        applyAvatar(null);
+        const savedAvatar = sanitizeProfileAvatarUrl(
+          window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY),
+        );
+
+        if (savedAvatar) {
+          applyAvatar(savedAvatar);
+        } else {
+          window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
+          applyAvatar(null);
+        }
       }
     } else {
       applyAvatar(window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY));

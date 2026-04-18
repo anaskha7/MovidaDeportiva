@@ -2,7 +2,7 @@ export const DEFAULT_PROFILE_AVATAR_URL = "/assets/figma/user-avatar-default.svg
 export const LEGACY_PROFILE_AVATAR_URL = "/assets/figma/dashboard-user.png";
 export const PROFILE_AVATAR_STORAGE_KEY = "mdv_profile_avatar";
 export const PROFILE_AVATAR_UPDATED_EVENT = "mdv-profile-avatar-updated";
-export const PROFILE_AVATAR_MAX_LENGTH = 300_000;
+export const PROFILE_AVATAR_MAX_LENGTH = 1_000_000;
 
 export function sanitizeProfileAvatarUrl(value?: string | null) {
   if (typeof value !== "string") {

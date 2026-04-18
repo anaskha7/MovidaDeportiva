@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useFormStatus } from "react-dom";
 import type { Locale } from "@/lib/i18n-shared";
 import {
@@ -14,7 +14,6 @@ import type { Rol } from "@/lib/types";
 import {
   type SettingsActionState,
   updatePasswordSettingsAction,
-  updateProfileSettingsAction,
 } from "@/app/app/ajustes/actions";
 import styles from "./Administracion.module.css";
 
@@ -232,11 +231,9 @@ export default function SettingsPanel({
     normalizeProfileAvatarUrl(initialAvatarUrl),
   );
   const [isAvatarProcessing, setIsAvatarProcessing] = useState(false);
+  const [isProfileSaving, setIsProfileSaving] = useState(false);
   const [fullName, setFullName] = useState(displayName);
-  const [profileState, profileAction] = useActionState(
-    updateProfileSettingsAction,
-    initialActionState,
-  );
+  const [profileState, setProfileState] = useState<SettingsActionState>(initialActionState);
   const [passwordState, passwordAction] = useActionState(
     updatePasswordSettingsAction,
     initialActionState,
@@ -263,6 +260,15 @@ export default function SettingsPanel({
       return;
     }
 
+    const savedAvatar = sanitizeProfileAvatarUrl(
+      window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY),
+    );
+
+    if (savedAvatar) {
+      setAvatarUrl(normalizeProfileAvatarUrl(savedAvatar));
+      return;
+    }
+
     window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
     setAvatarUrl(DEFAULT_PROFILE_AVATAR_URL);
   }, [initialAvatarUrl]);
@@ -272,34 +278,105 @@ export default function SettingsPanel({
   }, [displayName]);
 
   useEffect(() => {
-    if (profileState.status === "success" && profileState.updatedName && profileState.updatedEmail) {
-      const nextAvatarUrl = sanitizeProfileAvatarUrl(profileState.updatedAvatarUrl) ?? null;
-      setFullName(profileState.updatedName);
-      setAvatarUrl(normalizeProfileAvatarUrl(nextAvatarUrl));
-      if (nextAvatarUrl) {
-        window.localStorage.setItem(PROFILE_AVATAR_STORAGE_KEY, nextAvatarUrl);
-        emitProfileAvatarUpdated(nextAvatarUrl);
-      } else {
-        window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
-        emitProfileAvatarUpdated(DEFAULT_PROFILE_AVATAR_URL);
-      }
-      onProfileUpdated({
-        displayName: profileState.updatedName,
-        email: profileState.updatedEmail,
-        avatarUrl: nextAvatarUrl,
-      });
-    }
-  }, [onProfileUpdated, profileState]);
-
-  useEffect(() => {
     if (passwordState.status === "success") {
       passwordFormRef.current?.reset();
     }
   }, [passwordState]);
 
-  const handleProfileSubmit = (formData: FormData) => {
-    formData.set("avatarUrl", sanitizeProfileAvatarUrl(avatarUrl) ?? "");
-    return profileAction(formData);
+  const persistProfile = async ({
+    nextFullName,
+    nextAvatarUrl,
+  }: {
+    nextFullName: string;
+    nextAvatarUrl: string | null;
+  }) => {
+    if (isAvatarProcessing || isProfileSaving) {
+      return false;
+    }
+
+    setIsProfileSaving(true);
+    setProfileState(initialActionState);
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          locale: language,
+          fullName: nextFullName,
+          avatarUrl: nextAvatarUrl,
+        }),
+      });
+
+      const result = (await response.json().catch(() => null)) as
+        | (SettingsActionState & { updatedAvatarUrl?: string | null })
+        | null;
+
+      if (!response.ok || !result) {
+        setProfileState({
+          status: "error",
+          message:
+            result?.message ??
+            (language === "en"
+              ? "The profile could not be updated."
+              : language === "ca"
+                ? "No s'ha pogut actualitzar el perfil."
+                : "No se ha podido actualizar el perfil."),
+        });
+        return false;
+      }
+
+      const persistedAvatarUrl = sanitizeProfileAvatarUrl(result.updatedAvatarUrl) ?? null;
+      const persistedName = result.updatedName ?? nextFullName;
+
+      setFullName(persistedName);
+      setAvatarUrl(normalizeProfileAvatarUrl(persistedAvatarUrl));
+      setProfileState({
+        status: result.status ?? "success",
+        message: result.message ?? null,
+        updatedName: persistedName,
+        updatedEmail: result.updatedEmail,
+        updatedAvatarUrl: persistedAvatarUrl,
+      });
+
+      if (persistedAvatarUrl) {
+        window.localStorage.setItem(PROFILE_AVATAR_STORAGE_KEY, persistedAvatarUrl);
+        emitProfileAvatarUpdated(persistedAvatarUrl);
+      } else {
+        window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
+        emitProfileAvatarUpdated(DEFAULT_PROFILE_AVATAR_URL);
+      }
+
+      onProfileUpdated({
+        displayName: persistedName,
+        email: result.updatedEmail ?? email,
+        avatarUrl: persistedAvatarUrl,
+      });
+      return true;
+    } catch {
+      setProfileState({
+        status: "error",
+        message:
+          language === "en"
+            ? "The profile could not be updated."
+            : language === "ca"
+              ? "No s'ha pogut actualitzar el perfil."
+              : "No se ha podido actualizar el perfil.",
+      });
+      return false;
+    } finally {
+      setIsProfileSaving(false);
+    }
+  };
+
+  const handleProfileSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await persistProfile({
+      nextFullName: fullName,
+      nextAvatarUrl: sanitizeProfileAvatarUrl(avatarUrl),
+    });
   };
 
   const subscriptionDetails = useMemo(() => {
@@ -343,8 +420,7 @@ export default function SettingsPanel({
   return (
     <div className={styles.settingsGrid}>
       <section className={styles.primaryColumn}>
-        <form action={handleProfileSubmit} className={styles.settingsCard}>
-          <input type="hidden" name="locale" value={language} />
+        <form onSubmit={handleProfileSubmit} className={styles.settingsCard}>
           <div className={styles.sectionHeader}>
             <div>
               <h2>{t.account}</h2>
@@ -376,14 +452,25 @@ export default function SettingsPanel({
                     const file = event.target.files?.[0];
                     if (!file) return;
                     const optimizeAvatar = async () => {
+                      const previousAvatarUrl = avatarUrl;
+
                       try {
                         setIsAvatarProcessing(true);
                         const dataUrl = await readAvatarAsDataUrl(file);
                         if (!dataUrl) return;
                         const normalizedAvatar = normalizeProfileAvatarUrl(dataUrl);
                         setAvatarUrl(normalizedAvatar);
+                        const avatarSaved = await persistProfile({
+                          nextFullName: fullName,
+                          nextAvatarUrl: sanitizeProfileAvatarUrl(normalizedAvatar),
+                        });
+
+                        if (!avatarSaved) {
+                          setAvatarUrl(previousAvatarUrl);
+                        }
                       } finally {
                         setIsAvatarProcessing(false);
+                        event.target.value = "";
                       }
                     };
 
@@ -418,7 +505,17 @@ export default function SettingsPanel({
             </label>
           </div>
           <div className={styles.actionRow}>
-            <SubmitButton label={t.save} disabled={isAvatarProcessing} />
+            <button
+              type="submit"
+              className={styles.primaryAction}
+              disabled={isAvatarProcessing || isProfileSaving}
+            >
+              {isProfileSaving
+                ? "Guardando..."
+                : isAvatarProcessing
+                  ? "Procesando imagen..."
+                  : t.save}
+            </button>
           </div>
           <FormMessage state={profileState} />
         </form>
