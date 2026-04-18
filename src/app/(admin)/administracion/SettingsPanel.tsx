@@ -231,6 +231,7 @@ export default function SettingsPanel({
   const [avatarUrl, setAvatarUrl] = useState(
     normalizeProfileAvatarUrl(initialAvatarUrl),
   );
+  const [isAvatarProcessing, setIsAvatarProcessing] = useState(false);
   const [fullName, setFullName] = useState(displayName);
   const [profileState, profileAction] = useActionState(
     updateProfileSettingsAction,
@@ -296,6 +297,11 @@ export default function SettingsPanel({
     }
   }, [passwordState]);
 
+  const handleProfileSubmit = (formData: FormData) => {
+    formData.set("avatarUrl", sanitizeProfileAvatarUrl(avatarUrl) ?? "");
+    return profileAction(formData);
+  };
+
   const subscriptionDetails = useMemo(() => {
     if (role === "admin") {
       return {
@@ -337,13 +343,8 @@ export default function SettingsPanel({
   return (
     <div className={styles.settingsGrid}>
       <section className={styles.primaryColumn}>
-        <form action={profileAction} className={styles.settingsCard}>
+        <form action={handleProfileSubmit} className={styles.settingsCard}>
           <input type="hidden" name="locale" value={language} />
-          <input
-            type="hidden"
-            name="avatarUrl"
-            value={sanitizeProfileAvatarUrl(avatarUrl) ?? ""}
-          />
           <div className={styles.sectionHeader}>
             <div>
               <h2>{t.account}</h2>
@@ -375,10 +376,15 @@ export default function SettingsPanel({
                     const file = event.target.files?.[0];
                     if (!file) return;
                     const optimizeAvatar = async () => {
-                      const dataUrl = await readAvatarAsDataUrl(file);
-                      if (!dataUrl) return;
-                      const normalizedAvatar = normalizeProfileAvatarUrl(dataUrl);
-                      setAvatarUrl(normalizedAvatar);
+                      try {
+                        setIsAvatarProcessing(true);
+                        const dataUrl = await readAvatarAsDataUrl(file);
+                        if (!dataUrl) return;
+                        const normalizedAvatar = normalizeProfileAvatarUrl(dataUrl);
+                        setAvatarUrl(normalizedAvatar);
+                      } finally {
+                        setIsAvatarProcessing(false);
+                      }
                     };
 
                     void optimizeAvatar();
@@ -412,7 +418,7 @@ export default function SettingsPanel({
             </label>
           </div>
           <div className={styles.actionRow}>
-            <SubmitButton label={t.save} />
+            <SubmitButton label={t.save} disabled={isAvatarProcessing} />
           </div>
           <FormMessage state={profileState} />
         </form>
@@ -564,12 +570,19 @@ export default function SettingsPanel({
   );
 }
 
-function SubmitButton({ label }: { label: string }) {
+function SubmitButton({
+  label,
+  disabled = false,
+}: {
+  label: string;
+  disabled?: boolean;
+}) {
   const { pending } = useFormStatus();
+  const isDisabled = pending || disabled;
 
   return (
-    <button type="submit" className={styles.primaryAction} disabled={pending}>
-      {pending ? "Guardando..." : label}
+    <button type="submit" className={styles.primaryAction} disabled={isDisabled}>
+      {pending ? "Guardando..." : disabled ? "Procesando imagen..." : label}
     </button>
   );
 }
