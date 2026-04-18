@@ -10,11 +10,11 @@ export const PUBLIC_COLLABORATORS = [
     alt: "Federacion Catalana Futbol Sala",
   },
   {
-    src: "/assets/figma/Logos%20-%20Federaciones%20-%20Equipos/Federacion_Tinerfen%CC%83a_Futbol_Logo1-removebg-preview.png",
+    src: "/assets/figma/Logos%20-%20Federaciones%20-%20Equipos/Federacion_Tinerfena_Futbol_Logo1-removebg-preview.png",
     alt: "Federacion Tinerfena Futbol",
   },
   {
-    src: "/assets/figma/Logos%20-%20Federaciones%20-%20Equipos/Federacion_Tinerfen%CC%83a_Futbol_Logo2-removebg-preview.png",
+    src: "/assets/figma/Logos%20-%20Federaciones%20-%20Equipos/Federacion_Tinerfena_Futbol_Logo2-removebg-preview.png",
     alt: "Federacion Tinerfena Futbol alternativa",
   },
   {
