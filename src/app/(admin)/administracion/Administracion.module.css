@@ -188,13 +188,20 @@
 
 .headerRight {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
 .mobileHiddenBell {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 8px 24px rgba(26, 44, 42, 0.06);
 }
 
 .iconButton {
@@ -222,36 +229,47 @@
 .adminCard {
   background: #ffffff;
   border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 10px 13px;
+  border-radius: 14px;
+  padding: 10px 14px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  min-height: 44px;
+  box-shadow: 0 8px 24px rgba(26, 44, 42, 0.06);
 }
 
 .adminIcon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
-  background: #31aaa0;
+  background: #eef6f5;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex: 0 0 auto;
 }
 
 .adminIcon img {
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 999px;
 }
 
 .adminCard p {
+  margin: 0;
   font-size: 12px;
   color: #4b4b4b;
+  line-height: 1.2;
 }
 
 .adminCard strong {
+  display: block;
+  margin-bottom: 4px;
   color: #1a2c2a;
   letter-spacing: -0.6px;
+  line-height: 1.1;
 }
 
 .settingsContent {
