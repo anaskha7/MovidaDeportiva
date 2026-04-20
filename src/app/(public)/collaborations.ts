@@ -37,12 +37,12 @@ export const PUBLIC_COLLABORATORS = [
 
 export function getCollaborationsLabel(locale: Locale) {
   if (locale === "ca") {
-    return "Col·laboracions";
+    return "Col·laboracions oficials";
   }
 
   if (locale === "en") {
-    return "Collaborations";
+    return "Official collaborations";
   }
 
-  return "Colaboraciones";
+  return "Colaboraciones oficiales";
 }

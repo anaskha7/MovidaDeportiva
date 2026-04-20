@@ -9,6 +9,10 @@ export default function NotificationDateBadge({
   className,
   as = "span",
 }: NotificationDateBadgeProps) {
+  if (count <= 0) {
+    return null;
+  }
+
   const Tag = as;
 
   return <Tag className={className}>{count}</Tag>;

@@ -127,7 +127,9 @@ export default function ResponsiveSidebar({
     <>
       <AuthHistoryGuard />
       <div className={styles.mobileBar}>
-        <img className={styles.mobileLogo} src={logoSrc} alt={logoAlt} />
+        <a href="/" aria-label={logoAlt}>
+          <img className={styles.mobileLogo} src={logoSrc} alt={logoAlt} />
+        </a>
         <div className={styles.mobileBarActions}>
           {mobileActions}
           <button

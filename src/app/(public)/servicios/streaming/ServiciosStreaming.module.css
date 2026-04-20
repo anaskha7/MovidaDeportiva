@@ -32,16 +32,20 @@
 }
 
 .highlightBox h2 {
-  font-size: 66px;
-  font-weight: 600;
-  letter-spacing: -3px;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(36px, 5vw, 58px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   text-align: center;
 }
 
 .highlightBox p {
-  font-size: 36px;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(18px, 2.6vw, 24px);
   font-weight: 500;
-  letter-spacing: -2px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
   text-align: center;
 }
 
@@ -100,9 +104,10 @@
 }
 
 .servicesSection h2 {
-  font-size: 66px;
-  font-weight: 500;
-  letter-spacing: -3px;
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   border-bottom: 9px solid #31aaa0;
   padding-bottom: 12px;
   width: fit-content;
@@ -141,14 +146,18 @@
 }
 
 .serviceCard h3 {
-  font-size: 36px;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(24px, 3vw, 34px);
   font-weight: 700;
-  letter-spacing: -2px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
 }
 
 .serviceCard p {
-  font-size: 26px;
-  letter-spacing: -1px;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
 }
 
 .serviceCard:hover {
@@ -161,8 +170,8 @@
   gap: 12px;
   max-width: 860px;
   color: #e6f2f0;
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: 18px;
+  line-height: 1.65;
 }
 
 .processSection {
@@ -190,9 +199,10 @@
 }
 
 .processContent h2 {
-  font-size: 66px;
-  font-weight: 500;
-  letter-spacing: -3px;
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   border-bottom: 9px solid #31aaa0;
   padding-bottom: 12px;
   width: fit-content;
@@ -220,10 +230,11 @@
 .processCard {
   background: #445251;
   border-radius: 20px;
-  padding: 8px 13px;
+  padding: 12px 16px;
   color: #ffffff;
-  font-size: 26px;
-  letter-spacing: -1px;
+  font-size: 19px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
   flex: 1;
 }
 

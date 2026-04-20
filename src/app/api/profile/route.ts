@@ -5,8 +5,9 @@ import { getSessionUserRecord, createAuditLog } from "@/lib/backoffice";
 import { sanitizeProfileAvatarUrl } from "@/lib/profile-avatar";
 import { prisma } from "@/lib/prisma";
 import { formatUserName, getSession } from "@/lib/session";
-import { applySessionToResponse } from "@/lib/session-response";
+import { applySessionToResponse, clearSessionCookies } from "@/lib/session-response";
 import type { Locale } from "@/lib/i18n-shared";
+import { TRUSTED_DEVICE_COOKIE } from "@/lib/trusted-device";
 
 const profileSchema = z.object({
   locale: z.enum(["es", "ca", "en"]).catch("es"),
@@ -19,16 +20,19 @@ const messages = {
     expired: "Tu sesión ha expirado. Vuelve a iniciar sesión.",
     invalidName: "Introduce un nombre válido.",
     profileSaved: "Tu perfil se ha actualizado correctamente.",
+    deleted: "Tu cuenta se ha eliminado correctamente.",
   },
   ca: {
     expired: "La teva sessió ha caducat. Torna a iniciar sessió.",
     invalidName: "Introdueix un nom vàlid.",
     profileSaved: "El teu perfil s'ha actualitzat correctament.",
+    deleted: "El teu compte s'ha eliminat correctament.",
   },
   en: {
     expired: "Your session has expired. Please sign in again.",
     invalidName: "Enter a valid name.",
     profileSaved: "Your profile has been updated successfully.",
+    deleted: "Your account has been deleted successfully.",
   },
 } as const;
 
@@ -127,6 +131,78 @@ export async function PATCH(request: Request) {
     },
   );
 
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}
+
+export async function DELETE(request: Request) {
+  const session = await getSession();
+  const currentUser = await getSessionUserRecord(session);
+  const locale = new URL(request.url).searchParams.get("locale");
+  const t = getMessages(locale === "ca" || locale === "en" ? locale : "es");
+
+  if (!session || !currentUser) {
+    return NextResponse.json(
+      {
+        status: "error",
+        message: t.expired,
+      },
+      { status: 401 },
+    );
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.comentario.deleteMany({
+      where: { id_usuario: currentUser.id_usuario },
+    });
+    await tx.material.deleteMany({
+      where: { id_usuario: currentUser.id_usuario },
+    });
+    await tx.suscripcion.deleteMany({
+      where: { id_usuario: currentUser.id_usuario },
+    });
+    await tx.emailOtp.updateMany({
+      where: { id_usuario: currentUser.id_usuario },
+      data: { id_usuario: null },
+    });
+    await tx.appNotification.updateMany({
+      where: { id_usuario_destino: currentUser.id_usuario },
+      data: { id_usuario_destino: null },
+    });
+    await tx.appNotification.updateMany({
+      where: { id_actor_usuario: currentUser.id_usuario },
+      data: { id_actor_usuario: null },
+    });
+    await tx.auditLog.updateMany({
+      where: { id_usuario_actor: currentUser.id_usuario },
+      data: { id_usuario_actor: null },
+    });
+    await tx.solicitudServicio.updateMany({
+      where: { id_usuario: currentUser.id_usuario },
+      data: { id_usuario: null },
+    });
+    await tx.usuario.delete({
+      where: { id_usuario: currentUser.id_usuario },
+    });
+  });
+
+  revalidateUserSurfaces();
+
+  const response = clearSessionCookies(
+    NextResponse.json({
+      status: "success",
+      message: t.deleted,
+    }),
+  );
+
+  response.cookies.set(TRUSTED_DEVICE_COOKIE, "", {
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
   response.headers.set("Cache-Control", "no-store");
   return response;
 }

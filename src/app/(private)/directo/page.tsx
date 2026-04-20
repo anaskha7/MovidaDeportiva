@@ -59,7 +59,9 @@ export default async function DirectoPage() {
             />
           }
         >
-          <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
+          <HardNavLink href="/" aria-label="Volver a la web">
+            <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
+          </HardNavLink>
           <div className={styles.menu}>
             <span className={styles.menuLabel}>{t.menu}</span>
             <nav className={styles.menuList}>

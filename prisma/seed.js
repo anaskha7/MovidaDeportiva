@@ -100,17 +100,61 @@ async function ensureDemoUsers(roleMap) {
   }
 }
 
+async function ensureDemoSubscriptions() {
+  const subscriber = await prisma.usuario.findUnique({
+    where: { email: "suscriptor@movida.tv" },
+    select: { id_usuario: true },
+  });
+
+  if (!subscriber) {
+    return;
+  }
+
+  const existingSubscription = await prisma.suscripcion.findFirst({
+    where: { id_usuario: subscriber.id_usuario },
+    select: { id_suscripcion: true },
+  });
+
+  if (existingSubscription) {
+    await prisma.suscripcion.update({
+      where: { id_suscripcion: existingSubscription.id_suscripcion },
+      data: {
+        id_usuario: subscriber.id_usuario,
+        plan: "premium",
+        estado: "activa",
+        fecha_inicio: new Date("2026-04-01T00:00:00.000Z"),
+        fecha_renovacion: new Date("2026-05-01T00:00:00.000Z"),
+        fecha_fin: null,
+      },
+    });
+    return;
+  }
+
+  await prisma.suscripcion.create({
+    data: {
+      id_usuario: subscriber.id_usuario,
+      plan: "premium",
+      estado: "activa",
+      fecha_inicio: new Date("2026-04-01T00:00:00.000Z"),
+      fecha_renovacion: new Date("2026-05-01T00:00:00.000Z"),
+      fecha_fin: null,
+    },
+  });
+}
+
 async function main() {
   const roles = await ensureRoles();
   const roleMap = new Map(roles.map((role) => [role.rol, role.admin]));
 
   await ensureGeneros();
   await ensureDemoUsers(roleMap);
+  await ensureDemoSubscriptions();
 
   console.log("Seed completado:");
   console.log("- Roles base: admin, user, suscriptor");
   console.log("- Géneros base: masculino, femenino, mixto");
   console.log("- Usuarios demo: admin@movida.tv, user@movida.tv, suscriptor@movida.tv");
+  console.log("- Suscripción demo: premium activa para suscriptor@movida.tv");
 }
 
 main()

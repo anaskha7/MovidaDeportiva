@@ -7,6 +7,7 @@ import styles from "./Login.module.css";
 
 type Props = {
   error?: string;
+  notice?: string | null;
   initialTab?: "login" | "register";
   step?: "otp";
   otpEmail?: string;
@@ -16,6 +17,7 @@ type Props = {
 
 export default function LoginForm({
   error,
+  notice,
   initialTab = "login",
   step,
   otpEmail,
@@ -202,6 +204,7 @@ export default function LoginForm({
           onSubmit={() => setIsLoginSubmitting(true)}
         >
           <div className={styles.formFields}>
+            {notice ? <div className={styles.success}>{notice}</div> : null}
             <label>
               {t.email}
               <div className={styles.inputBox}>
@@ -249,7 +252,7 @@ export default function LoginForm({
                 </button>
               </div>
             </label>
-            <a className={styles.forgot} href="#">
+            <a className={styles.forgot} href="/recuperar-password">
               {t.forgot}
             </a>
             {loginError && (

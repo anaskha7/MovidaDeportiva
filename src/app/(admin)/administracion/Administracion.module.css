@@ -308,6 +308,11 @@
   background: linear-gradient(180deg, #f5fffd 0%, #ecf9f7 100%);
 }
 
+.dangerCard {
+  border-color: rgba(180, 35, 24, 0.16);
+  background: linear-gradient(180deg, #fff8f7 0%, #fff1ef 100%);
+}
+
 .sectionHeader h2 {
   font-size: 28px;
   color: #1a2c2a;
@@ -447,6 +452,26 @@
 }
 
 .primaryAction:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.dangerAction {
+  min-height: 48px;
+  border-radius: 999px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #b42318;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dangerAction:disabled {
   opacity: 0.72;
   cursor: wait;
 }

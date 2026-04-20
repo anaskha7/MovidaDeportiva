@@ -5,30 +5,30 @@ type Locale = "es" | "ca" | "en";
 
 const socialIcons = [
   {
-    id: "facebook",
-    label: "Facebook",
-    glyph: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M14 8h3V4h-3c-3.3 0-5 1.7-5 4.9V12H6v4h3v4h4v-4h3l1-4h-4V9.2c0-.8.3-1.2 1-1.2Z" />
-      </svg>
-    ),
-  },
-  {
-    id: "x",
-    label: "X",
-    glyph: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M18.9 3H21l-6.5 7.4L22 21h-5.9l-4.6-6-5.3 6H4.1l7-7.9L2 3h6l4.2 5.5L18.9 3Z" />
-      </svg>
-    ),
-  },
-  {
     id: "instagram",
     label: "Instagram",
+    href: "https://www.instagram.com/movidadeportivatv/",
     glyph: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2" />
-        <circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" strokeWidth="2" />
+        <rect
+          x="3.25"
+          y="3.25"
+          width="17.5"
+          height="17.5"
+          rx="5"
+          ry="5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="4.1"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
         <circle cx="17.35" cy="6.65" r="1.15" />
       </svg>
     ),
@@ -36,6 +36,7 @@ const socialIcons = [
   {
     id: "youtube",
     label: "YouTube",
+    href: "https://www.youtube.com/@movidadeportivatv",
     glyph: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M21 12.2c0 2.3-.3 4.4-.6 5.3-.2.7-.8 1.3-1.5 1.5-1.5.4-6.9.4-6.9.4s-5.4 0-6.9-.4c-.7-.2-1.3-.8-1.5-1.5C3.3 16.6 3 14.5 3 12.2s.3-4.4.6-5.3c.2-.7.8-1.3 1.5-1.5C6.6 5 12 5 12 5s5.4 0 6.9.4c.7.2 1.3.8 1.5 1.5.3.9.6 3 .6 5.3Z" />
@@ -52,42 +53,45 @@ export default function Footer({ locale }: { locale: Locale }) {
       home: "Inicio",
       about: "Conócenos",
       contact: "Contacto",
-      legal: "Legal",
+      legalSpace: "Espacio legal",
       privacy: "Política de Privacidad",
       terms: "Términos de Servicio",
       services: "Nuestros servicios",
-      streaming: "Servicio de streaming",
-      speakers: "Speakers y animación",
-      customer: "Atención al cliente",
-      customerText: "Disponible por correo y teléfono. Respuesta en menos de 24 horas",
+      streaming: "Servicio de retransmisión",
+      mdtv: "Emisión en plataforma MDTV",
+      support: "Soporte",
+      supportText:
+        "Te atendemos por correo o teléfono para dudas, presupuestos y seguimiento.",
     },
     ca: {
       quick: "Enllaços ràpids",
       home: "Inici",
       about: "Coneix-nos",
       contact: "Contacte",
-      legal: "Legal",
+      legalSpace: "Espai legal",
       privacy: "Política de privacitat",
       terms: "Termes del servei",
       services: "Els nostres serveis",
-      streaming: "Servei d'Streaming",
-      speakers: "Speakers i animació",
-      customer: "Atenció al client",
-      customerText: "Disponible per correu i telèfon. Resposta en menys de 24 hores",
+      streaming: "Servei de retransmissió",
+      mdtv: "Emissió a la plataforma MDTV",
+      support: "Suport",
+      supportText:
+        "T'atendrem per correu o telèfon per dubtes, pressupostos i seguiment.",
     },
     en: {
       quick: "Quick links",
       home: "Home",
       about: "About us",
       contact: "Contact",
-      legal: "Legal",
+      legalSpace: "Legal area",
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       services: "Our services",
-      streaming: "Streaming service",
-      speakers: "Speakers and entertainment",
-      customer: "Customer support",
-      customerText: "Available by email and phone. Response within 24 hours",
+      streaming: "Broadcast service",
+      mdtv: "Broadcast on MDTV platform",
+      support: "Support",
+      supportText:
+        "Reach us by email or phone for questions, quotes and follow-up.",
     },
   }[locale];
 
@@ -99,25 +103,38 @@ export default function Footer({ locale }: { locale: Locale }) {
             <div>
               <h3>{copy.quick}</h3>
               <ul>
-                <li><Link href="/">{copy.home}</Link></li>
-                <li><Link href="/quienes-somos">{copy.about}</Link></li>
-                <li><a href="mailto:movidadeportiva.direccion@gmail.com">{copy.contact}</a></li>
+                <li>
+                  <Link href="/">{copy.home}</Link>
+                </li>
+                <li>
+                  <Link href="/quienes-somos">{copy.about}</Link>
+                </li>
+                <li>
+                  <Link href="/servicios/contacto">{copy.contact}</Link>
+                </li>
               </ul>
             </div>
             <div>
-              <h3>{copy.legal}</h3>
+              <h3>{copy.legalSpace}</h3>
               <ul>
-                <li><Link href="/quienes-somos">{copy.privacy}</Link></li>
-                <li><Link href="/quienes-somos">{copy.terms}</Link></li>
+                <li>
+                  <Link href="/legal/privacidad">{copy.privacy}</Link>
+                </li>
+                <li>
+                  <Link href="/legal/terminos">{copy.terms}</Link>
+                </li>
               </ul>
             </div>
           </div>
           <div>
             <h3>{copy.services}</h3>
             <ul>
-              <li><Link href="/servicios/streaming">{copy.streaming}</Link></li>
-              <li><Link href="/servicios/streaming">MDTV</Link></li>
-              <li><Link href="/servicios/streaming">{copy.speakers}</Link></li>
+              <li>
+                <Link href="/servicios/streaming">{copy.streaming}</Link>
+              </li>
+              <li>
+                <Link href="/servicios/streaming">{copy.mdtv}</Link>
+              </li>
             </ul>
           </div>
           <div>
@@ -135,8 +152,8 @@ export default function Footer({ locale }: { locale: Locale }) {
               </div>
             </div>
             <div className={styles.contactGroup}>
-              <h3>{copy.customer}</h3>
-              <p>{copy.customerText}</p>
+              <h3>{copy.support}</h3>
+              <p>{copy.supportText}</p>
               <div className={styles.contactRow}>
                 <img src="/assets/figma/footer-phone.svg" alt="" />
                 <span>+34 666 123 456</span>
@@ -148,11 +165,19 @@ export default function Footer({ locale }: { locale: Locale }) {
           <p>© 2026 Movida Deportiva TV.</p>
           <div className={styles.socials}>
             {socialIcons.map((icon) => (
-              <div key={icon.id} className={styles.socialCircle}>
+              <a
+                key={icon.id}
+                href={icon.href}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.socialLink}
+                aria-label={icon.label}
+                title={icon.label}
+              >
                 <span className={styles.socialGlyph} aria-label={icon.label}>
                   {icon.glyph}
                 </span>
-              </div>
+              </a>
             ))}
           </div>
         </div>

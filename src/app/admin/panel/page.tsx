@@ -98,7 +98,9 @@ export default async function AdminPanelPage(props: {
             />
           }
         >
-          <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
+          <HardNavLink href="/" aria-label="Volver a la web">
+            <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
+          </HardNavLink>
           <div className={styles.menuBlock}>
             <p className={styles.menuLabel}>{t.menu}</p>
             <nav className={styles.menuList}>

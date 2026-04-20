@@ -5,6 +5,8 @@ const OTP_LENGTH = 6;
 const OTP_TTL_MINUTES = 10;
 const OTP_MAX_ATTEMPTS = 5;
 const DEV_BYPASS_DOMAINS = new Set(["movida.tv", "demo.movida.tv"]);
+export const OTP_INTENTS = ["login", "password_reset"] as const;
+export type OtpIntent = (typeof OTP_INTENTS)[number];
 
 function isBypassEmail(email: string) {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
@@ -33,8 +35,10 @@ function normalizeOtpCode(value: string) {
 export async function createEmailOtp(input: {
   email: string;
   userId?: number | null;
+  intent?: OtpIntent;
 }) {
   const email = input.email.toLowerCase();
+  const intent = input.intent ?? "login";
   if (isBypassEmail(email)) {
     return { code: "000000", expiresMinutes: OTP_TTL_MINUTES };
   }
@@ -47,6 +51,7 @@ export async function createEmailOtp(input: {
     await tx.emailOtp.updateMany({
       where: {
         email,
+        intent,
         consumed_at: null,
       },
       data: {
@@ -58,6 +63,7 @@ export async function createEmailOtp(input: {
       data: {
         email,
         id_usuario: input.userId ?? null,
+        intent,
         codigo_hash: codeHash,
         expires_at: expiresAt,
         attempts: 0,
@@ -68,9 +74,14 @@ export async function createEmailOtp(input: {
   return { code, expiresMinutes: OTP_TTL_MINUTES };
 }
 
-export async function verifyEmailOtp(input: { email: string; code: string }) {
+export async function verifyEmailOtp(input: {
+  email: string;
+  code: string;
+  intent?: OtpIntent;
+}) {
   const email = input.email.toLowerCase();
   const normalizedCode = normalizeOtpCode(input.code);
+  const intent = input.intent ?? "login";
 
   if (isBypassEmail(email)) {
     if (normalizedCode !== "000000") {
@@ -86,6 +97,7 @@ export async function verifyEmailOtp(input: { email: string; code: string }) {
   const records = await prisma.emailOtp.findMany({
     where: {
       email,
+      intent,
       consumed_at: null,
     },
     orderBy: {
@@ -131,6 +143,7 @@ export async function verifyEmailOtp(input: { email: string; code: string }) {
     await prisma.emailOtp.updateMany({
       where: {
         email,
+        intent,
         consumed_at: null,
       },
       data: {

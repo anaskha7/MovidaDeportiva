@@ -79,6 +79,7 @@ model Usuario {
   notificaciones_creadas AppNotification[]   @relation("NotificationCreator")
   registros_auditoria    AuditLog[]          @relation("AuditLogActor")
   email_otps             EmailOtp[]
+  suscripciones          Suscripcion[]
 
   @@index([admin], map: "ix_usuarios_admin")
   @@map("usuarios")
@@ -170,12 +171,41 @@ model Partido {
   competicion             Competicion @relation(fields: [id_competicion], references: [id_competicion], onDelete: Restrict, onUpdate: Cascade)
   equipo_local            Equipo?     @relation("PartidoEquipoLocal", fields: [id_equipo_local], references: [id_equipo], onDelete: SetNull, onUpdate: Cascade)
   equipo_visitante        Equipo?     @relation("PartidoEquipoVisitante", fields: [id_equipo_visitante], references: [id_equipo], onDelete: SetNull, onUpdate: Cascade)
+  vods                    Vod[]
 
   @@index([id_competicion], map: "ix_partidos_id_competicion")
   @@index([id_equipo_local], map: "ix_partidos_id_equipo_local")
   @@index([id_equipo_visitante], map: "ix_partidos_id_equipo_visitante")
   @@index([fecha_partido], map: "ix_partidos_fecha_partido")
   @@map("partidos")
+}
+
+model Suscripcion {
+  id_suscripcion   Int       @id @default(autoincrement())
+  id_usuario       Int
+  plan             String    @db.VarChar(40)
+  estado           String    @db.VarChar(20)
+  fecha_inicio     DateTime  @db.Timestamp(0)
+  fecha_fin        DateTime? @db.Timestamp(0)
+  fecha_renovacion DateTime? @db.Timestamp(0)
+  usuario          Usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([id_usuario], map: "ix_suscripciones_id_usuario")
+  @@index([estado], map: "ix_suscripciones_estado")
+  @@map("suscripciones")
+}
+
+model Vod {
+  id_vod            Int      @id @default(autoincrement())
+  id_partido        Int?
+  cloudflare_id     String   @unique @db.VarChar(120)
+  duracion_segundos Int?
+  estado            String   @db.VarChar(20)
+  partido           Partido? @relation(fields: [id_partido], references: [id_partido], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([id_partido], map: "ix_vods_id_partido")
+  @@index([estado], map: "ix_vods_estado")
+  @@map("vods")
 }
 
 model SolicitudServicio {

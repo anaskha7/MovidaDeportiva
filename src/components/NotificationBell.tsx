@@ -103,7 +103,7 @@ export default function NotificationBell({
         aria-expanded={open}
       >
         <img src={iconSrc} alt="" />
-        <i className={styles.dot} />
+        {count > 0 ? <i className={styles.dot} /> : null}
       </button>
 
       {open ? (

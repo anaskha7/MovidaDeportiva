@@ -14,18 +14,18 @@ type ServiceOption = {
 
 const SERVICES: ServiceOption[] = [
   {
-    id: "retransmision",
-    title: "Servicios retransmisión",
+    id: "tu-plataforma",
+    title: "Retransmisión para tu plataforma",
     pricePerHour: 19.99,
-    description: "Cobertura audiovisual completa para partidos y eventos deportivos.",
-    features: ["Realización en vivo", "Marcadores y grafismos", "Entrega de contenido final"],
+    description: "Producción audiovisual para emitir en tu web, app o canal.",
+    features: ["Realización en vivo", "Audio profesional", "Entrega estable en 1080p"],
   },
   {
-    id: "speakers",
-    title: "Speakers y animación",
+    id: "mdtv",
+    title: "Retransmisión en MDTV",
     pricePerHour: 27.99,
-    description: "Locución, animación de grada y dinamización del evento.",
-    features: ["Speaker profesional", "Guion del evento", "Coordinación de momentos clave"],
+    description: "Emisión desde nuestro canal con cobertura y salida gestionadas por MDTV.",
+    features: ["Canal MDTV", "Operativa resuelta", "Publicación lista para difusión"],
   },
 ];
 
@@ -126,12 +126,12 @@ export default function ContratarServiciosClient({
   const services = {
     es: SERVICES,
     ca: [
-      { ...SERVICES[0], title: "Serveis retransmissió", description: "Cobertura audiovisual completa per a partits i esdeveniments esportius.", features: ["Realització en viu", "Marcadors i grafismes", "Lliurament de contingut final"] },
-      { ...SERVICES[1], title: "Speakers i animació", description: "Locució, animació de graderia i dinamització de l'esdeveniment.", features: ["Speaker professional", "Guió de l'esdeveniment", "Coordinació de moments clau"] },
+      { ...SERVICES[0], title: "Retransmissió per a la teva plataforma", description: "Producció audiovisual per emetre a la teva web, app o canal.", features: ["Realització en viu", "Àudio professional", "Entrega estable en 1080p"] },
+      { ...SERVICES[1], title: "Retransmissió a MDTV", description: "Emissió des del nostre canal amb cobertura i sortida gestionades per MDTV.", features: ["Canal MDTV", "Operativa resolta", "Publicació llesta per difusió"] },
     ],
     en: [
-      { ...SERVICES[0], title: "Broadcast services", description: "Full audiovisual coverage for sports matches and events.", features: ["Live production", "Scoreboards and graphics", "Final content delivery"] },
-      { ...SERVICES[1], title: "Speakers and entertainment", description: "Commentary, crowd entertainment and event hosting.", features: ["Professional speaker", "Event script", "Key moments coordination"] },
+      { ...SERVICES[0], title: "Broadcast for your platform", description: "Audiovisual production for your website, app or channel.", features: ["Live production", "Professional audio", "Stable 1080p delivery"] },
+      { ...SERVICES[1], title: "Broadcast on MDTV", description: "Broadcast from our channel with production and output handled by MDTV.", features: ["MDTV channel", "Handled operations", "Ready-to-publish output"] },
     ],
   }[locale];
 

@@ -13,13 +13,12 @@ export default async function HomePage() {
       discover: "Descubrir más",
       servicesPill: "Nuestros servicios",
       servicesTitle: "Tenemos todo lo que necesitas.",
-      servicesText: "Desde streaming profesional hasta producción completa.",
+      servicesText: "Dos soluciones claras para retransmitir tu evento con calidad profesional.",
       knowMore: "Quiero saber más",
       streaming: "Servicio streaming",
-      streamingText: "Disponible en múltiples plataformas. YouTube, Facebook, Instagram, Twitch y más. Calidad 4K, audio profesional y chat interactivo.",
-      streamingDetail: "Diseñamos la retransmisión completa para que tu evento se vea sólido, profesional y listo para crecer en audiencia.",
-      speakers: "Speakers y animación",
-      speakersText: "Servicios de locución profesional y animación para dar vida a tus eventos con energía y profesionalismo.",
+      streamingText: "Emitimos el evento en la plataforma que ya utilizas, con realización en directo, audio profesional y señal preparada para una entrega estable en 1080p.",
+      streamingDetail: "Nos encargamos de la producción técnica para que tu organización mantenga el control del canal sin renunciar a una emisión sólida y bien presentada.",
+      mdtvText: "Si prefieres apoyarte en nuestro canal, publicamos la retransmisión en MDTV y nos ocupamos de la parte operativa, la puesta en marcha y la visibilidad del directo.",
       livePill: "Directos",
       liveTitle: "Transmisiones exclusivas y chat en directo.",
       watchNow: "Ver ahora",
@@ -46,13 +45,12 @@ export default async function HomePage() {
       discover: "Descobrir més",
       servicesPill: "Els nostres serveis",
       servicesTitle: "Tenim tot el que necessites.",
-      servicesText: "Des d'Streaming professional fins a producció completa.",
+      servicesText: "Dues solucions clares per retransmetre el teu esdeveniment amb qualitat professional.",
       knowMore: "Vull saber-ne més",
       streaming: "Servei d'Streaming",
-      streamingText: "Disponible en múltiples plataformes. YouTube, Facebook, Instagram, Twitch i més. Qualitat 4K, àudio professional i xat interactiu.",
-      streamingDetail: "Dissenyem la retransmissió completa perquè el teu esdeveniment es vegi sòlid, professional i preparat per créixer en audiència.",
-      speakers: "Speakers i animació",
-      speakersText: "Serveis de locució professional i animació per donar vida als teus esdeveniments amb energia i professionalitat.",
+      streamingText: "Emetem l'esdeveniment a la plataforma que ja utilitzes, amb realització en directe, àudio professional i senyal preparada per a una entrega estable en 1080p.",
+      streamingDetail: "Ens ocupem de la producció tècnica perquè la teva organització mantingui el control del canal sense renunciar a una emissió sòlida i ben presentada.",
+      mdtvText: "Si prefereixes recolzar-te en el nostre canal, publiquem la retransmissió a MDTV i ens ocupem de la part operativa, la posada en marxa i la visibilitat del directe.",
       livePill: "Directes",
       liveTitle: "Transmissions exclusives i xat en directe.",
       watchNow: "Veure ara",
@@ -79,13 +77,12 @@ export default async function HomePage() {
       discover: "Discover more",
       servicesPill: "Our services",
       servicesTitle: "We have everything you need.",
-      servicesText: "From professional streaming to full production.",
+      servicesText: "Two clear ways to broadcast your event with professional delivery.",
       knowMore: "I want to know more",
       streaming: "Streaming service",
-      streamingText: "Available on multiple platforms. YouTube, Facebook, Instagram, Twitch and more. 4K quality, professional audio and interactive chat.",
-      streamingDetail: "We design the full live production so your event feels polished, professional and ready to grow its audience.",
-      speakers: "Speakers and entertainment",
-      speakersText: "Professional voice-over and entertainment services to bring your events to life with energy and professionalism.",
+      streamingText: "We deliver the event to the platform you already use, with live direction, professional audio and a stable 1080p-ready feed.",
+      streamingDetail: "We handle the technical production so your organisation keeps control of the channel without sacrificing a polished broadcast.",
+      mdtvText: "If you prefer to rely on our channel, we publish the broadcast on MDTV and take care of the operational setup, launch and live visibility.",
       livePill: "Live",
       liveTitle: "Exclusive broadcasts and live chat.",
       watchNow: "Watch now",
@@ -149,9 +146,6 @@ export default async function HomePage() {
           <div className={styles.servicesGrid}>
             <Link href="/servicios/streaming" className={`${styles.cardLink} ${styles.cardLinkFeatured}`}>
               <article className={`${styles.serviceCard} ${styles.serviceCardFeatured}`}>
-                <div className={styles.cardTop}>
-                  <span className={styles.cardArrow} aria-hidden="true" />
-                </div>
                 <div>
                   <h3>{t.streaming}</h3>
                   <p>{t.streamingText}</p>
@@ -161,26 +155,9 @@ export default async function HomePage() {
             </Link>
             <Link href="/servicios/streaming" className={styles.cardLink}>
               <article className={styles.serviceCard}>
-                <div className={styles.cardTop}>
-                  <span className={styles.cardArrow} aria-hidden="true" />
-                </div>
                 <div>
                   <h3>MDTV</h3>
-                  <p>
-                    Producción audiovisual completa. Desde la idea hasta la pantalla,
-                    creamos contenido que conecta con tu audiencia.
-                  </p>
-                </div>
-              </article>
-            </Link>
-            <Link href="/servicios/streaming" className={styles.cardLink}>
-              <article className={styles.serviceCard}>
-                <div className={styles.cardTop}>
-                  <span className={styles.cardArrow} aria-hidden="true" />
-                </div>
-                <div>
-                  <h3>{t.speakers}</h3>
-                  <p>{t.speakersText}</p>
+                  <p>{t.mdtvText}</p>
                 </div>
               </article>
             </Link>

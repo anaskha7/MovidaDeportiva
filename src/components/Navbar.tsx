@@ -27,7 +27,6 @@ const navItems = {
 export default function Navbar({ locale }: { locale: Locale }) {
   const pathname = usePathname();
   const items = navItems[locale];
-  const servicesLabel = items[2].label;
   const loginLabel = locale === "ca" ? "Entrar" : locale === "en" ? "Log in" : "Iniciar sesión";
 
   return (
@@ -45,13 +44,6 @@ export default function Navbar({ locale }: { locale: Locale }) {
               className={isActive ? styles.activeLink : styles.link}
             >
               <span className={styles.linkText}>{item.label}</span>
-              {item.label === servicesLabel && (
-                <span className={styles.chevron} aria-hidden="true">
-                  <svg viewBox="0 0 20 20">
-                    <path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              )}
             </Link>
           );
         })}

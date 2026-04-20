@@ -21,6 +21,8 @@ type AjustesPageClientProps = {
   hasLiveNow: boolean;
   notificationItems: NotificationFeedItem[];
   notificationCount: number;
+  subscriptionPlan: string | null;
+  subscriptionStatus: string | null;
 };
 
 const translations = {
@@ -86,6 +88,8 @@ export default function AjustesPageClient({
   hasLiveNow,
   notificationItems,
   notificationCount,
+  subscriptionPlan,
+  subscriptionStatus,
 }: AjustesPageClientProps) {
   const [language, setLanguage] = useState<Locale>(initialLanguage);
   const [currentDisplayName, setCurrentDisplayName] = useState(displayName);
@@ -122,7 +126,9 @@ export default function AjustesPageClient({
             />
           }
         >
-          <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
+          <HardNavLink href="/" aria-label="Volver a la web">
+            <img className={styles.logo} src="/assets/figma/logo-md-dark.svg" alt="Movida Deportiva TV" />
+          </HardNavLink>
           <p className={styles.menuLabel}>{t.menu}</p>
           <nav className={styles.menuList}>
             <HardNavLink href={homeHref} className={styles.menuItem}>
@@ -163,11 +169,13 @@ export default function AjustesPageClient({
         <section className={styles.content}>
           <header className={styles.header}>
             <div className={styles.headerLeft}>
-              <img
-                className={styles.logoSmall}
-                src="/assets/figma/logo-md-dark.svg"
-                alt="Movida Deportiva TV"
-              />
+              <HardNavLink href="/" aria-label="Volver a la web">
+                <img
+                  className={styles.logoSmall}
+                  src="/assets/figma/logo-md-dark.svg"
+                  alt="Movida Deportiva TV"
+                />
+              </HardNavLink>
               <div>
                 <h1>{t.title}</h1>
                 <p>{t.subtitle}</p>
@@ -208,6 +216,8 @@ export default function AjustesPageClient({
               roleLabel={roleLabel}
               language={language}
               onLanguageChange={setLanguage}
+              subscriptionPlan={subscriptionPlan}
+              subscriptionStatus={subscriptionStatus}
               onProfileUpdated={({
                 displayName: nextDisplayName,
                 email: nextEmail,

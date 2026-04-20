@@ -24,6 +24,8 @@ type SettingsPanelProps = {
   role: Rol;
   roleLabel: string;
   language: Locale;
+  subscriptionPlan?: string | null;
+  subscriptionStatus?: string | null;
   onLanguageChange: (language: Locale) => void;
   onProfileUpdated: (input: {
     displayName: string;
@@ -73,6 +75,12 @@ const content = {
     accessBasic: "Clasificaciones, calendario y área privada básica",
     accessSubscriber: "Contenido premium, VODs y directos",
     accessAdmin: "Acceso total a gestión, métricas y directos",
+    deleteAccount: "Eliminar cuenta",
+    deleteAccountDesc: "Borra tu acceso, tu perfil y los datos asociados que dependan de esta cuenta.",
+    deleteAccountCta: "Borrar mi cuenta",
+    deleteAccountConfirm: "Esta acción eliminará tu cuenta. ¿Quieres continuar?",
+    deleteAccountSuccess: "Tu cuenta se ha eliminado correctamente.",
+    deleteAccountError: "No se ha podido eliminar la cuenta.",
   },
   ca: {
     account: "El meu compte",
@@ -114,6 +122,12 @@ const content = {
     accessBasic: "Classificacions, calendari i àrea privada bàsica",
     accessSubscriber: "Contingut premium, VODs i directes",
     accessAdmin: "Accés total a gestió, mètriques i directes",
+    deleteAccount: "Eliminar compte",
+    deleteAccountDesc: "Esborra el teu accés, el teu perfil i les dades associades que depenguin d'aquest compte.",
+    deleteAccountCta: "Esborrar el meu compte",
+    deleteAccountConfirm: "Aquesta acció eliminarà el teu compte. Vols continuar?",
+    deleteAccountSuccess: "El teu compte s'ha eliminat correctament.",
+    deleteAccountError: "No s'ha pogut eliminar el compte.",
   },
   en: {
     account: "My account",
@@ -155,6 +169,12 @@ const content = {
     accessBasic: "Standings, schedule and basic private area",
     accessSubscriber: "Premium content, VODs and live events",
     accessAdmin: "Full access to management, metrics and live operations",
+    deleteAccount: "Delete account",
+    deleteAccountDesc: "Remove your access, profile and dependent data linked to this account.",
+    deleteAccountCta: "Delete my account",
+    deleteAccountConfirm: "This action will delete your account. Do you want to continue?",
+    deleteAccountSuccess: "Your account has been deleted successfully.",
+    deleteAccountError: "The account could not be deleted.",
   },
 } as const;
 
@@ -216,6 +236,8 @@ export default function SettingsPanel({
   role,
   roleLabel,
   language,
+  subscriptionPlan,
+  subscriptionStatus,
   onLanguageChange,
   onProfileUpdated,
 }: SettingsPanelProps) {
@@ -234,6 +256,8 @@ export default function SettingsPanel({
   const [isProfileSaving, setIsProfileSaving] = useState(false);
   const [fullName, setFullName] = useState(displayName);
   const [profileState, setProfileState] = useState<SettingsActionState>(initialActionState);
+  const [deleteState, setDeleteState] = useState<SettingsActionState>(initialActionState);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [passwordState, passwordAction] = useActionState(
     updatePasswordSettingsAction,
     initialActionState,
@@ -379,7 +403,63 @@ export default function SettingsPanel({
     });
   };
 
+  const handleDeleteAccount = async () => {
+    if (isDeletingAccount) {
+      return;
+    }
+
+    if (!window.confirm(t.deleteAccountConfirm)) {
+      return;
+    }
+
+    setDeleteState(initialActionState);
+    setIsDeletingAccount(true);
+
+    try {
+      const response = await fetch(`/api/profile?locale=${language}`, {
+        method: "DELETE",
+      });
+
+      const result = (await response.json().catch(() => null)) as SettingsActionState | null;
+
+      if (!response.ok) {
+        setDeleteState({
+          status: "error",
+          message: result?.message ?? t.deleteAccountError,
+        });
+        return;
+      }
+
+      setDeleteState({
+        status: "success",
+        message: result?.message ?? t.deleteAccountSuccess,
+      });
+      window.localStorage.removeItem(PROFILE_AVATAR_STORAGE_KEY);
+      emitProfileAvatarUpdated(DEFAULT_PROFILE_AVATAR_URL);
+      window.location.assign("/");
+    } catch {
+      setDeleteState({
+        status: "error",
+        message: t.deleteAccountError,
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   const subscriptionDetails = useMemo(() => {
+    if (subscriptionPlan) {
+      return {
+        badge: subscriptionPlan,
+        access:
+          subscriptionStatus && subscriptionStatus !== "activa"
+            ? `${subscriptionStatus} · ${t.accessSubscriber}`
+            : t.accessSubscriber,
+        actionLabel: role === "admin" ? t.goToAdmin : t.manageSubscription,
+        actionHref: role === "admin" ? "/dashboard" : "/servicios/contacto",
+      };
+    }
+
     if (role === "admin") {
       return {
         badge: t.planAdmin,
@@ -406,6 +486,8 @@ export default function SettingsPanel({
     };
   }, [
     role,
+    subscriptionPlan,
+    subscriptionStatus,
     t.accessAdmin,
     t.accessBasic,
     t.accessSubscriber,
@@ -661,6 +743,26 @@ export default function SettingsPanel({
           <a href={subscriptionDetails.actionHref} className={styles.primaryAction}>
             {subscriptionDetails.actionLabel}
           </a>
+        </article>
+
+        <article className={`${styles.settingsCard} ${styles.dangerCard}`}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2>{t.deleteAccount}</h2>
+              <p>{t.deleteAccountDesc}</p>
+            </div>
+          </div>
+          <div className={styles.actionRow}>
+            <button
+              type="button"
+              className={styles.dangerAction}
+              onClick={handleDeleteAccount}
+              disabled={isDeletingAccount}
+            >
+              {isDeletingAccount ? "..." : t.deleteAccountCta}
+            </button>
+          </div>
+          <FormMessage state={deleteState} />
         </article>
       </aside>
     </div>

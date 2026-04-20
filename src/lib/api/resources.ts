@@ -115,6 +115,22 @@ const appNotificationCreateSchema = z.object({
   id_actor_usuario: positiveInt.optional().nullable(),
 });
 
+const suscripcionCreateSchema = z.object({
+  id_usuario: positiveInt,
+  plan: requiredText(40),
+  estado: requiredText(20),
+  fecha_inicio: z.coerce.date(),
+  fecha_fin: z.coerce.date().optional().nullable(),
+  fecha_renovacion: z.coerce.date().optional().nullable(),
+});
+
+const vodCreateSchema = z.object({
+  id_partido: positiveInt.optional().nullable(),
+  cloudflare_id: requiredText(120),
+  duracion_segundos: z.coerce.number().int().min(0).optional().nullable(),
+  estado: requiredText(20),
+});
+
 const auditLogCreateSchema = z.object({
   accion: requiredText(40),
   entidad: requiredText(40),
@@ -246,6 +262,39 @@ const auditLogSelect = {
       id_usuario: true,
       nombre: true,
       email: true,
+    },
+  },
+} as const;
+
+const suscripcionSelect = {
+  id_suscripcion: true,
+  id_usuario: true,
+  plan: true,
+  estado: true,
+  fecha_inicio: true,
+  fecha_fin: true,
+  fecha_renovacion: true,
+  usuario: {
+    select: {
+      id_usuario: true,
+      nombre: true,
+      email: true,
+    },
+  },
+} as const;
+
+const vodSelect = {
+  id_vod: true,
+  id_partido: true,
+  cloudflare_id: true,
+  duracion_segundos: true,
+  estado: true,
+  partido: {
+    select: {
+      id_partido: true,
+      equipo_local_nombre: true,
+      equipo_visitante_nombre: true,
+      fecha_partido: true,
     },
   },
 } as const;
@@ -564,7 +613,7 @@ export const RESOURCE_CONFIGS: Record<string, ResourceConfig> = {
       id_usuario: 2,
       nombre_contacto: "Club Demo",
       email_contacto: "club@demo.com",
-      servicios: "Servicios retransmisión, Speakers y animación",
+      servicios: "Retransmisión para tu plataforma, Retransmisión en MDTV",
       fecha_servicio: "2026-03-29",
       horas_servicio: 3,
       detalles: "Cobertura completa del partido principal del fin de semana.",
@@ -650,6 +699,48 @@ export const RESOURCE_CONFIGS: Record<string, ResourceConfig> = {
     },
     exampleUpdateBody: {
       descripcion: "Ajuste manual del log de auditoría.",
+    },
+  },
+  suscripciones: {
+    resource: "suscripciones",
+    label: "Suscripciones",
+    delegate: "suscripcion",
+    idField: "id_suscripcion",
+    description: "Planes contratados por usuario, con fechas de inicio, fin y renovación.",
+    fields: ["id_usuario", "plan", "estado", "fecha_inicio", "fecha_fin", "fecha_renovacion"],
+    createSchema: suscripcionCreateSchema,
+    updateSchema: suscripcionCreateSchema.partial(),
+    select: suscripcionSelect,
+    exampleCreateBody: {
+      id_usuario: 3,
+      plan: "premium",
+      estado: "activa",
+      fecha_inicio: "2026-04-20T00:00:00.000Z",
+      fecha_renovacion: "2026-05-20T00:00:00.000Z",
+    },
+    exampleUpdateBody: {
+      estado: "cancelada",
+      fecha_fin: "2026-05-20T00:00:00.000Z",
+    },
+  },
+  vods: {
+    resource: "vods",
+    label: "VODs",
+    delegate: "vod",
+    idField: "id_vod",
+    description: "Vídeos bajo demanda vinculados a Cloudflare y, opcionalmente, a un partido.",
+    fields: ["id_partido", "cloudflare_id", "duracion_segundos", "estado"],
+    createSchema: vodCreateSchema,
+    updateSchema: vodCreateSchema.partial(),
+    select: vodSelect,
+    exampleCreateBody: {
+      id_partido: 1,
+      cloudflare_id: "8c9e2a7b-demo-vod-id",
+      duracion_segundos: 5820,
+      estado: "publicado",
+    },
+    exampleUpdateBody: {
+      estado: "procesando",
     },
   },
   materiales: {
